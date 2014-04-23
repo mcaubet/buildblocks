@@ -351,8 +351,8 @@ function em.install_doc() {
 }
 
 function _set_link() {
-	(mkdir -p "${EM_MODULEROOT_PATH}"
-	cd "${EM_MODULEROOT_PATH}"
+	(mkdir -p "${MODULEROOT_PATH}"
+	cd "${MODULEROOT_PATH}"
 	local _path="${EM_FAMILY}/${EM_MODULENAME%/*}"
 	mkdir -p "${_path}"
 	cd "${_path}"
