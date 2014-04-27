@@ -1,0 +1,10 @@
+#!/bin/bash
+
+family=$1
+shift
+
+modules=$(egrep  -l "[:space:]*\"$family\"" *)
+
+for m in ${modules}; do
+	./$m "$@"
+done
