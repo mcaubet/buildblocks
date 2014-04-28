@@ -1,5 +1,7 @@
 #!/bin/bash
 
+declare -rx ARGS="$@"
+
 declare -rx SHLIBDIR=$( cd $(dirname "$BASH_SOURCE") && pwd )
 
 declare -r OS=$(uname -s)
@@ -184,8 +186,8 @@ function _load_build_dependencies() {
 		fi
 		if module load "$m" 2>&1 | grep -q "Unable to locate"; then
 			echo "Module \"$m\" not available, trying to build it..."
-			"${SCRIPTDIR}/${m/\/*}"
-			if -z $(module avail "$m" 2>&1); then
+			"${SCRIPTDIR}/${m/\/*}.build" ${ARGS[@]}
+			if [[ -z $(module avail "$m" 2>&1) ]]; then
 				echo "Oops: Building module \"$m\" failed..."
 				exit 1
 			fi
@@ -390,6 +392,8 @@ function em.cleanup_src() {
 	if [[ $(pwd) != / ]]; then
 		echo "Cleaning up $(pwd)"
 		rm -rf *
+		cd ..
+		rmdir "/${EM_SRCDIR}"
 	fi
     );
 }
