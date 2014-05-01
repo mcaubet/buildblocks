@@ -9,7 +9,7 @@ Achim Gsell, Valeri Markushin, Hans Christian Stadler
 
 Scientific Computing, AIT, PSI
 
-2014-04-30
+2014-05-01
 
 
 * DONE Introduction 
@@ -44,6 +44,7 @@ maintaners easier and staightforward.
 
 Since we have a work in progress, we call it *specification*, not evaluation. 
 
+
 ** DONE Must Preserve the Core Functionality of Traditional Modulel 
    CLOSED: [2014-04-30 Wed 16:15]
 
@@ -51,6 +52,7 @@ The essential (to be specified) tradinional *module* *subcommands* *must* be sup
 Both the traditional TCL and Lua modules meet this requirement. 
 It is desirable to support all traditional subcommands in extensions of the 
 existing implementations.  
+
 
 *** IN-PROGRESS Essential subcommands
 
@@ -241,6 +243,7 @@ Modules based on Lua: Version 5.3.2 (5.3.2-2-ga7fbd80) 2014-03-21 22:04
 
 The *Module Hierarchy* section has been moved to [[[DesignProposal]]].
 
+
 *** DONE Must support SW Dependencies 
     CLOSED: [2014-04-28 Mon 10:46]
 
@@ -256,6 +259,7 @@ Only nonfloating licenses will be taken into account.
 
 
 ** IN-PROGRESS Settings for Standard and Application Specific Environment Variables 
+
 
 *** DONE Must Export Environment Variables Specifying Module Version and Prefix    
     CLOSED: [2014-04-30 Wed 16:42]
@@ -318,6 +322,7 @@ Examples:
 
 
 *** WAITING Must Export a Predefined Subset of POSIX Standard and Other Common Environment Variables
+
 
 **** DONE POSIX and POSIX-like
      CLOSED: [2014-04-30 Wed 17:15]
@@ -583,15 +588,18 @@ on the corresponding systems, e.g.:
 #+END_EXAMPLE
 
 
-** IN-PROGRESS Must Support Modules at Multiple Locations (Local and Network Installations)
+** DONE Must Support Modules at Multiple Locations (Local and Network Installations)
+   CLOSED: [2014-05-01 Thu 10:46]
 
-*** IN-PROGRESS Must Support Combinations of Local and Network Installations
+
+*** DONE Must Support Combinations of Local and Network Installations
+    CLOSED: [2014-05-01 Thu 10:41]
 
 It must be possible to install locally any selfconsistent subset of environment modules.  
 
 The user should be able to select which installation is used if multiple installations are available.   
 
-The should be a mechanism (e.g., environment variable) to control which installation is used 
+There should be a mechanism (e.g., environment variable) to control which installation is used 
 on per-user basis. 
 
 
@@ -603,19 +611,24 @@ The top level directory may be a link to a local or network file system.
 See [[[TLD]]] for the PSI specific implementation details.  
 
 
-*** IN-PROGRESS Must Support Modules in Home Directory
+*** DONE Must Support Modules in User Home Directory
+    CLOSED: [2014-05-01 Thu 10:42]
 
-User should be able to install their own modules. 
+Users should be able to install their own modules.  
 
 
-** DONE May Support Runtime Environments when Complete Development Environments are not Desirable 
+** DONE Shoud Support Runtime Environments without Going into Deatails of Development Environments 
    CLOSED: [2014-04-28 Mon 11:24]
 
-The end users may wish to run applications without loading all modules required to build these applications. 
-To this end, run-time modules may be provided if the module maintainer decides so. 
+The user should be able to load default modules in their runtime environments without 
+going through the chain of dependent modules.  
+For example, the user should be able to load the default version of a module that depends on 
+compiler and MPI without explicitly loading the corresponding versions of the compiler 
+and the MPI library.     
 
 
-** DONE May Support HW Compartibility Requirements
+
+** DONE Should Support HW Compartibility Requirements
    CLOSED: [2014-04-28 Mon 11:25]
 
 This functionality should allow one to hide environment modules that lack certain capabilities   
@@ -623,57 +636,73 @@ on a given HW platform.  For example, all 64-bit applications should be hidden o
 A less trivial example is checking the CPU flags and hiding the applications compiled with 
 options that are not supported by the CPU.  
 
-If possible, make it "should support" requirement.  
+
+** IN-PROGRESS Must Define Minimum System Requirements to Support Generic Modules
+
+The minimum HW requirements for 64-bit systems: Intel and AMD CPUs with the support for 
+the GCC option -mtune=core2 that includes the 64-bit extensions, MMX, SSE, SSE2, SSE3 and SSSE3 
+instruction set support [[[man_gcc]]]. 
+
+The minimum OS requirement: Linux SL6 64-bit or higher, MacOS ...
+
+Most modules built for SL6 are expected to work in SL5 and SL7, but the compatibility 
+with SL5 may not be guaranteed. 
+
+Do we need to support 32-bit systems?  
 
 
-** IN-PROGRESS May Support Optional Optimization and Development Requirements
+** DONE Should Support Optional Optimization and Development Requirements
+   CLOSED: [2014-05-01 Thu 11:31]
 
-There may be a mechanism to hide (default) or unhide modules, which are not intended for general use, 
-e.g. of development and testing type, from the standard workflow.   
-
-Note(Achim): Hiding should be implemented via MODULEPATH. Modules in
-testing state should print a warning. Everything else will end in a nightmare.
-Valeri: this paragraph should go to Implementation. 
-
- 
-
-** DONE Must Define Minimum System Requirements to Support Generic Modules
-   CLOSED: [2014-04-28 Mon 11:42]
-
-Example: CPU family XXX and SL6 or higher on 64-bit arch OR MacOS XYZ OR ...   
+The modules that are not intended for general use, e.g. of development and testing type, 
+should be hidden unless the user explicitly decides to use them.   
 
 
-* IN-PROGRESS Design Proposal 
+* DONE Design Proposal 
+  CLOSED: [2014-05-01 Thu 13:45]
 <<DesignProposal>>
 
-** IN-PROGRESS Must Support Module Hierarchy 
 
+** DONE Must Support Module Hierarchy 
+   CLOSED: [2014-05-01 Thu 13:45]
 
-*** IN-PROGRESS Must Support the Hierarchy Compiler-MPI-Application 
-
-As defined in the reference implementations of the extended TCL modules [[[env_modules_psi]]] and Lmod [[[lmod]]].  
-
-
-*** IN-PROGRESS Must Support family Functionality 
+*** DONE Must Support family Functionality 
+    CLOSED: [2014-05-01 Thu 13:30]
 
 As defined in the reference implementations of the extended TCL modules [[[env_modules_psi]]] and Lmod [[[lmod]]].  
 
 
-*** IN-PROGRESS May/Should Support Subcommand swap on Upper Levels of Module Hierarchy 
+*** DONE Must Support the Hierarchy Compiler-MPI-Application 
+    CLOSED: [2014-05-01 Thu 12:27]
+
+As defined in the reference implementations of the extended TCL modules [[[env_modules_psi]]] and Lmod [[[lmod]]].  
+
+
+*** DONE Should Support Subcommand swap on Upper Levels of Module Hierarchy 
+    CLOSED: [2014-05-01 Thu 13:30]
 
 As defined in the reference implementations of Lmod [[[lmod]]].  
 
+This requirement implies that the recommended implementation of environment 
+modules should support the same swap functionality as Lmod.
 
 
+** DONE Molule Command 
+   CLOSED: [2014-05-01 Thu 13:45]
 
-** IN-PROGRESS Molule Command 
+*** DONE Only One Implementation of Environment Modules Should Be Officially Supported  
+    CLOSED: [2014-05-01 Thu 13:44]
 
-Both the extended TCL modules and Lua modules (Lmod) can be supported.  
-The user will have a choice of default module command and will be able 
-to swith to the alternative if both implementations are available. 
+The user may be able to use alternative implementations at his own efforts. 
+The maintaners may provide support for alternative implementations 
+for their packages if they find it useful. 
+There may be no official support for alternative implementations. 
 
 
-*** IN-PROGRESS Extended TCL Modules 
+*** DONE Extended TCL Modules Should Be the Recommended Implementation
+    CLOSED: [2014-05-01 Thu 13:45]
+
+The extended TCL modules is the recommended implementation. 
 
 See  [[[env_modules_psi]]] and the reference implementations on Merlin4 (FIXME) 
 and MacOS (FIXME). 
@@ -681,18 +710,21 @@ and MacOS (FIXME).
 The extended TCL modules cannot not support Lua modules.  
 
 
-*** IN-PROGRESS Lua Modules (Lmod)
+*** DONE Lua Modules (Lmod) 
+    CLOSED: [2014-05-01 Thu 13:45]
 
 See [[[lmod]]] and the reference implementaion on Merlin4 (FIXME). 
 
 The Lua modules may support (extended) TCL modules. 
 
+The maintaners of particular packages may provide support for Lua  
+if they find it useful. 
 
 
 ** IN-PROGRESS File System Layout  
 
 
-*** IN-PROGRESS Top Level Directory			    :OPT_PROVIDER=/opt/psi:
+*** IN-PROGRESS Top Level Directory			    :PROVIDER_PREFIX=/opt/psi:
 <<TLD>>
 
 The top level directory for the PSI implememtation is */opt/psi* in accordance with [[[FHS]]].
@@ -853,8 +885,17 @@ FIXME
 
 FIXME
 
+
+** IN-PROGRESS Hiding of Testing Modules
+
+Note(Achim): Hiding should be implemented via MODULEPATH. Modules in
+testing state should print a warning. Everything else will end in a nightmare.
+Valeri: this paragraph should go to Implementation. 
+
+
 ** IN-PROGRESS Must Provide Build Environment for All Supported Computing Environments 
  
+
 ** IN-PROGRESS Build Environment Should Support Regression Tests
 
 Should be done by maintaners. 
@@ -880,3 +921,4 @@ Every build must be reproducable.
    6. <<Open_MPI_wrappers>> http://www.open-mpi.org/faq/?category=mpi-apps
    7. <<Open_MPI_without-wrappers>> http://www.open-mpi.org/faq/?category=mpi-apps#cant-use-wrappers
    8. <<ANL_MPICH2>> https://svn.mcs.anl.gov/repos/mpi/mpich2/tags/release/mpe2-1.0.7rc1/INSTALL
+   9. <<man_gcc>> "man gcc".
