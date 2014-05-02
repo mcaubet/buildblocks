@@ -299,7 +299,7 @@ function _set_env() {
 		EM_MODULENAME="${COMPILER}/${COMPILER_VERSION}/${MPI}/${MPI_VERSION}/${HDF5}/${HDF5_VERSION}/${P}/${V}"
 		;;
 	    HDF5_serial )
-		EM_MODULENAME="${COMPILER}/${COMPILER_VERSION}/hdf5/${HDF5_SERIAL_VERSION}/${P}/${V}"
+		EM_MODULENAME="${COMPILER}/${COMPILER_VERSION}/hdf5_serial/${HDF5_SERIAL_VERSION}/${P}/${V}"
 		;;
 	esac
 
