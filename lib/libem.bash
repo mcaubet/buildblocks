@@ -258,7 +258,7 @@ function _set_env() {
 	DYLD_LIBRARY_PATH=''
 
 	if [[ -z ${EM_FAMILY} ]]; then
-		em.add_to_family 'core'
+		die 1 "$P: family not set."
 	fi
 
 	# overwrite environment variables with values we got on the cmd line
