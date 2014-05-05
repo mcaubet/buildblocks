@@ -26,6 +26,7 @@ function em.install_doc() {
 # use system gcc to compile
 declare -rx CC=gcc
 
+module use 'Libraries'
 em.add_to_family 'Programming'
 em.set_build_dependencies "gmp" "mpfr" "mpc"
 em.make_all
