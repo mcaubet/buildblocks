@@ -201,7 +201,7 @@ function em.add_to_family() {
 		die 42 "${FUNCNAME}: Missing family argument."
 	fi
 	if [[ ! -d ${EM_ETCDIR}/${1} ]]; then
-		dir 43 "${1}: family does not exist."
+		die 43 "${1}: family does not exist."
 	fi
 	EM_FAMILY=$1
 	source "${CONFIG_DIR}/versions.conf"
@@ -281,6 +281,9 @@ function _set_env() {
 		EM_MODULENAME="${P}/${V}"
 		;;
 	    Libraries )
+		EM_MODULENAME="${P}/${V}"
+		;;
+	    System )
 		EM_MODULENAME="${P}/${V}"
 		;;
 	    Compiler )
