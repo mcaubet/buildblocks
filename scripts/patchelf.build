@@ -18,6 +18,7 @@ function em.configure() {
 #		"${DOCDIR}"
 #}
 
+em.supported_os 'Linux'
 em.add_to_family 'System'
 em.set_build_dependencies "${COMPILER}"
 em.make_all
