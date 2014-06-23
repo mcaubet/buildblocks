@@ -5,7 +5,7 @@ source "$(dirname $0)/../lib/libem.bash"
 
 
 function em.configure() {
-	"${EM_SRCDIR}"/configure \
+	CPPFLAGS="-DUSE_INTERP_ERRORLINE" "${EM_SRCDIR}"/configure \
 		--prefix="${EM_BINDIR}/${EM_FAMILY}" \
 		--with-module-path="${MODULEPATH_ROOT}" \
 		|| exit 1
