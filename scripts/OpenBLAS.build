@@ -1,0 +1,33 @@
+#!/bin/bash
+
+source "$(dirname $0)/../lib/libem.bash"
+
+function em.configure() {
+	cat <<EOF > "${EM_SRCDIR}/make.inc"
+SHELL = /bin/sh
+PLAT = 
+DRVOPTS  = \$(OPTS)
+LOADER   = \$(FORTRAN) -pthread
+ARCHFLAGS= -ru
+#RANLIB   = ranlib
+EOF
+}
+
+function em.build() {
+	cd "${EM_SRCDIR}"
+	make TARGET=CORE2 BINARY=64 USE_THREAD=0 NO_SHARED=1
+}
+
+function em.install() {
+	make PREFIX="${PREFIX}" install
+}
+
+function em.install_doc() {
+	:
+}
+
+em.add_to_family 'Compiler'
+em.set_runtime_dependencies "${COMPILER}"
+em.set_build_dependencies "${COMPILER}"
+em.make_all
+em.cleanup_src
