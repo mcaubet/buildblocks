@@ -50,18 +50,10 @@ ENV=VALUE
 }
 
 
-# 
-# the module name might already be set in the build script(!)
-#if [[ -z $P ]]; then
-	P=$(basename $0)
-	P=${P%.*}
-#fi
-
-# unset the version of the module
+P=$(basename $0)
+P=${P%.*}
 _P=$(echo $P | tr [:lower:] [:upper:])
 _V=${_P}_VERSION
-#unset ${_V}
-#fi
 
 DEBUG_ON=''
 FORCE_REBUILD=''
@@ -200,12 +192,24 @@ function em.set_runtime_dependencies() {
 	EM_DEPENDENCIES=("$@")
 }
 
+function em.set_supported_compilers() {
+	EM_SUPPORTED_COMPILERS=("$@")
+}
+
+function em.set_docfiles() {
+	EM_DOCFILES=("$@")
+}
+
 function _load_build_dependencies() {
 	for m in "${EM_BUILD_DEPENDENCIES[@]}"; do
 		[[ -z $m ]] && continue
 		if [[ ! $m =~ "*/*" ]]; then
-		    local _V=$(echo -n $m | tr [:lower:] [:upper:] )_VERSION
-		    m=$m/${!_V}
+			local _V=$(echo -n $m | tr [:lower:] [:upper:] )_VERSION
+			if [[ -n ${!_V} ]]; then
+		    		m=$m/${!_V}
+			else
+				echo "Warning: No version set for $m. Trying default ..."
+			fi
 		fi
 		if module load "$m" 2>&1 | grep -q "Unable to locate"; then
 			echo "Module \"$m\" not available, trying to build it..."
@@ -368,7 +372,7 @@ function em.post_install() {
 }
 
 function em.install_doc() {
-	:
+	install -m0444 ${EM_DOCFILES[*]} "${DOCDIR}"
 }
 
 function _set_link() {
@@ -407,12 +411,22 @@ function em.cleanup_src() {
     );
 }
 
+function _check_compiler() {
+	test -z ${EM_SUPPORTED_COMPILERS} && return 0
+	for cc in ${EM_SUPPORTED_COMPILERS[@]}; do
+		if [[ ${COMPILER}/${COMPILER_VERSION} =~ ${cc} ]]; then
+			return 0
+		fi
+	done
+	die 0 "Package cannot be build with ${COMPILER}/${COMPILER_VERSION}."
+}
 
 function em.make_all() {
 	_set_env
 	if [[ ! -d "${PREFIX}" ]] || [[ ${FORCE_REBUILD} ]]; then
  		echo "Building $P/$V ..."
 		_load_build_dependencies
+		_check_compiler
 		_prep
 		cd "${EM_SRCDIR}"
 		em.pre_configure
