@@ -117,6 +117,8 @@ while (( $# > 0 )); do
 	shift
 done
 
+eval "${ENVIRONMENT_ARGS}"
+
 declare -rx EM_BASEDIR=$(abspath $SHLIBDIR/..)
 
 source "${EM_BASEDIR}/config/environment.bash"
@@ -168,20 +170,6 @@ function em.add_to_family() {
 		die 43 "${1}: family does not exist."
 	fi
 	EM_FAMILY=$1
-	while read _name _version; do
-		[[ -z ${_name} ]] && continue
-		[[ -z ${_version} ]] && continue
-		[[ "${_name:0:1}" == '#' ]] && continue
-		_NAME=$(echo ${_name} | tr [:lower:] [:upper:])
-		eval ${_NAME}_VERSION=$_version 
-	done < "${DEFAULT_VERSIONS_FILE}"
-	if [[ -z "${CONFIG_DIR}/families.d/"*.conf ]]; then
-		die 1 "Default family configuration not set in ${CONFIG_DIR}/families.d"
-	fi
-	for f in "${CONFIG_DIR}/families.d/"*.conf; do
-		source "${f}"
-	done
-	eval ${ENVIRONMENT_ARGS}
 }
 
 function em.set_build_dependencies() {
@@ -254,7 +242,7 @@ function _write_build_dependencies() {
 	done
 }
 
-function _set_env() {
+function _setup_env() {
 	C_INCLUDE_PATH=''
 	CPLUS_INCLUDE_PATH=''
 	CPP_INCLUDE_PATH=''
@@ -265,6 +253,20 @@ function _set_env() {
 	if [[ -z ${EM_FAMILY} ]]; then
 		die 1 "$P: family not set."
 	fi
+
+	while read _name _version; do
+		[[ -z ${_name} ]] && continue
+		[[ -z ${_version} ]] && continue
+		[[ "${_name:0:1}" == '#' ]] && continue
+		_NAME=$(echo ${_name} | tr [:lower:] [:upper:])
+		eval ${_NAME}_VERSION=$_version 
+	done < "${DEFAULT_VERSIONS_FILE}"
+	if [[ -z "${CONFIG_DIR}/families.d/"*.conf ]]; then
+		die 1 "Default family configuration not set in ${CONFIG_DIR}/families.d"
+	fi
+	for f in "${CONFIG_DIR}/families.d/"*.conf; do
+		source "${f}"
+	done
 
 	# overwrite environment variables with values we got on the cmd line
 	eval ${ENVIRONMENT_ARGS}
@@ -422,7 +424,7 @@ function _check_compiler() {
 }
 
 function em.make_all() {
-	_set_env
+	_setup_env
 	if [[ ! -d "${PREFIX}" ]] || [[ ${FORCE_REBUILD} ]]; then
  		echo "Building $P/$V ..."
 		_load_build_dependencies
