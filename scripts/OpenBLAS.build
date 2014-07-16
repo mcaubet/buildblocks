@@ -15,11 +15,15 @@ EOF
 
 function em.build() {
 	cd "${EM_SRCDIR}"
-	make TARGET=CORE2 BINARY=64 USE_THREAD=0 NO_SHARED=1
+	make TARGET=CORE2 BINARY=64
 }
 
 function em.install() {
 	make PREFIX="${PREFIX}" install
+	# We have to build shared libs and remove them here.
+	# Building with NOSHARED gives an error during install -
+	# due to a bug in the Makefile(s).
+	rm -f "${PREFIX}/lib/"*.so
 }
 
 function em.install_doc() {
