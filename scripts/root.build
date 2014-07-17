@@ -14,9 +14,10 @@ esac
 
 function em.configure() {
 	"${EM_SRCDIR}"/configure \
-		--disable-python \
-		--disable-mysql \
 		--disable-ldap \
+		--disable-mysql \
+		--disable-opengl \
+		--disable-python \
 		--enable-fftw3 \
 		--with-cc=${CC} \
 		--with-cxx=${CXX} \
@@ -24,6 +25,10 @@ function em.configure() {
 		--with-ld=${CXX} \
 		${config_args} \
 		|| exit 1
+}
+
+function em.build() {
+	make -j 4
 }
 
 function em.install() {
