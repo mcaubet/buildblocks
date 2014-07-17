@@ -1,0 +1,50 @@
+#!/bin/bash
+
+source "$(dirname $0)/../lib/libem.bash"
+
+function em.configure() {
+	cat <<EOF > "${EM_SRCDIR}/make.inc"
+PLAT		= 
+SuperLUroot 	= \${PREFIX}
+SUPERLULIB   	= \$(SuperLUroot)/lib/libsuperlu.a
+BLASDEF	     	= -DUSE_VENDOR_BLAS
+BLASLIB      	= \${OPENBLAS_PREFIX}/lib/libopenblas.a
+TMGLIB          = libtmglib.a
+METISLIB	=
+PARMETISLIB	=
+FLIBS	 	= 
+LIBS            = \$(DSUPERLULIB) \$(BLASLIB) \$(PARMETISLIB) \$(METISLIB)
+ARCH         	= ar
+ARCHFLAGS    	= cr
+RANLIB       	= ranlib
+CC           	= ${CC}
+CFLAGS          = -pipe -O3
+NOOPTS		= 
+FORTRAN         = ${FC}
+F90FLAGS	= 
+LOADER	        = ${FC}
+LOADOPTS	= -fopenmp 
+CDEFS        = -DAdd_ 
+EOF
+}
+
+function em.build() {
+	cd "${EM_SRCDIR}"
+	mkdir -p "${PREFIX}/lib"
+	make
+}
+
+function em.install() {
+	make install
+	mkdir -p "${PREFIX}/include"
+	install -m 0444 "${EM_SRCDIR}"/SRC/*.h "${PREFIX}/include"
+}
+
+function em.install_doc() {
+	install -m 0444 README "${DOCDIR}"
+}
+
+em.add_to_family 'MPI'
+em.set_runtime_dependencies "${COMPILER}"
+em.set_build_dependencies "${COMPILER}" 'OpenBLAS'
+em.make_all
