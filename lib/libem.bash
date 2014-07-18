@@ -120,15 +120,17 @@ done
 declare -rx EM_BASEDIR=$(abspath $SHLIBDIR/..)
 
 source "${EM_BASEDIR}/config/environment.bash"
-declare -xr CONFIG_DIR="${EM_BASEDIR}/config"
-declare -xr SCRIPTDIR="${EM_BASEDIR}/scripts"
-declare -xr EM_TMPDIR="${EM_BASEDIR}/tmp"
-declare -xr DEFAULT_VERSIONS_FILE="${CONFIG_DIR}/versions.conf"
 
-if [[ -z "${CONFIG_DIR}/families.d/"*.conf ]]; then
-	die 1 "Default family configuration not set in ${CONFIG_DIR}/families.d"
+declare -xr EM_CONFIGDIR="${EM_BASEDIR}/config"
+declare -xr EM_SCRIPTDIR="${EM_BASEDIR}/scripts"
+declare -xr EM_TMPDIR="${EM_BASEDIR}/tmp"
+declare -rx EM_DOWNLOADDIR="${EM_BASEDIR}/Downloads"
+declare -xr EM_DEFAULT_VERSIONSFILE="${EM_CONFIGDIR}/versions.conf"
+
+if [[ -z "${EM_CONFIGDIR}/families.d/"*.conf ]]; then
+	die 1 "Default family configuration not set in ${EM_CONFIGDIR}/families.d"
 fi
-for f in "${CONFIG_DIR}/families.d/"*.conf; do
+for f in "${EM_CONFIGDIR}/families.d/"*.conf; do
 	source "${f}"
 done
 
@@ -139,6 +141,7 @@ eval "${ENVIRONMENT_ARGS}"
 declare -x  PREFIX=''
 declare -x  DOCDIR=''
 declare -x  EM_FAMILY=''
+declare	-x  EM_RELEASE='stable'
 declare -x  EM_MODULENAME=''
 
 
@@ -163,6 +166,22 @@ fi
 if [[ $DEBUG_ON ]]; then
 	trap 'echo "$BASH_COMMAND"' DEBUG
 fi
+
+#
+# allowwd arguments are
+#	'unstable'
+#	'stable'
+#	'obsolete'
+function em.release() {
+	case $1 in
+	unstable | stable | obsolete )
+		EM_RELEASE="$1"
+		;;
+	* )
+		die 1 "$P: unknown release type: $1"
+		;;
+	esac
+}
 
 function em.supported_os() {
 	for os in "$@"; do
@@ -205,15 +224,14 @@ function _load_build_dependencies() {
 			if [[ -n ${!_V} ]]; then
 		    		m=$m/${!_V}
 			else
-				echo "Warning: No version set for $m. Trying default ..."
+				echo "$m: warning: No version set, loading default ..."
 			fi
 		fi
-		if module load "$m" 2>&1 | grep -q "Unable to locate"; then
-			echo "Module \"$m\" not available, trying to build it..."
-			"${SCRIPTDIR}/${m/\/*}.build" ${ARGS[@]}
+		if [[ -z $(module avail "$m" 2>&1) ]]; then
+			echo "$m: info: module does not exist, trying to build it..."
+			"${EM_SCRIPTDIR}/${m/\/*}.build" ${ARGS[@]}
 			if [[ -z $(module avail "$m" 2>&1) ]]; then
-				echo "Oops: Building module \"$m\" failed..."
-				exit 1
+				die 1 "$m: oops: build failed..."
 			fi
 		fi
 		echo "Loading module: $m"
@@ -269,7 +287,7 @@ function _setup_env() {
 		[[ "${_name:0:1}" == '#' ]] && continue
 		_NAME=$(echo ${_name} | tr [:lower:] [:upper:])
 		eval ${_NAME}_VERSION=$_version 
-	done < "${DEFAULT_VERSIONS_FILE}"
+	done < "${EM_DEFAULT_VERSIONSFILE}"
 
 	# overwrite environment variables with values we got on the cmd line
 	eval ${ENVIRONMENT_ARGS}
@@ -285,8 +303,6 @@ function _setup_env() {
 	fi
 	EM_SRCDIR="${EM_TMPDIR}/src/${P/_serial}-$V"
 	EM_BUILDDIR="${EM_TMPDIR}/build/$P-$V/$COMPILER/$COMPILER_VERSION"
-
-	declare -rx DOWNLOADDIR="${EM_BASEDIR}/Downloads"
 
 	# build module name
 	case ${EM_FAMILY} in
@@ -322,6 +338,20 @@ function _setup_env() {
 		EM_PREFIX="${P}/${V}/hdf5_serial/${HDF5_SERIAL_VERSION}/${COMPILER}/${COMPILER_VERSION}"
 		EM_MODULENAME="${COMPILER}/${COMPILER_VERSION}/hdf5_serial/${HDF5_VERSION}/${P}/${V}"
 		;;
+	    * )
+		die 1 "$P: oops: unknown family: ${EM_FAMILY}"
+		;;
+	esac
+
+	case ${EM_RELEASE} in
+	unstable | obsolete )
+		EM_FAMILY="${EM_FAMILY}.${EM_RELEASE}"
+		;;
+	stable )
+		;;
+	* )
+		die "$P: oops: unknown release type..."
+		;;
 	esac
 
 	# set PREFIX of module
@@ -329,7 +359,7 @@ function _setup_env() {
 
 	DOCDIR="${PREFIX}/share/doc/$P"
 
-	TARBALL="${DOWNLOADDIR}/${P/_serial}-$V.tar"
+	TARBALL="${EM_DOWNLOADDIR}/${P/_serial}-$V.tar"
 	if [[ -r $TARBALL.gz ]]; then
 		TARBALL=${TARBALL}.gz
 		_UNTAR_FLAGS='xvzf'
@@ -397,9 +427,9 @@ function _set_link() {
 function _cleanup_build() {
     (
 	[[ -d /${EM_BUILDDIR} ]] || return 0
-	cd "/${EM_BUILDDIR}";
+	cd "/${EM_BUILDDIR}/..";
 	if [[ $(pwd) != / ]]; then
-		echo "Cleaning up $(pwd)"
+		echo "Cleaning up $(pwd)/${COMPILER_VERSION}"
 		rm -rf *
 	fi
     );
