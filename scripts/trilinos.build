@@ -23,7 +23,7 @@ function em.configure() {
 
 	BLAS_INCLUDE_DIRS="$BLAS_PREFIX/include"
 	BLAS_LIBRARY_DIRS="$BLAS_PREFIX/lib"
-	BLAS_LIBRARY_NAMES="blas"
+	BLAS_LIBRARY_NAMES="openblas"
 
 	LAPACK_INCLUDE_DIRS="$LAPACK_PREFIX/include"
 	LAPACK_LIBRARY_DIRS="$LAPACK_PREFIX/lib"
@@ -70,17 +70,9 @@ function em.configure() {
            "${EM_SRCDIR}" || exit 1
 }
 
-function em.install_doc() {
-	install -m 0444 \
-		Copyright.txt \
-		LICENSE \
-		README \
-		RELEASE_NOTES \
-		"${DOCDIR}"
-}
-
 em.add_to_family 'MPI'
 em.set_runtime_dependencies "${COMPILER}" "${MPI}"
 em.set_build_dependencies 'cmake' "${COMPILER}" "${MPI}" 'OpenBLAS' 'parmetis'
+em.doc_files Copyright.txt LICENSE README RELEASE_NOTES
 em.make_all
 
