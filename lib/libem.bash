@@ -301,7 +301,7 @@ function _write_build_dependencies() {
 	done
 }
 
-function _setup_env() {
+function _setup_env1() {
 	C_INCLUDE_PATH=''
 	CPLUS_INCLUDE_PATH=''
 	CPP_INCLUDE_PATH=''
@@ -309,6 +309,17 @@ function _setup_env() {
 	LD_LIBRARY_PATH=''
 	DYLD_LIBRARY_PATH=''
 
+	while read _name _version; do
+		[[ -z ${_name} ]] && continue
+		[[ -z ${_version} ]] && continue
+		[[ "${_name:0:1}" == '#' ]] && continue
+		_NAME=$(echo ${_name} | tr [:lower:] [:upper:])
+		eval ${_NAME}_VERSION=$_version 
+	done < "${BUILD_VERSIONSFILE}"
+
+}
+
+function _setup_env2() {
 	if [[ -z ${MODULE_FAMILY} ]]; then
 		die 1 "$P: family not set."
 	fi
@@ -471,18 +482,13 @@ function _check_compiler() {
 
 function em.make_all() {
 
-	while read _name _version; do
-		[[ -z ${_name} ]] && continue
-		[[ -z ${_version} ]] && continue
-		[[ "${_name:0:1}" == '#' ]] && continue
-		_NAME=$(echo ${_name} | tr [:lower:] [:upper:])
-		eval ${_NAME}_VERSION=$_version 
-	done < "${BUILD_VERSIONSFILE}"
+	_setup_env1
 
 	# build release - and thereby the PREFIX - depends on other modules
 	_load_build_dependencies
 	
-	_setup_env
+	_setup_env2
+
 	if [[ ! -d "${PREFIX}" ]] || [[ ${FORCE_REBUILD} ]]; then
  		echo "Building $P/$V ..."
 		_check_compiler
