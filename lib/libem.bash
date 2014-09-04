@@ -268,17 +268,19 @@ function _load_build_dependencies() {
 		tmp=${tmp/${MODULEPATH_ROOT}\/}
 		tmp=${tmp%%/*}
 		local _family=( ${tmp//./ } )
+		# set module release to 'deprecated' if a build dependency
+		# is deprecated
 		if [[ ${_family[1]} == deprecated ]]; then
-			MODULE_RELEASE=.deprecated
+			MODULE_RELEASE='.deprecated'
+		# set module release to 'unstable' if a build dependency is
+		# unstable and release not yet set
 		elif [[ ${_family[1]} == unstable ]] && [[ -z ${MODULE_RELEASE} ]]; then
-			MODULE_RELEASE=.unstable
+			MODULE_RELEASE='.unstable'
 		fi
 		echo "Loading module: ${m}"
 		module load "${m}"
 	done
 }
-
-
 
 function _write_runtime_dependencies() {
 	local -r fname="${PREFIX}/.dependencies"
@@ -310,6 +312,7 @@ function _write_build_dependencies() {
 	done
 }
 
+# setup general environment
 function _setup_env1() {
 	C_INCLUDE_PATH=''
 	CPLUS_INCLUDE_PATH=''
@@ -328,6 +331,7 @@ function _setup_env1() {
 
 }
 
+#setup module specific environment
 function _setup_env2() {
 	if [[ -z ${MODULE_FAMILY} ]]; then
 		die 1 "$P: family not set."
@@ -349,6 +353,8 @@ function _setup_env2() {
 	MODULE_BUILDDIR="${BUILD_TMPDIR}/build/$P-$V/$COMPILER/$COMPILER_VERSION"
 
 	# build module name
+	# :FIXME: the MODULE_PREFIX should be derived from MODULE_NAME
+	# :FIXME: this should be read from a configuration file
 	case ${MODULE_FAMILY} in
 	    Tools )
 		MODULE_RPREFIX="${P}/${V}"
@@ -390,8 +396,13 @@ function _setup_env2() {
 	# set PREFIX of module
 	PREFIX="${EM_PREFIX}/${MODULE_FAMILY}/${MODULE_RPREFIX}"
 
+	# set release to 'unstable' on first time compilation and release not yet set
+	[[ ! -d ${PREFIX} ]] && [[ -z ${MODULE_RELEASE} ]] && MODULE_RELEASE='.unstable'
+
+	# directory for README's, license files etc
 	DOCDIR="${PREFIX}/share/doc/$P"
 
+	# set tar-ball and flags for tar
 	TARBALL="${BUILD_DOWNLOADSDIR}/${P/_serial}-$V.tar"
 	if [[ -r $TARBALL.gz ]]; then
 		TARBALL=${TARBALL}.gz
@@ -403,6 +414,7 @@ function _setup_env2() {
 		error "tar-ball for $P/$V not found."
 		exit 43
 	fi
+
 }
 
 function _prep() {
@@ -507,10 +519,7 @@ function _post_install() {
 function em.make_all() {
 	echo "${P}:"
 	_setup_env1
-
-	# build release - and thereby the PREFIX - depends on other modules
 	_load_build_dependencies
-
 	# setup module specific environment
 	_setup_env2
 
