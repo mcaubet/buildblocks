@@ -18,6 +18,7 @@ function em.configure() {
 
 # use system gcc to compile
 declare -rx CC=gcc
+declare -rx CXX=g++
 
 module use 'Libraries'
 em.add_to_family 'Programming'
