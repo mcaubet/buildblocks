@@ -32,7 +32,7 @@ function em.configure() {
 	cmake \
            --prefix=$PREFIX \
            -DCMAKE_INSTALL_PREFIX:PATH=$PREFIX \
-           -DCMAKE_CXX_FLAGS:STRING="-DMPICH_IGNORE_CXX_SEEK -fPIC" \
+           -DCMAKE_CXX_FLAGS:STRING="-DMPICH_IGNORE_CXX_SEEK -fPIC -fpermissive" \
            -DCMAKE_C_FLAGS:STRING="-DMPICH_IGNORE_CXX_SEEK -fPIC" \
            -DCMAKE_Fortran_FLAGS:STRING="-fPIC" \
            -D CMAKE_BUILD_TYPE:STRING=DEBUG \
