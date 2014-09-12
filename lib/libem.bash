@@ -40,6 +40,9 @@ declare -x  PREFIX=''
 declare -x  DOCDIR=''
 declare -x  MODULE_FAMILY=''
 declare	-x  MODULE_RELEASE=''
+declare     cur_module_release=''
+
+declare     DEPEND_RELEASE=''
 declare -x  MODULE_NAME=''
 
 
@@ -137,9 +140,6 @@ while (( $# > 0 )); do
 		if [[ -n ${MODULE_RELEASE} ]] && [[ ${MODULE_RELASE:0:1} != . ]]; then
 			MODULE_RELEASE=".${MODULE_RELEASE}"
 		fi
-		if [[ ${MODULE_RELEASE} == .stable ]]; then
-			MODULE_RELEASE=''
-		fi
 		;;
 	--with-hdf5=*)
 		v=${1/--with-hdf5=}
@@ -185,7 +185,7 @@ eval "${ENVIRONMENT_ARGS}"
 
 function is_release () {
 	local -a releases=( '' )
-	releases+=( $(< "${EM_RELEASES_CONF}") )
+	releases+=( $(< "${PSI_PREFIX}/${PSI_RELEASES_CONF}") )
         local rel
         for rel in "${releases[@]}"; do
 		[[ "${rel}" == "$1" ]] && return 0
@@ -196,7 +196,7 @@ function is_release () {
 
 function em.set_release() {
 	is_release "$1" || die 1 "$P: unknown release type: $1"
-	[[ "$1" == "deprecated" ]] && die 0 "$P: not rebuilding $1 modules."
+	[[ "$1" == "deprecated" ]] && die 0 "$P: is deprecated, we don't rebuild it."
 	MODULE_RELEASE=".$1"
 }
 
@@ -211,7 +211,7 @@ function em.add_to_family() {
 	if [[ -z ${1} ]]; then
 		die 42 "${FUNCNAME}: Missing family argument."
 	fi
-	if [[ ! -d ${EM_ETCDIR}/${1} ]]; then
+	if [[ ! -d ${PSI_PREFIX}/${PSI_CONFIG_DIR}/${1} ]]; then
 		die 43 "${1}: family does not exist."
 	fi
 	MODULE_FAMILY=$1
@@ -234,7 +234,7 @@ function em.set_docfiles() {
 }
 
 function is_module_available() {
-	[[ -n $("${MODULECMD}" bash avail "$m" 2>&1 1>/dev/null) ]]
+	[[ -n $("${MODULECMD}" bash avail "$1" 2>&1 1>/dev/null) ]]
 }
 
 function _load_build_dependencies() {
@@ -250,9 +250,9 @@ function _load_build_dependencies() {
 		fi
 		if [[ -z $("${MODULECMD}" bash avail "$m" 2>&1 1>/dev/null) ]]; then
 			debug "${m}: module not available"
-			for rel in $(< "${EM_RELEASES_CONF}"); do
+			for rel in $(< "${PSI_PREFIX}/${PSI_RELEASES_CONF}"); do
 				debug "${m}: check release \"${rel/.}\""
-				eval $("${MODULES_EXTENSIONSDIR}/use.bash" ${rel/.})
+				eval $("${PSI_PREFIX}/${PSI_CONFIG_DIR}/init/extensions/use.bash" ${rel/.})
 				if is_module_available "${m}"; then
 					die 1 "${m}: module available in release \"${rel/.}\", add this release with \"module use ${rel/.}\" and re-run build script."
 				fi
@@ -264,18 +264,19 @@ function _load_build_dependencies() {
 				die 1 "$m: oops: build failed..."
 			fi
 		fi
-		local tmp=$( module display "${m}" 2>&1 | grep -m1 -- "${MODULEPATH_ROOT}" )
-		tmp=${tmp/${MODULEPATH_ROOT}\/}
+		local modulepath_root="${PSI_PREFIX}/${PSI_MODULES_ROOT}"
+		local tmp=$( module display "${m}" 2>&1 | grep -m1 -- "${modulepath_root}" )
+		tmp=${tmp/${modulepath_root}\/}
 		tmp=${tmp%%/*}
 		local _family=( ${tmp//./ } )
 		# set module release to 'deprecated' if a build dependency
 		# is deprecated
 		if [[ ${_family[1]} == deprecated ]]; then
-			MODULE_RELEASE='.deprecated'
+			DEPEND_RELEASE='.deprecated'
 		# set module release to 'unstable' if a build dependency is
 		# unstable and release not yet set
-		elif [[ ${_family[1]} == unstable ]] && [[ -z ${MODULE_RELEASE} ]]; then
-			MODULE_RELEASE='.unstable'
+		elif [[ ${_family[1]} == unstable ]] && [[ -z ${DEPEND_RELEASE} ]]; then
+			DEPEND_RELEASE='.unstable'
 		fi
 		echo "Loading module: ${m}"
 		module load "${m}"
@@ -394,10 +395,54 @@ function _setup_env2() {
 	esac
 
 	# set PREFIX of module
-	PREFIX="${EM_PREFIX}/${MODULE_FAMILY}/${MODULE_RPREFIX}"
+	PREFIX="${PSI_PREFIX}/${MODULE_FAMILY}/${MODULE_RPREFIX}"
 
-	# set release to 'unstable' on first time compilation and release not yet set
-	[[ ! -d ${PREFIX} ]] && [[ -z ${MODULE_RELEASE} ]] && MODULE_RELEASE='.unstable'
+	# get module release if already installed
+	local saved_modulepath=${MODULEPATH}
+	for rel in $(< "${PSI_PREFIX}/${PSI_RELEASES_CONF}"); do
+		eval $("${PSI_PREFIX}/${PSI_CONFIG_DIR}/init/extensions/unuse.bash" ${rel/.})
+	done
+	for rel in '.stable' $(< "${PSI_PREFIX}/${PSI_RELEASES_CONF}"); do
+		if [[ "${rel}" != '.stable' ]]; then
+			eval $("${PSI_PREFIX}/${PSI_CONFIG_DIR}/init/extensions/use.bash" ${rel/.})
+		fi
+		if is_module_available "${P}/${V}"; then
+			cur_module_release=${rel}
+			info "${P}/${V}: already available and is in release \"${rel/.}\""
+			break
+		fi
+	done
+	MODULEPATH=${saved_modulepath}
+
+	# set release of module
+	# release is deprecated
+	#   - if a build-dependency is deprecated or 
+	#   - the module already exists and is deprecated or
+	#   - is forced to be deprecated by setting this on the command line
+	if [[ "${depend_release}" == '.deprecated' ]] || \
+		[[ "${cur_module_release}" == '.deprecated' ]] \
+		|| [[ "${MODULE_RELEASE}" == '.deprecated' ]]; then
+		MODULE_RELEASE='.deprecated'
+		info "${P}/${V}: will be released as \"deprecated\""
+	#
+	# release is stable
+	#   - if all build-dependency are stable or
+	#   - the module already exists and is stable
+	#   - an unstable release of the module exists and the release is changed to stable on the command line
+	elif [[ "${depend_release}" == '.stable' ]] \
+		|| [[ "${cur_module_release}" == '.stable' ]] \
+		|| [[ "${MODULE_RELEASE}" == '.stable' ]]; then
+		MODULE_RELEASE='.stable'
+		info "${P}/${V}: will be released as \"stable\""
+	#
+	# release is unstable
+	#   - if a build-dependency is unstable or 
+	#   - if the module does not exists and no other release-type is given on the command line
+	#   - and all the cases I didn't think of
+	else
+		MODULE_RELEASE='.unstable'
+		info "${P}/${V}: will be released as \"unstable\""
+	fi
 
 	# directory for README's, license files etc
 	DOCDIR="${PREFIX}/share/doc/$P"
@@ -458,17 +503,23 @@ function em.install_doc() {
 }
 
 function _set_link() {
-	info "Setting sym-link ..."
-	(mkdir -p "${MODULEPATH_ROOT}"
-	cd "${MODULEPATH_ROOT}"
-	local _path="${MODULE_FAMILY}${MODULE_RELEASE}/${MODULE_NAME%/*}"
-	mkdir -p "${_path}"
-	cd "${_path}"
-
-	local x
-	IFS='/' x=(${_path})
-	local -r _target="../"$(eval printf "../%.s" {1..${#x[@]}})${EM_ETCDIR##*/}/"${MODULE_FAMILY}/${P}/modulefile"
-	ln -fs "${_target}" "${MODULE_NAME##*/}"
+	[[ ${cur_module_release} == ${MODULE_RELEASE} ]] && return 0
+	local _path
+	if [[ "${cur_module_release}" != '' ]]; then
+		_path="${PSI_PREFIX}/${PSI_MODULES_ROOT}/${MODULE_FAMILY}${cur_module_release/.stable}/${MODULE_NAME}"
+		info "Removing old sym-link \"${_path}\" ..."
+		rm "${_path}"
+	fi
+	(
+		_path="${PSI_PREFIX}/${PSI_MODULES_ROOT}/${MODULE_FAMILY}${MODULE_RELEASE/.stable}/${MODULE_NAME%/*}"
+		info "Setting new sym-link \"${_path}/${V}\" ..."
+		mkdir -p "${_path}"
+		cd "${_path}"
+		local x
+		IFS='/' x=( ${_path/${PSI_PREFIX}\/${PSI_MODULES_ROOT}\/} )
+		local n=${#x[@]}
+		local -r _target="../"$(eval printf "../%.s" {1..${n}})${PSI_CONFIG_DIR##*/}/"${MODULE_FAMILY}/${P}/modulefile"
+		ln -fs "${_target}" "${MODULE_NAME##*/}"
 	)
 }
 
@@ -548,3 +599,9 @@ function em.make_all() {
 	_cleanup_build
 }
 
+
+# Local Variables:
+# mode: sh
+# sh-basic-offset: 8
+# tab-width: 8
+# End:
