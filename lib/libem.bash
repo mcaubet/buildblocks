@@ -87,17 +87,12 @@ ENV=VALUE
 -f | --force-rebuild
         Force rebuild of module.
 
---with-compiler=P/V
-        Use compiler P with version V
+--with=P/V
+        Preload module P with version V. To preload multiple modules,
+        use this option per module. Nete that order may matter.
 
---with-mpi=P/V
-        Use MPI implementation P with version V
+--release=stable|unstable|deprecated
 
---with-hdf5=V
-        Use parallel HDF5 version V
-
---with-hdf5_serial=V
-        Use serial HDF5 version V
 "
 	exit 1
 }
@@ -144,40 +139,12 @@ while (( $# > 0 )); do
 	--with=*/* )
 		with_modules+=( ${1/--with=} )
 		;;
-	--with-hdf5=*)
-		v=${1/--with-hdf5=}
-		ENVIRONMENT_ARGS="${ENVIRONMENT_ARGS} HDF5=hdf5 HDF5_VERSION=$v"
-		;;
-	--with-hdf5_serial=*)
-		v=${1/--with-hdf5_serial=}
-		ENVIRONMENT_ARGS="${ENVIRONMENT_ARGS} HDF5_SERIAL=hdf5_serial HDF5_SERIAL_VERSION=$v"
-		;;
-	--with-*=* )
-		# --with-mpi=openmpi/1.6.5 ->
-		# MPI=openmpi MPI_VERSION=1.6.5 OPENMPI_VERSION=1.6.5
-		arg=${1/--with-}
-		f=$(echo ${arg/=*} | tr [:lower:] [:upper:])
-		m=${arg/*=}
-		if [[ -z $m ]]; then
-			error "$1: module missing."
-			die 1
-		fi
-		p=${m/\/*}
-		_p=$(echo ${p} | tr [:lower:] [:upper:])
-		v=${m/*\/}
-		if [[ -z $v ]] || [[ $p == $v ]]; then
-			error "$1: version missing in module specification."
-			die 1
-		fi
-		ENVIRONMENT_ARGS="${ENVIRONMENT_ARGS} ${f}=${p} ${f}_VERSION=$v ${_p}_VERSION=${v}"
+	*=* )
+		eval $1
+		ENVIRONMENT_ARGS="${ENVIRONMENT_ARGS} $1"
 		;;
 	* )
-		if [[ $1 =~ = ]]; then
-			eval $1
-			ENVIRONMENT_ARGS="${ENVIRONMENT_ARGS} $1"
-		else
-			V=$1
-		fi
+		V=$1
 		;;
 	esac
 	shift
@@ -263,9 +230,36 @@ function _load_build_dependencies() {
 					die 1 "${m}: module available in release \"${rel/.}\", add this release with \"module use ${rel/.}\" and re-run build script."
 				fi
 			done
+			[[ ${DRY_RUN} ]] && die 1 "${m}: module does not exist, cannot continue with dry run..."
 
-			echo "$m: info: module does not exist, trying to build it..."
-			"${BUILD_SCRIPTSDIR}/${m/\/*}.build" ${ARGS[@]}
+			echo "$m: module does not exist, trying to build it..."
+			local args=( '' )
+			set -- ${ARGS[@]}
+			while (( $# > 0 )); do
+				case $1 in
+				-j )
+					args+=( "-j $2" )
+					shift
+					;;
+				--jobs=[0-9]* )
+					args+=( $1 )
+					;;
+				-v | --verbose)
+					args+=( $1 )
+					;;
+				--release=* )
+					args+=( $1 )
+					;;
+				--with=*/* )
+					args+=( $1 )
+					;;
+				*=* )
+					args+=( $1 )
+					;;
+				esac
+				shift
+			done
+			"${BUILD_SCRIPTSDIR}/${m/\/*}.build" ${args[@]}
 			if [[ -z $(module avail "$m" 2>&1) ]]; then
 				die 1 "$m: oops: build failed..."
 			fi
