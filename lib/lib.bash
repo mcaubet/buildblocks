@@ -56,7 +56,7 @@ error() {
 }
 
 debug() {
-	[[ ${EM_DEBUG} ]] || return 0
+	[[ ${PSI_DEBUG} ]] || return 0
 	log 2 "$@"
 }
 
