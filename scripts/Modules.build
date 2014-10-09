@@ -1,13 +1,13 @@
 #!/bin/bash
 
-source "$(dirname $0)/../config/environment.bash"
 source "$(dirname $0)/../lib/libem.bash"
 
 
 function em.configure() {
 	CPPFLAGS="-DUSE_INTERP_ERRORLINE" "${MODULE_SRCDIR}"/configure \
-		--prefix="${EM_PREFIX}/${MODULE_FAMILY}" \
+		--prefix="${PSI_PREFIX}/${MODULE_FAMILY}" \
 		--with-module-path="${MODULEPATH_ROOT}" \
+		--with-static='yes' \
 		|| exit 1
 }
 # fake module command
