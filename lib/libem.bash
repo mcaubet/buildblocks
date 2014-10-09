@@ -2,6 +2,11 @@
 
 PATH=/usr/bin:/bin:/usr/sbin:/sbin:/usr/local/bin:/opt/X11/bin
 
+shopt -s expand_aliases
+
+source	"${PSI_PREFIX}/${PSI_CONFIG_DIR}/profile.bash"
+module use unstable
+
 declare -r	MODULECMD="${MODULESHOME}/bin/modulecmd"
 
 declare -r	BUILDSCRIPT=$( cd $(dirname "$0") && pwd )/$(basename "$0")
@@ -503,12 +508,13 @@ function em.install_doc() {
 }
 
 function _set_link() {
-	[[ ${cur_module_release} == ${MODULE_RELEASE} ]] && return 0
 	local _path
 	if [[ "${cur_module_release}" != '' ]]; then
 		_path="${PSI_PREFIX}/${PSI_MODULES_ROOT}/${MODULE_FAMILY}${cur_module_release/.stable}/${MODULE_NAME}"
-		info "Removing old sym-link \"${_path}\" ..."
-		rm "${_path}"
+		if [[ -e "${_path}" ]]; then
+			info "Removing old sym-link \"${_path}\" ..."
+			rm "${_path}"
+		fi
 	fi
 	(
 		_path="${PSI_PREFIX}/${PSI_MODULES_ROOT}/${MODULE_FAMILY}${MODULE_RELEASE/.stable}/${MODULE_NAME%/*}"
