@@ -296,7 +296,7 @@ function _write_runtime_dependencies() {
 	echo -n "" > "${fname}"
 	for dep in "${MODULE_DEPENDENCIES[@]}"; do
 		[[ -z $dep ]] && continue
-		if [[ ! $dep =~ "*/*" ]]; then
+		if [[ ! $dep =~ .*/.* ]]; then
 		    local _V=$(echo -n $dep | tr [:lower:] [:upper:] )_VERSION
 		    dep=$dep/${!_V}
 		fi
