@@ -13,6 +13,7 @@ function em.configure() {
 	esac
 	"${srcdir}"/configure \
 		--prefix="${PREFIX}" \
+		--enable-shared=no \
 		|| exit 1
 }
 
