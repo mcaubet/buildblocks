@@ -28,6 +28,35 @@ function em.configure() {
 		|| exit 1
 }
 
+function em.post_install() {
+	cat > "${PREFIX}/bin/Emacs" <<\EOF
+#!/bin/bash
+
+declare -r OS=$(uname -s)
+
+if [[ "${OS}" == "Darwin" ]]; then
+	open "${EMACS_DIR}/Emacs.app" --args "$@"
+else
+	"${EMACS_DIR}/bin/emacs" "$@"
+fi
+EOF
+
+	cat > "${PREFIX}/bin/Emacsclient" <<\EOF
+#!/bin/bash
+
+declare -r OS=$(uname -s)
+
+if [[ "${OS}" == "Darwin" ]]; then
+	"${EMACS_DIR}/Emacs.app/Contents/MacOS/bin/emacsclient" -c "$@"
+else
+	"${EMACS_DIR}/bin/emacsclient" -c "$@" &
+fi
+EOF
+
+	chmod 0755 "${PREFIX}/bin/Emacs"
+	chmod 0755 "${PREFIX}/bin/Emacsclient"
+}
+
 em.add_to_family 'Tools'
 em.set_build_dependencies ${build_dependencies}
 em.make_all
