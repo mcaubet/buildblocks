@@ -138,9 +138,6 @@ while (( $# > 0 )); do
 		;;
 	--release=* )
 		MODULE_RELEASE=${1/--release=}
-		if [[ -n ${MODULE_RELEASE} ]] && [[ ${MODULE_RELASE:0:1} != . ]]; then
-			MODULE_RELEASE=".${MODULE_RELEASE}"
-		fi
 		;;
 	--with=*/* )
 		with_modules+=( ${1/--with=} )
