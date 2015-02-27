@@ -667,6 +667,13 @@ subcommand_avail() {
 	done
 }
 
+get_families () {
+	{
+		cd "${modulepath_root}"
+		echo *
+	}
+}
+
 #
 # $1: family name (not path!)
 compute_family_depth () {
@@ -690,18 +697,12 @@ subcommand_use() {
 			echo -e "\t${f}" 1>&2
 		done
 		echo -e "\nFamilies you may use in addition:" 1>&2
-		local available_families=':'
-		{
-			cd "${PSI_PREFIX}/${PSI_MODULES_ROOT}"
-			for f in *; do
-				local  tmp=$(find $f -d -type f -o -type l | head -1)
-				local -a tmp2=( ${tmp//\// } )
-				local -i depth=${#tmp2[@]}-3
-				if ! is_used_family $f && (( depth == 0 )); then
-					echo -e "\t${f}" 1>&2
-				fi
-			done
-		}
+		for family in $(get_families); do
+			local -i depth=$( compute_family_depth "${family}")
+			if ! is_used_family $f && (( depth == 0 )); then
+			    echo -e "\t${f}" 1>&2
+			fi
+		done
 		
 		echo -e "\nUsed releases:" 1>&2
 		for r in ${used_releases//:/ }; do
@@ -831,14 +832,8 @@ subcommand_search() {
 		local -r tmpfile=$( mktemp /tmp/$(basename $0).XXXXXX ) || exit 1
 		local family
 		# loop over all families
-		push -n .
-		cd "${PSI_PREFIX}/${PSI_MODULES_ROOT}"
-		for family in *; do
-			local tmp=$( find "${family}" -d -type f -o -type l 2>&1 | head -1 )
-			local -a tmp2=( ${tmp//\// } )
-			echo ${tmp2[0]}
-			local -i depth=${tmp2[@]}
-			let depth-=3
+		for family in $(get_families); do
+			local -i depth=$( compute_family_depth ${family} )
 			# get all potential directories of family $f with module-files 
 			local mpaths=( $(find \
 					     "${modulepath_root}/${family}" \
@@ -870,7 +865,6 @@ subcommand_search() {
 				done
 			done
 		done
-		popd
 		sort -k 1,1 -k 4,4 -k 5,5 "${tmpfile}" | awk "${with_modules}" 1>&2
 		
 		rm -f "${tmpfile}"
