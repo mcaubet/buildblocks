@@ -170,12 +170,12 @@ subcommand_init() {
 	fi
 	local -i euid=$(id -u)
 	if (( euid == 0 )); then
-	        [[ -n "$ENV_USER" ]] || \
+	        [[ -n "${user}" ]] || \
 		    die 1 "Error: --user parameter is required!"
-		id -u "$ENV_USER" > /dev/null 2>&1 || \
-		    die 1 "Error: Unable to retrieve user id of user '$ENV_USER'"
+		id -u "${user}" > /dev/null 2>&1 || \
+		    die 1 "Error: Unable to retrieve user id of user '${user}'"
 	else
-		[[ -z "$ENV_USER" ]] || \
+		[[ -z "${user}" ]] || \
 		    die 1 "Error: --user option is only allowed if running as root!"
 	fi
 	
@@ -222,10 +222,10 @@ environment at '${PSI_PREFIX}'
 			    "${target_prefix}" || die 1 "Error: sync Pmodules failed!"
 		echo
 		
-		if [[ -n "${ENV_USER}" ]]; then
-	            echo "Changing user of new module environment to '${ENV_USER}'..."
-		    $DRY chown -R "${ENV_USER}" "${target_prefix}" || die 1 "Error: changing owner failed!"
-		    echo
+		if [[ -n "${user}" ]]; then
+	                echo "Changing user of new module environment to '${user}'..."
+                        $DRY chown -R "${user}" "${target_prefix}" || die 1 "Error: changing owner failed!"
+                        echo
 		fi
 		echo "New minimal module environment created at '${target_prefix}'."
 		echo "To use this environment, execute"
