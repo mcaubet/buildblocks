@@ -4,7 +4,7 @@ declare -r BASE_DIR=$(cd "$(dirname $0)/../.." && pwd)
 declare -r BOOTSTRAP_DIR="${BASE_DIR}/scripts/Bootstrap"
 declare -r SRC_DIR="${BOOTSTRAP_DIR}/Pmodules"
 
-source "${BASE_DIR}/config/pmodules_version.conf"
+source "${BASE_DIR}/config/Pmodules.conf"
 
 unset PMODULES_HOME
 source "/opt/psi/config/environment.bash"
