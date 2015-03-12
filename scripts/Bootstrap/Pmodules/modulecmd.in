@@ -668,10 +668,14 @@ subcommand_avail() {
 }
 
 get_families () {
+	if [[ ! -d "${modulepath_root}" ]]; then
+		echo ""
+	else
 	{
 		cd "${modulepath_root}"
-		echo *
+		ls -1
 	}
+	fi
 }
 
 #
