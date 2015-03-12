@@ -194,7 +194,7 @@ environment at '${PSI_PREFIX}'
 		echo
 		if [[ -d "${target_prefix}" ]]  && [[ ${force} == no ]]; then
 			echo "Warning: ${target_prefix} already exists."
-			get_YN_answer "Do you really want to re-run the initialization? (y/N) " \
+			get_YN_answer "Do you really want to re-run the initialization? (y/N) " || \
 				      die 1 "Abort ..."
 		fi
 
