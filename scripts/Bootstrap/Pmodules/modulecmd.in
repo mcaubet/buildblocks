@@ -881,11 +881,11 @@ subcommand_search() {
 			sort -k 1,1 -k 4,4 -k 5,5 "${tmpfile}" | awk "${with_modules}" 1>&2
 		else
 			while read -a line; do
-				echo -n "${line[2]}/"
+				echo -n "${line[2]}/" 1>&2
 				for d in "${line[@]:3}"; do
-					echo -n "$d/"
+					echo -n "$d/" 1>&2
 				done
-				echo "${line[0]}"
+				echo "${line[0]}" 1>&2
 			done < <(sort -k 1,1 -k 4,4 -k 5,5 "${tmpfile}" | awk "${with_modules}")
 		fi
 		rm -f "${tmpfile}"
