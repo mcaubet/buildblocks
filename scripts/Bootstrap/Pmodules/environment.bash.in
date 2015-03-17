@@ -3,7 +3,7 @@
 declare -x PSI_PREFIX=$(cd $(dirname "${BASH_SOURCE}")/.. && pwd)
 
 if [[ -z ${PMODULES_VERSION} ]]; then
-	declare -x PMODULES_VERSION="0.99.1"
+	declare -x PMODULES_VERSION="@PMODULES_VERSION@"
 fi
 declare -x PMODULES_HOME="${PSI_PREFIX}/Tools/Pmodules/${PMODULES_VERSION}"
 
