@@ -51,7 +51,7 @@ init [--src=<src>] [--user=<user>] <dst>
 
 subcommand_help_install() {
 	echo "
-install <module> [--with=<dep>...]
+install <module>... [--with=<dep>...] [--release=<release>...] [--src=<src>]
                 Install matching modules
 " 1>&2
 }
@@ -111,11 +111,12 @@ sync_module() {
 	local -r rel_module_prefix=$( get_module_prefix "${rel_modulefile}" )
 	local -r rel_releasefile=$( get_releasefile_name "${rel_modulefile}" )
 
-	$DRY mkdir -p "${target_prefix}/${rel_module_prefix}" || return $?
-	$DRY rsync --links --perms --recursive --delete \
-	      "${src_prefix}/${rel_module_prefix}/" \
-	      "${target_prefix}/${rel_module_prefix}/" || return $?
-
+	if [[ ! -d "${target_prefix}/${rel_module_prefix}" ]] || [[ "${force}" == 'yes' ]]; then
+		$DRY mkdir -p "${target_prefix}/${rel_module_prefix}" || return $?
+		$DRY rsync --links --perms --recursive --delete \
+		      "${src_prefix}/${rel_module_prefix}/" \
+		      "${target_prefix}/${rel_module_prefix}/" || return $?
+	fi
 	local -r src_modulefile="${src_prefix}/${PSI_MODULES_ROOT}/${rel_modulefile}"
 	local -r src_releasefile="${src_prefix}/${PSI_MODULES_ROOT}/${rel_releasefile}"
 	local -r target_modulefile="${target_prefix}/${PSI_MODULES_ROOT}/${rel_modulefile}"
@@ -270,7 +271,7 @@ subcommand_install() {
 	local -r src_prefix="${PMODULES_INSTALL_SOURCE}"
 	local -r target_prefix="${PSI_PREFIX}"
 
-	opts=$(get_options -o h -l with: -l release: -l help -l src: -- "$@")
+	opts=$(get_options -o hf -l dry-run -l force -l with: -l release: -l help -l src: -- "$@")
 	if [[ $? != 0 ]]; then
 		subcommand_help_install
 		exit 1
@@ -278,6 +279,12 @@ subcommand_install() {
 	eval set --  "${opts}"
 	while (($# > 0)); do
 		case $1 in
+			--dry-run )
+				DRY='echo'
+				;;
+			--force | -f )
+				force='yes'
+				;;
 			--release )
 				releases+=( "$2" )
 				shift
@@ -293,7 +300,11 @@ subcommand_install() {
 			-- )
 				:
 				;;
-			-* | -h | --help )
+			-h | --help )
+				subcommand_help_install
+				exit 1
+				;;
+			-* )
 				echo "$1: illegal option" 1>&2
 				subcommand_help_init
 				exit 1
