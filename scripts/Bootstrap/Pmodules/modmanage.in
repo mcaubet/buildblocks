@@ -328,7 +328,7 @@ subcommand_install() {
 		let n+=1
 	done < <(${PMODULES_HOME}/bin/modulecmd bash search \
 				 "${module_pattern[@]}" \
-				 "${with[@]/#/--with}" \
+				 "${with[@]/#/--with=}" \
 				 "${releases[@]/#/--release=}" \
 				 --no-header --print-modulefiles \
 				 --src="${src_prefix}" 2>&1)
