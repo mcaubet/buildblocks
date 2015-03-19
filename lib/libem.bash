@@ -28,15 +28,6 @@ declare -xr BUILD_TMPDIR="${BUILD_BASEDIR}/tmp"
 declare -xr BUILD_DOWNLOADSDIR="${BUILD_BASEDIR}/Downloads"
 declare -xr BUILD_VERSIONSFILE="${BUILD_CONFIGDIR}/versions.conf"
 
-#declare -xr PSI_TEMPLATES_DIR='templates'
-
-if [[ -z "${BUILD_CONFIGDIR}/families.d/"*.conf ]]; then
-	die 1 "Default family configuration not set in ${BUILD_CONFIGDIR}/families.d"
-fi
-
-#for f in "${BUILD_CONFIGDIR}/families.d/"*.conf; do
-#	source "${f}"
-#done
 source "${BUILD_CONFIGDIR}/Pmodules.conf"
 
 declare -x  PREFIX=''
@@ -62,7 +53,8 @@ declare -x  LIBRARY_PATH
 declare -x  LD_LIBRARY_PATH
 declare -x  DYLD_LIBRARY_PATH
 
-
+##############################################################################
+#
 function usage() {
 	error "
 Usage: $0 [OPTIONS..] [VERSION] [ENV=VALUE...]
@@ -260,6 +252,8 @@ function _write_build_dependencies() {
 
 # setup general environment
 function _setup_env1() {
+	local varname=''
+
 	C_INCLUDE_PATH=''
 	CPLUS_INCLUDE_PATH=''
 	CPP_INCLUDE_PATH=''
@@ -277,8 +271,11 @@ function _setup_env1() {
 		[[ -z ${_name} ]] && continue
 		[[ -z ${_version} ]] && continue
 		[[ "${_name:0:1}" == '#' ]] && continue
-		_NAME=$(echo ${_name} | tr [:lower:] [:upper:])
-		eval ${_NAME}_VERSION=$_version 
+		var_name=$(echo ${_name} | tr [:lower:] [:upper:])_VERSION
+		# don't set version, if already set
+		if [[ -z ${!var_name} ]]; then
+			eval ${var_name}="${_version}"
+		fi
 	done < "${BUILD_VERSIONSFILE}"
 
 }
