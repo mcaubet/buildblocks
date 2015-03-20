@@ -8,7 +8,8 @@ unset CDPATH
 shopt -s expand_aliases
 
 
-declare -r  BUILDSCRIPT=$( cd $(dirname "$0") && pwd )/$(basename "$0")
+declare -r  BUILDSCRIPT_DIR=$( cd $(dirname "$0") && pwd )
+declare -r  BUILDSCRIPT="${BUILDSCRIPT_DIR}"/$(basename "$0")
 declare -rx ARGS="$@"
 declare -rx SHLIBDIR=$( cd $(dirname "$BASH_SOURCE") && pwd )
 declare -r OS=$(uname -s)
@@ -366,6 +367,17 @@ function _setup_env2() {
 			MODULE_NAME+="${HDF5}/${HDF5_VERSION}/"
 			MODULE_NAME+="${P}/${V}"
 			;;
+		OPAL )
+			MODULE_RPREFIX="${P}/${V}"
+			MODULE_RPREFIX+="/${OPAL}/${OPAL_VERSION}"
+			MODULE_RPREFIX+="/${MPI}/${MPI_VERSION}"
+			MODULE_RPREFIX+="/${COMPILER}/${COMPILER_VERSION}"
+			
+			MODULE_NAME="${COMPILER}/${COMPILER_VERSION}/"
+			MODULE_NAME+="${MPI}/${MPI_VERSION}/"
+			MODULE_NAME+="${OPAL}/${OPAL_VERSION}/"
+			MODULE_NAME+="${P}/${V}"
+			;;
 		HDF5_serial )
 			MODULE_RPREFIX="${P}/${V}"
 			MODULE_RPREFIX+="/hdf5_serial/${HDF5_SERIAL_VERSION}"
@@ -659,6 +671,10 @@ bootstrap='no'
 
 # array collecting all modules specified on the command line via '--with=module'
 with_modules=()
+
+if [[ -r "${BUILDSCRIPT_DIR}/with_modules" ]]; then
+	with_modules+=( $(cat "${BUILDSCRIPT_DIR}/with_modules") )
+fi
 
 while (( $# > 0 )); do
 	case $1 in
