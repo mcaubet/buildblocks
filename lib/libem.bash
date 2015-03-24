@@ -584,14 +584,14 @@ function _set_link() {
 }
 
 function em.cleanup_build() {
-    (
-	[[ -d /${MODULE_BUILDDIR} ]] || return 0
-	cd "/${MODULE_BUILDDIR}/..";
-	if [[ $(pwd) != / ]]; then
-		echo "Cleaning up $(pwd)/${COMPILER_VERSION}"
-		rm -rf *
-	fi
-    );
+	[[ -n "${MODULE_BUILDDIR}" ]]     \
+		|| die 1 "Oops: internal error: MODULE_BUILDDIR is set to empty string..."
+	[[ "${MODULE_BUILDDIR}" == "/" ]] \
+		&& die 1 "Oops: internal error: MODULE_BUILDDIR is set to '/'..."
+	[[ -d "/${MODULE_BUILDDIR}" ]]    \
+		|| die 1 "Oops: internal error: MODULE_BUILDDIR=${MODULE_BUILDDIR} is not a directory..."
+	echo "Cleaning up '/${MODULE_BUILDDIR}'..."
+	rm -rf  "/${MODULE_BUILDDIR}"
 }
 
 function em.cleanup_src() {
