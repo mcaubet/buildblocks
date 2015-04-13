@@ -58,22 +58,30 @@ get_options() {
 	"${bindir}/getopt" "$@"
 }
 
-check_pmodules_env() {
+check_pmodules_env_vars() {
 	[[ -n "${PSI_PREFIX}" ]] &&
 	    [[ -n "${PSI_CONFIG_DIR}" ]] &&
 	    [[ -n "${PSI_MODULES_ROOT}" ]] &&
 	    [[ -n "${PSI_TEMPLATES_DIR}" ]] &&
 	    [[ -n "${PMODULES_HOME}" ]] &&
 	    [[ -n "${PMODULES_VERSION}" ]] || die 1 "
-Error: not running within a valid module environment!"
+Error: the module environment you are going to use as source has not been
+initialized properly!"
+}
 
-	[[ -d "${PSI_PREFIX}" ]] &&
-	    [[ -d "${PSI_PREFIX}/${PSI_CONFIG_DIR}" ]] &&
-	    [[ -d "${PSI_PREFIX}/${PSI_MODULES_ROOT}" ]] &&
-	    [[ -d "${PSI_PREFIX}/${PSI_TEMPLATES_DIR}" ]] &&
-	    [[ -d "${PMODULES_HOME}" ]] || die 1 "
-Error: the module environment '$PSI_PREFIX' is invalid!"
+check_pmodules_directories() {
+	local -r src_prefix="$1"
+	[[ -d "${src_prefix}" ]] &&
+	    [[ -d "${src_prefix}/${PSI_CONFIG_DIR}" ]] &&
+	    [[ -d "${src_prefix}/${PSI_MODULES_ROOT}" ]] &&
+	    [[ -d "${src_prefix}/${PSI_TEMPLATES_DIR}" ]] &&
+	    [[ -d "${src_prefix}/Tools/Pmodules/${PMODULES_VERSION}" ]] || die 1 "
+Error: the module environment '${src_prefix}' has not been initialized properly!"
+}
 
+check_pmodules_env() {
+	check_pmodules_env_vars
+	check_pmodules_directories "${PSI_PREFIX}"
 }
 
 

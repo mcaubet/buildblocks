@@ -181,6 +181,8 @@ proc set_std_environment { PREFIX name version } {
 		if { [lsearch ${::dont-setenv} "${NAME}_HOME"] == -1 } {
 			setenv		${NAME}_HOME		$PREFIX
 		}
+	} else {
+		debug "$PREFIX is not a directory"
 	}
 
 	if { [file isdirectory "$PREFIX/bin"] } {

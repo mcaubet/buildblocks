@@ -23,7 +23,6 @@ function em.install() {
 	make install
 }
 
-em.release 'unstable'
 em.add_to_family 'System'
 em.set_build_dependencies "${COMPILER}"
 em.make_all

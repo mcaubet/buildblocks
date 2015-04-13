@@ -2,10 +2,14 @@
 
 PATH=/usr/bin:/bin:/usr/sbin:/sbin:/usr/local/bin:/opt/X11/bin
 
+# disable auto-echo feature of 'cd'
+unset CDPATH
+
 shopt -s expand_aliases
 
 
-declare -r  BUILDSCRIPT=$( cd $(dirname "$0") && pwd )/$(basename "$0")
+declare -r  BUILDSCRIPT_DIR=$( cd $(dirname "$0") && pwd )
+declare -r  BUILDSCRIPT="${BUILDSCRIPT_DIR}"/$(basename "$0")
 declare -rx ARGS="$@"
 declare -rx SHLIBDIR=$( cd $(dirname "$BASH_SOURCE") && pwd )
 declare -r OS=$(uname -s)
@@ -25,16 +29,7 @@ declare -xr BUILD_TMPDIR="${BUILD_BASEDIR}/tmp"
 declare -xr BUILD_DOWNLOADSDIR="${BUILD_BASEDIR}/Downloads"
 declare -xr BUILD_VERSIONSFILE="${BUILD_CONFIGDIR}/versions.conf"
 
-#declare -xr PSI_TEMPLATES_DIR='templates'
-
-if [[ -z "${BUILD_CONFIGDIR}/families.d/"*.conf ]]; then
-	die 1 "Default family configuration not set in ${BUILD_CONFIGDIR}/families.d"
-fi
-
-#for f in "${BUILD_CONFIGDIR}/families.d/"*.conf; do
-#	source "${f}"
-#done
-source "${BUILD_CONFIGDIR}/Pmodules.conf"
+#source "${BUILD_CONFIGDIR}/Pmodules.conf"
 
 declare -x  PREFIX=''
 declare -x  DOCDIR=''
@@ -59,7 +54,8 @@ declare -x  LIBRARY_PATH
 declare -x  LD_LIBRARY_PATH
 declare -x  DYLD_LIBRARY_PATH
 
-
+##############################################################################
+#
 function usage() {
 	error "
 Usage: $0 [OPTIONS..] [VERSION] [ENV=VALUE...]
@@ -96,87 +92,24 @@ ENV=VALUE
 	exit 1
 }
 
-
-debug_on='no'
-force_rebuild='no'
-ENVIRONMENT_ARGS=''
-dry_run='no'
-bootstrap='no'
-
-# array collecting all modules specified on the command line via '--with=module'
-with_modules=()
-
-while (( $# > 0 )); do
-	case $1 in
-	-j )
-		JOBS=$2
-		shift
-		;;
-	--jobs=[0-9]* )
-		JOBS=${1/--jobs=}
-		;;
-	-v | --verbose)
-		debug_on='yes'
-		;;
-	-f | --force-rebuild )
-		force_rebuild='yes'
-		;;
-	-b | --bootstrap )
-		bootstrap='yes'
-		force_rebuild='yes'
-		;;
-	-? | -h | --help )
-		usage
-		;;
-	--dry-run )
-		dry_run='yes'
-		;;
-	--release=* )
-		MODULE_RELEASE=${1/--release=}
-		;;
-	--with=*/* )
-		with_modules+=( ${1/--with=} )
-		;;
-	*=* )
-		eval $1
-		ENVIRONMENT_ARGS="${ENVIRONMENT_ARGS} $1"
-		;;
-	* )
-		V=$1
-		;;
-	esac
-	shift
-done
-
-if [[ ${debug_on} == yes ]]; then
-	trap 'echo "$BASH_COMMAND"' DEBUG
-fi
-
-# while bootstraping the module command is not yet available
-if [[ ${bootstrap} == no ]]; then
-        source	"${PSI_PREFIX}/${PSI_CONFIG_DIR}/profile.bash"
-	MODULECMD="${PMODULES_HOME}/bin/modulecmd"
-	[[ -x ${MODULECMD} ]] || die 1 "${MODULECMD}: no such executable"
-	module use unstable
-	module purge
-fi
-
-P=$(basename $(dirname "${BUILDSCRIPT}"))
-_P=$(echo $P | tr [:lower:] [:upper:])
-_P=${_P//-/_}
-_V=${_P}_VERSION
-
-eval "${ENVIRONMENT_ARGS}"
-
-if [[ -n ${PSI_RELEASES} ]]; then
-        declare -r releases="${PSI_RELEASES}"
-else
-	# set defaults, if file doesn't exist or isn't readable
-	declare -r releases=":unstable:stable:deprecated:"
-fi
-
+##############################################################################
+#
+# test whether a the string passed in $1 is a valid release name
+#
+# $1: string to be tested
+#
 is_release () {
 	[[ ${releases} =~ :$1: ]]
+}
+
+##############################################################################
+#
+# test whether a module is loaded or not
+#
+# $1: module name
+#
+em.is_loaded() {
+        [[ :${LOADEDMODULES}: =~ :$1: ]]
 }
 
 function em.set_release() {
@@ -223,16 +156,6 @@ function module_is_available() {
 }
 
 function _load_build_dependencies() {
-	# :FIXME: merge this two loops, load only modules which are required
-	#         this merge is not as easy as it looks like at a first glance!
-	for m in "${with_modules[@]}"; do
-		if module_is_available "$m"; then
-			echo "Loading module: ${m}"
-			module load "${m}"
-		else
-			die 44 "$m: module not available!"
-		fi
-	done
 	for m in "${MODULE_BUILD_DEPENDENCIES[@]}"; do
 		[[ -z $m ]] && continue
 		if [[ ! $m =~ "*/*" ]]; then
@@ -243,6 +166,7 @@ function _load_build_dependencies() {
 				echo "$m: warning: No version set, loading default ..."
 			fi
 		fi
+		em.is_loaded "$m" && continue
 		if ! module_is_available "$m"; then
 		        debug "${m}: module not available"
 			local rels=( ${releases//:/ } )
@@ -344,8 +268,12 @@ function _write_build_dependencies() {
 	done
 }
 
-# setup general environment
-function _setup_env1() {
+##############################################################################
+# 
+# cleanup environment
+#
+em.cleanup_env() {
+
 	C_INCLUDE_PATH=''
 	CPLUS_INCLUDE_PATH=''
 	CPP_INCLUDE_PATH=''
@@ -358,13 +286,23 @@ function _setup_env1() {
 	CXXFLAGS=''
 	LIBS=''
 	LDFLAGS=''
-	
+}
+
+##############################################################################
+#
+# load default versions
+#
+ _setup_env1() {
+	local varname=''
 	while read _name _version; do
 		[[ -z ${_name} ]] && continue
 		[[ -z ${_version} ]] && continue
 		[[ "${_name:0:1}" == '#' ]] && continue
-		_NAME=$(echo ${_name} | tr [:lower:] [:upper:])
-		eval ${_NAME}_VERSION=$_version 
+		var_name=$(echo ${_name} | tr [:lower:] [:upper:])_VERSION
+		# don't set version, if already set
+		if [[ -z ${!var_name} ]]; then
+			eval ${var_name}="${_version}"
+		fi
 	done < "${BUILD_VERSIONSFILE}"
 
 }
@@ -438,13 +376,24 @@ function _setup_env2() {
 			MODULE_NAME+="${HDF5}/${HDF5_VERSION}/"
 			MODULE_NAME+="${P}/${V}"
 			;;
+		OPAL )
+			MODULE_RPREFIX="${P}/${V}"
+			MODULE_RPREFIX+="/${OPAL}/${OPAL_VERSION}"
+			MODULE_RPREFIX+="/${MPI}/${MPI_VERSION}"
+			MODULE_RPREFIX+="/${COMPILER}/${COMPILER_VERSION}"
+			
+			MODULE_NAME="${COMPILER}/${COMPILER_VERSION}/"
+			MODULE_NAME+="${MPI}/${MPI_VERSION}/"
+			MODULE_NAME+="${OPAL}/${OPAL_VERSION}/"
+			MODULE_NAME+="${P}/${V}"
+			;;
 		HDF5_serial )
 			MODULE_RPREFIX="${P}/${V}"
 			MODULE_RPREFIX+="/hdf5_serial/${HDF5_SERIAL_VERSION}"
 			MODULE_RPREFIX+="/${COMPILER}/${COMPILER_VERSION}"
 			
 			MODULE_NAME="${COMPILER}/${COMPILER_VERSION}/"
-			MODULE_NAME+="hdf5_serial/${HDF5_VERSION}/"
+			MODULE_NAME+="hdf5_serial/${HDF5_SERIAL_VERSION}/"
 			MODULE_NAME+="${P}/${V}"
 			;;
 		* )
@@ -523,58 +472,56 @@ function _setup_env2() {
 
 }
 
-if [[ ${bootstrap} == yes ]]; then
-    # redefine function for bootstrapping
-    function _setup_env2() {
-	    if [[ -z ${MODULE_FAMILY} ]]; then
+# redefine function for bootstrapping
+function _setup_env2_bootstrap() {
+	if [[ -z ${MODULE_FAMILY} ]]; then
 		die 1 "$P: family not set."
-	    fi
+	fi
 
-            if [[ -z $V ]]; then
+        if [[ -z $V ]]; then
 		V=$(eval echo \$${_P}_VERSION)
-	    fi
+	fi
 
-	    # oops, we need a version
-	    if [[ -z $V ]]; then
+	# oops, we need a version
+	if [[ -z $V ]]; then
 		die 1 "$P: Missing version."
-	    fi
-	    MODULE_SRCDIR="${BUILD_TMPDIR}/src/${P/_serial}-$V"
-	    MODULE_BUILDDIR="${BUILD_TMPDIR}/build/$P-$V"
-	    MODULE_FAMILY='Tools'
-	    MODULE_NAME="Pmodules/${PMODULES_VERSION}"
-	    # set PREFIX of module
-	    PREFIX="${PSI_PREFIX}/${MODULE_FAMILY}/${MODULE_NAME}"
-	    
-	    MODULE_RELEASE='unstable'
-	    info "${MODULE_NAME}: will be released as \"${MODULE_RELEASE}\""
+	fi
+	MODULE_SRCDIR="${BUILD_TMPDIR}/src/${P/_serial}-$V"
+	MODULE_BUILDDIR="${BUILD_TMPDIR}/build/$P-$V"
+	MODULE_FAMILY='Tools'
+	MODULE_NAME="Pmodules/${PMODULES_VERSION}"
+	# set PREFIX of module
+	PREFIX="${PSI_PREFIX}/${MODULE_FAMILY}/${MODULE_NAME}"
+	
+	MODULE_RELEASE='unstable'
+	info "${MODULE_NAME}: will be released as \"${MODULE_RELEASE}\""
 
-	    # directory for README's, license files etc
-	    DOCDIR="${PREFIX}/share/doc/$P"
+	# directory for README's, license files etc
+	DOCDIR="${PREFIX}/share/doc/$P"
 
-	    # set tar-ball and flags for tar
-	    TARBALL="${BUILD_DOWNLOADSDIR}/${P/_serial}"
-	    if [[ -r "${TARBALL}-${V}.tar.gz" ]]; then
-		    TARBALL+="-${V}.tar.gz"
-	    elif [[ -r "${TARBALL}-${OS}-${V}.tar.gz" ]]; then
-		    TARBALL+="-${OS}-${V}.tar.gz"
-	    elif [[ -r "${TARBALL}-${V}.tar.bz2" ]]; then
-		    TARBALL+="-${V}.tar.bz2"
-	    elif [[ -r "${TARBALL}-${OS}-${V}.tar.bz2" ]]; then
-		    TARBALL+="-${OS}-${V}.tar.bz2"
-	    else
-		    error "tar-ball for $P/$V not found."
-		    exit 43
-	    fi
-	    C_INCLUDE_PATH="${PREFIX}/include"
-	    CPLUS_INCLUDE_PATH="${PREFIX}/include"
-	    CPP_INCLUDE_PATH="${PREFIX}/include"
-	    LIBRARY_PATH="${PREFIX}/lib"
-	    LD_LIBRARY_PATH="${PREFIX}/lib"
-	    DYLD_LIBRARY_PATH="${PREFIX}/lib"
+	# set tar-ball and flags for tar
+	TARBALL="${BUILD_DOWNLOADSDIR}/${P/_serial}"
+	if [[ -r "${TARBALL}-${V}.tar.gz" ]]; then
+	        TARBALL+="-${V}.tar.gz"
+	elif [[ -r "${TARBALL}-${OS}-${V}.tar.gz" ]]; then
+	        TARBALL+="-${OS}-${V}.tar.gz"
+	elif [[ -r "${TARBALL}-${V}.tar.bz2" ]]; then
+	        TARBALL+="-${V}.tar.bz2"
+	elif [[ -r "${TARBALL}-${OS}-${V}.tar.bz2" ]]; then
+	        TARBALL+="-${OS}-${V}.tar.bz2"
+	else
+	        error "tar-ball for $P/$V not found."
+	        exit 43
+	fi
+	C_INCLUDE_PATH="${PREFIX}/include"
+	CPLUS_INCLUDE_PATH="${PREFIX}/include"
+	CPP_INCLUDE_PATH="${PREFIX}/include"
+	LIBRARY_PATH="${PREFIX}/lib"
+	LD_LIBRARY_PATH="${PREFIX}/lib"
+	DYLD_LIBRARY_PATH="${PREFIX}/lib"
 
-	    PATH+=":${PREFIX}/bin"
-    }
-fi
+	PATH+=":${PREFIX}/bin"
+}
 
 function _prep() {
 
@@ -637,14 +584,14 @@ function _set_link() {
 }
 
 function em.cleanup_build() {
-    (
-	[[ -d /${MODULE_BUILDDIR} ]] || return 0
-	cd "/${MODULE_BUILDDIR}/..";
-	if [[ $(pwd) != / ]]; then
-		echo "Cleaning up $(pwd)/${COMPILER_VERSION}"
-		rm -rf *
-	fi
-    );
+	[[ -n "${MODULE_BUILDDIR}" ]]     \
+		|| die 1 "Oops: internal error: MODULE_BUILDDIR is set to empty string..."
+	[[ "${MODULE_BUILDDIR}" == "/" ]] \
+		&& die 1 "Oops: internal error: MODULE_BUILDDIR is set to '/'..."
+	[[ -d "/${MODULE_BUILDDIR}" ]]    \
+		|| die 1 "Oops: internal error: MODULE_BUILDDIR=${MODULE_BUILDDIR} is not a directory..."
+	echo "Cleaning up '/${MODULE_BUILDDIR}'..."
+	rm -rf  "/${MODULE_BUILDDIR}"
 }
 
 function em.cleanup_src() {
@@ -685,13 +632,19 @@ function _post_install() {
 }
 
 function em.make_all() {
+	local building='no'
 	echo "${P}:"
 	_setup_env1
 	_load_build_dependencies
 	# setup module specific environment
-	_setup_env2
+	if [[ ${bootstrap} == no ]]; then
+		_setup_env2
+	else
+		_setup_env2_bootstrap
+	fi
 
 	if [[ ! -d "${PREFIX}" ]] || [[ ${force_rebuild} == 'yes' ]]; then
+		building='yes'
  		echo "Building $P/$V ..."
 		[[ ${dry_run} == yes ]] && die 0 ""
 		_check_compiler
@@ -716,8 +669,103 @@ function em.make_all() {
 	if [[ ${bootstrap} == 'no' ]]; then
 		_set_link
 	fi
-	em.cleanup_build
+	[[ ${building} == yes ]] && em.cleanup_build
+	return 0
 }
+
+##############################################################################
+#
+debug_on='no'
+force_rebuild='no'
+ENVIRONMENT_ARGS=''
+dry_run='no'
+bootstrap='no'
+
+em.cleanup_env
+
+# array collecting all modules specified on the command line via '--with=module'
+with_modules=()
+
+if [[ -r "${BUILDSCRIPT_DIR}/with_modules" ]]; then
+	with_modules+=( $(cat "${BUILDSCRIPT_DIR}/with_modules") )
+fi
+
+while (( $# > 0 )); do
+	case $1 in
+	-j )
+		JOBS=$2
+		shift
+		;;
+	--jobs=[0-9]* )
+		JOBS=${1/--jobs=}
+		;;
+	-v | --verbose)
+		debug_on='yes'
+		;;
+	-f | --force-rebuild )
+		force_rebuild='yes'
+		;;
+	-b | --bootstrap )
+		bootstrap='yes'
+		force_rebuild='yes'
+		;;
+	-? | -h | --help )
+		usage
+		;;
+	--dry-run )
+		dry_run='yes'
+		;;
+	--release=* )
+		MODULE_RELEASE=${1/--release=}
+		;;
+	--with=*/* )
+		with_modules+=( ${1/--with=} )
+		;;
+	*=* )
+		eval $1
+		ENVIRONMENT_ARGS="${ENVIRONMENT_ARGS} $1"
+		;;
+	* )
+		V=$1
+		;;
+	esac
+	shift
+done
+
+if [[ ${debug_on} == yes ]]; then
+	trap 'echo "$BASH_COMMAND"' DEBUG
+fi
+
+# while bootstraping the module command is not yet available
+if [[ ${bootstrap} == no ]]; then
+        source	"${PSI_PREFIX}/${PSI_CONFIG_DIR}/profile.bash"
+	MODULECMD="${PMODULES_HOME}/bin/modulecmd"
+	[[ -x ${MODULECMD} ]] || die 1 "${MODULECMD}: no such executable"
+	module use unstable
+	module purge
+	for m in "${with_modules[@]}"; do
+		if module_is_available "$m"; then
+			echo "Loading module: ${m}"
+			module load "${m}"
+		else
+			die 44 "$m: module not available!"
+		fi
+	done
+fi
+
+P=$(basename $(dirname "${BUILDSCRIPT}"))
+_P=$(echo $P | tr [:lower:] [:upper:])
+_P=${_P//-/_}
+_V=${_P}_VERSION
+
+eval "${ENVIRONMENT_ARGS}"
+
+if [[ -n ${PSI_RELEASES} ]]; then
+        declare -r releases="${PSI_RELEASES}"
+else
+	# set defaults, if file doesn't exist or isn't readable
+	declare -r releases=":unstable:stable:deprecated:"
+fi
 
 # Local Variables:
 # mode: sh

@@ -338,7 +338,7 @@ function module_picker() {
 # if DIALOG_LIB is NOT set, call module picker
 [[ ${DIALOG_LIB:+"is_lib"} == "is_lib" ]] || {
     if [[ -x ${PMODULES_HOME}/bin/modulecmd ]]; then
-        module_picker "$1" < <(${PMODULES_HOME}/bin/modulecmd bash search --no-header -a 2>&1)
+        module_picker "${1:-$PSI_PREFIX}" < <(${PMODULES_HOME}/bin/modulecmd bash search --src="${2:-/afs/psi.ch/sys/psi.x86_64_slp6}" --no-header -a 2>&1)
     else
         echo "ERROR: module environment configuration: ${PMODULES_HOME}/bin/modulecmd is not an executable!"
     fi

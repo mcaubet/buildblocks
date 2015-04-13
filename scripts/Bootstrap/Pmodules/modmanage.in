@@ -1,5 +1,7 @@
 #!@PMODULES_HOME@/bin/bash
 
+unset CDPATH
+
 shopt -s expand_aliases
 
 declare -r bindir=$(cd $(dirname "$0") && pwd)
@@ -25,7 +27,7 @@ Switches:
         --force       force overwrite
 
 Available SubCommands and Args:
-        init [--src=<src>] [--user=<user>] --dst=<dst>
+        init [--src=<src>] [--user=<user>] <dst>
                 Initialize a new minimal Pmodule environment.
 
         install <module> [--with=<dep>...]
@@ -54,7 +56,7 @@ init [--src=<src>] [--user=<user>] <dst>
 
 subcommand_help_install() {
 	echo "
-install <module> [--with=<dep>...]
+install <module>... [--with=<dep>...] [--release=<release>...] [--src=<src>]
                 Install matching modules
 " 1>&2
 }
@@ -125,11 +127,12 @@ sync_module() {
 	local -r rel_module_prefix=$( get_module_prefix "${rel_modulefile}" )
 	local -r rel_releasefile=$( get_releasefile_name "${rel_modulefile}" )
 
-	$DRY mkdir -p "${target_prefix}/${rel_module_prefix}" || return $?
-	$DRY rsync --links --perms --recursive --delete \
-	      "${src_prefix}/${rel_module_prefix}/" \
-	      "${target_prefix}/${rel_module_prefix}/" || return $?
-
+	if [[ ! -d "${target_prefix}/${rel_module_prefix}" ]] || [[ "${force}" == 'yes' ]]; then
+		$DRY mkdir -p "${target_prefix}/${rel_module_prefix}" || return $?
+		$DRY rsync --links --perms --recursive --delete \
+		      "${src_prefix}/${rel_module_prefix}/" \
+		      "${target_prefix}/${rel_module_prefix}/" || return $?
+	fi
 	local -r src_modulefile="${src_prefix}/${PSI_MODULES_ROOT}/${rel_modulefile}"
 	local -r src_releasefile="${src_prefix}/${PSI_MODULES_ROOT}/${rel_releasefile}"
 	local -r target_modulefile="${target_prefix}/${PSI_MODULES_ROOT}/${rel_modulefile}"
@@ -174,7 +177,7 @@ subcommand_init() {
 	local target_prefixes=()
 	local user=''
 	local opts=''
-	opts=$(get_options -o h -l src: -l user: -l help -- "$@")
+	opts=$(get_options -o h -l src: -l user: -l help -l version: -- "$@")
 	if [[ $? != 0 ]]; then
 		subcommand_help_init
 		exit 1
@@ -188,6 +191,10 @@ subcommand_init() {
 				;;
 			--user )
 				user=$2
+				shift
+				;;
+			--version )
+				PMODULES_VERSION=$2
 				shift
 				;;
 			-- )
@@ -231,6 +238,7 @@ environment at '${PSI_PREFIX}'
 "
 
 	init_pmodules_environment() {
+		local -r src_prefix="${PSI_PREFIX}"
 		local -r target_prefix=$1
 		local src=''
 		local dst=''
@@ -250,10 +258,21 @@ environment at '${PSI_PREFIX}'
 		sync_config "${PSI_PREFIX}" \
 		            "${target_prefix}" || die 1 "Error: configuration synchronization failed!"
 
+		dst="${target_prefix}/${PSI_MODULES_ROOT}/"
+		echo "Creating root directory '${dst}' for module hierarchy ..."
+		$DRY mkdir -p "${dst}"
+		echo
+
 		echo "Syncing Pmodules ..."
 		sync_module "Tools/Pmodules/${PMODULES_VERSION}" \
-			    "${PSI_PREFIX}" \
+			    "${src_prefix}" \
 			    "${target_prefix}" || die 1 "Error: sync Pmodules failed!"
+		echo
+
+		dst="${target_prefix}/${PSI_CONFIG_DIR}/environment.bash"
+		echo "Adding installation source '${src_prefix}' to '${dst}'..."
+		sed -i .bak '/PMODULES_INSTALL_SOURCE/d' "${dst}"
+		echo "declare -x PMODULES_INSTALL_SOURCE=\"${src_prefix}\"" >> "${dst}"
 		echo
 
 		if [[ -n "${user}" ]]; then
@@ -279,8 +298,10 @@ subcommand_install() {
 	local -a with=()
 	local -a releases=()
 	local -a module_pattern=()
+	local -r src_prefix="${PMODULES_INSTALL_SOURCE}"
+	local -r target_prefix="${PSI_PREFIX}"
 
-	opts=$(get_options -o h -l with: -l release: -l help -- "$@")
+	opts=$(get_options -o hf -l dry-run -l force -l with: -l release: -l help -l src: -- "$@")
 	if [[ $? != 0 ]]; then
 		subcommand_help_install
 		exit 1
@@ -288,9 +309,18 @@ subcommand_install() {
 	eval set --  "${opts}"
 	while (($# > 0)); do
 		case $1 in
+			--dry-run )
+				DRY='echo'
+				;;
+			--force | -f )
+				force='yes'
+				;;
 			--release )
 				releases+=( "$2" )
-				echo $2
+				shift
+				;;
+			--src )
+				src_prefix="$2"
 				shift
 				;;
 			--with )
@@ -300,7 +330,11 @@ subcommand_install() {
 			-- )
 				:
 				;;
-			-* | -h | --help )
+			-h | --help )
+				subcommand_help_install
+				exit 1
+				;;
+			-* )
 				echo "$1: illegal option" 1>&2
 				subcommand_help_init
 				exit 1
@@ -311,7 +345,36 @@ subcommand_install() {
 		esac
 		shift
 	done
-	${PMODULES_HOME}/bin/modulecmd bash search "${module_pattern[@]}" "${with[@]/#/--with}" "${releases[@]/#/--release=}" --no-header
+	local -A modules_to_install
+	local -i n=0
+	while read rel_modulefile; do
+		modules_to_install["${rel_modulefile}"]+='.'
+		let n+=1
+	done < <(${PMODULES_HOME}/bin/modulecmd bash search \
+				 "${module_pattern[@]}" \
+				 "${with[@]/#/--with=}" \
+				 "${releases[@]/#/--release=}" \
+				 --no-header --print-modulefiles \
+				 --src="${src_prefix}" 2>&1)
+	(( n == 0 )) && die 0 "Nothing to install..."
+	echo -e "The following modules will be installed/updated:\n" 1>&2
+	for key in "${!modules_to_install[@]}"; do
+		echo "    ${key}" 1>&2
+	done
+	echo 1>&2
+	get_YN_answer "Do you want to continue? [n] " || die 1 "Aborting..."
+	echo 1>&2
+	for rel_modulefile in "${!modules_to_install[@]}"; do
+		if [[ -d "${target_prefix}/${rel_modulefile}" ]]; then
+			echo "    Updating; ${rel_modulefile}..." 1>&2
+		else
+			echo "    Installing: ${rel_modulefile}..."
+		fi
+		sync_module "${rel_modulefile}" \
+			    "${src_prefix}" \
+			    "${target_prefix}"
+	done
+	echo -e "\nDone!\n" 1>&2
 }
 
 subcommand_sync() {
