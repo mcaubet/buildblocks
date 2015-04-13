@@ -28,12 +28,6 @@ debug() {
 die() {
         local -ri ec=$1
         shift
-        local cout
-        if (( ec == 0)); then
-                cout='1'
-        else
-                cout='2'
-        fi
         if [[ -n $@ ]]; then
                 local -r fmt=$1
                 shift
@@ -52,7 +46,7 @@ get_YN_answer() {
 	local ans
 	read -p "${prompt}" ans
 	case ${ans} in
-		y|Y )
+		y|Y ) 
 			return 0;;
 		* )
 			return 1;;
@@ -90,6 +84,7 @@ initialized properly!"
 
 check_pmodules_directories() {
 	local -r src_prefix="$1"
+
 	[[ -d "${src_prefix}" ]] &&
 	    [[ -d "${src_prefix}/${PSI_CONFIG_DIR}" ]] &&
 	    [[ -d "${src_prefix}/${PSI_MODULES_ROOT}" ]] &&
