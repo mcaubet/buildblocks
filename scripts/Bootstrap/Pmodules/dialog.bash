@@ -116,12 +116,13 @@ function update_deps() { # $1: 1-add dependency, -1-remove dependency   $2: set 
     done
 }
 
+# "$1": source module environment
 function find_modules() {
     # construct modlist/modmap/uidmap/depcnt/fmmap/relmap arrays from module search output
     local -a mc         # module info components
     local -i i=0
     local current=""
-    local name m
+    local name m uid
     while read m; do
         mc=($m)
         [[ "${mc[2]}" == "Legacy" ]] && continue    # filter out legacy stuff
@@ -133,14 +134,16 @@ function find_modules() {
             modmap[$name]+=" $i"
         fi
         modlist[i]=$m
-        uidmap[$(unique_id $i)]=$i
+        uid="$(unique_id $i)"
+        uidmap["$uid"]=$i
         depcnt[i]=0
         [[ -z ${fmmap[$name]} ]] && { fmmap[$name]=${mc[2]}; }
         relmap[i]=${mc[1]}
         i+=1
-    done
+    done < <(${PMODULES_HOME}/bin/modulecmd bash search --src="$1" --no-header -a 2>&1)
 }
 
+# "$1": source module environment
 function find_families() {
     # construct fdmap
     local -a t  # tcl file components
@@ -153,7 +156,7 @@ function find_families() {
             t=( ${l##*:} )
             fdmap[$n]=${t[-1]//\"}
         fi
-    done < <(grep -R set-family "${PSI_PREFIX}/${PSI_MODULES_ROOT}")
+    done < <(grep -R set-family "$1/${PSI_MODULES_ROOT}")
 }
 
 function select_uid() { # $1: module uid
@@ -250,10 +253,11 @@ function module_out() { # $1: module info index
     echo "${args[@]}"
 }
 
-# "$1": prefix for preselected modules
+# "$1": prefix for preselected modules (destination module environment)
+# "$2": prefix for selectable modules (source module environment)
 function module_picker() {
-    find_families
-    find_modules
+    find_families "$2"
+    find_modules "$2"
     preselect "$1"
 
     tempfile=$(mktemp ${TMPDIR:-/tmp}/msyncXXXXXX) || {
@@ -303,8 +307,8 @@ function module_picker() {
                     0)  #OK
                         oldsel=${selected[$sel]}        # old selection
                         selected[$sel]=$(< $tempfile)   # new selection
-                        update_deps -1 "$(set_difference "$oldsel" "${selected[$sel]}")" # remove dependencies
-                        update_deps 1 "$(set_difference "${selected[$sel]}" "$oldsel")"  # add dependencies
+                        PSI_PREFIX="$2" update_deps -1 "$(set_difference "$oldsel" "${selected[$sel]}")" # remove dependencies
+                        PSI_PREFIX="$2" update_deps 1 "$(set_difference "${selected[$sel]}" "$oldsel")"  # add dependencies
                         level=1
                         ;;
                     1|255)  #ESC/Cancel
@@ -338,7 +342,7 @@ function module_picker() {
 # if DIALOG_LIB is NOT set, call module picker
 [[ ${DIALOG_LIB:+"is_lib"} == "is_lib" ]] || {
     if [[ -x ${PMODULES_HOME}/bin/modulecmd ]]; then
-        module_picker "${1:-$PSI_PREFIX}" < <(${PMODULES_HOME}/bin/modulecmd bash search --src="${2:-/afs/psi.ch/sys/psi.x86_64_slp6}" --no-header -a 2>&1)
+        module_picker "${1:-$PSI_PREFIX}" "${2:-/afs/psi.ch/sys/psi.x86_64_slp6}"
     else
         echo "ERROR: module environment configuration: ${PMODULES_HOME}/bin/modulecmd is not an executable!"
     fi
