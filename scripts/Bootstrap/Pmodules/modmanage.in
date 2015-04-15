@@ -1,4 +1,4 @@
-#!@PMODULES_HOME@/bin/bash
+#!/opt/psi/Tools/Pmodules/0.99.2/bin/bash
 
 unset CDPATH
 
@@ -67,6 +67,7 @@ sync [--delete] [--dst=<dst>] <src>
                 Synchronize environment modules and configuration files
                 from Pmodule environment <src> to Pmodule environment <dst>
                 (default: currently active Pmodule environment).
+                Not yet implemented:
                 If --delete is given, unmarked modules present in <dst>
                 will be deleted.
 " 1>&2
@@ -170,6 +171,15 @@ sync_config() {
 	$DRY rsync --recursive --links --perms --delete \
 		"${src}" "${dst}" || die 1 "Error: synch operation failed!"
 	echo
+}
+
+#
+# Delete a module
+#
+# $1: module environment prefix
+#
+delete_module() {
+    echo "Not implemented yet!"
 }
 
 subcommand_init() {
@@ -378,10 +388,13 @@ subcommand_install() {
 }
 
 subcommand_sync() {
+        [[ -z "${PSI_PREFIX}" ]] && die 1 "Error: No current module environment is configured!"
+
 	local delete=false
 	local opts=''
 	local dst_prefix=''
-	local source_prefix=''
+	local src_prefix=''
+
 	opts=$(get_options -o h -l dst: -l delete -l help -- "$@")
 	if [[ $? != 0 ]]; then
 		subcommand_help_sync
@@ -406,20 +419,23 @@ subcommand_sync() {
 				exit 1
 				;;
 			* )
-				[[ -n "${source_prefix}" ]] && die 1 "Error: Only one source is allowed!"
-				source_prefix="$1"
+				[[ -n "${src_prefix}" ]] && die 1 "Error: Only one source is allowed!"
+				src_prefix="$1"
 				;;
 		esac
 		shift
 	done
 	unset -v opts
+
 	if [[ -z "${dst_prefix}" ]]; then
-		[[ -z "${PSI_PREFIX}" ]] && die 1 "Error: No current module environment and no destination specified!"
 		dst_prefix="${PSI_PREFIX}"
 	fi
 	(
 		PSI_PREFIX="${dst_prefix}" check_pmodules_env || die 1 "Error: invalid destination modules environment!"
 	) || die 1 "Giving up..."
+	if [[ -z "${src_prefix}" ]]; then
+            die 1 "Error: no source module environment was specified!"
+        fi
 	(
 		PSI_PREFIX="${src_prefix}" check_pmodules_env || die 1 "Error: invalid source modules environment!"
 	) || die 1 "Giving up..."
@@ -429,22 +445,14 @@ subcommand_sync() {
 	local file_type_dst=$( file -b "${dst_prefix}/${modbin}" 2>&1 || echo err2 )
 	[[ "${file_type_src}" == "${file_type_dst}" ]] || die 1 "Error: The file signatures in the source and destination installation do not match!"
 	unset -v file_type_src file_type_dst
-
-	local profile_script="${src_prefix}/${PSI_CONFIG_DIR}/profile.bash"
-	[[ -r "${profile_script}" ]] || die 1 "Error: Unable to find profile script of installation $profile_script";
-	local search_script="${src_prefix}/${modbin}/bin/modulecmd"
-	[[ -x "${search_script}" ]] || die 1 "Error: Unable to find search script of installation $search_script";
-#	local dialog_script="${src_prefix}/${modbin}/bin/dialog.bash"
-	local dialog_script="./dialog.bash"
+	local dialog_script="${PMODULES_HOME}/bin/dialog.bash"
 	[[ -r "$dialog_script" ]] || die 1 "Error: Unable to find dialog script of installation $dialog_script";
 
-	source "$profile_script"    # set variables for the source installation
 	DIALOG_LIB=1                # use dialog script as a library
 	source "$dialog_script"     # dialog functions
 
-	local -a selected_modules
-
 	# Redefine module_out to append modules to the selected_modules variable
+        local -a selected_modules
 	function module_out() {
 		local -a args=(${modlist[$1]})
 		local path=""
@@ -454,9 +462,12 @@ subcommand_sync() {
 		selected_modules+=( "${args[2]}${path}/${args[0]}" )
 	}
 
-	module_picker "${dst_prefix}" < <("$search_script" bash search --no-header -a 2>&1)   # this calls module_out for each selected module, filling up the selected_modules array
+	module_picker "${dst_prefix}" "${src_prefix}" || {      # this calls module_out for each selected module, filling up the selected_modules array
+            echo "Abort!"
+            exit 1
+	}
 
-	local -a destination_modules=( $(cd "${dst_prefix}/${PSI_MODULES_ROOT}"; find -L . -type f | while read f; do echo ${f#./}; done) )
+	local -a destination_modules=( $(cd "${dst_prefix}/${PSI_MODULES_ROOT}"; find -L . -type f | while read f; do n=${f##*/}; [[ "${n:0:1}" == "." ]] || echo ${f#./}; done) )
 
 	# redefine set difference, the version in dialog.bash only handles integers
 	function set_difference() {  #  $1 \ $2
@@ -476,6 +487,7 @@ subcommand_sync() {
 	if [[ "$delete" == "true" ]]; then
 		local -a modules_delete=( $(set_difference "${destination_modules[*]}" "${selected_modules[*]}") )
 		for m in "${modules_delete[@]}"; do
+                        echo "Deleting module $m ..."
 			delete_module "$m" "$dst_prefix"
 		done
 		unset modules_delete
@@ -487,6 +499,7 @@ subcommand_sync() {
 		sync_config "$src_prefix" "$dst_prefix" || die 1 "Error: syncing the configuration failed"
         fi
         for m in "${modules_copy[@]}"; do
+                echo "Copying module $m ..."
 		sync_module "$m" "$src_prefix" "$dst_prefix" || die 1 "Error: syncing of module $m failed!"
         done
 	unset modules_copy
