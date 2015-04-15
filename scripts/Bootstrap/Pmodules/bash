@@ -42,7 +42,7 @@ module() {
 			-* )
 				sub_switches+=( $1 )
 				;;
-			[a-zA-Z]* )
+			[/~a-zA-Z]* )
 				args+=( $1 )
 				;;
 		esac
