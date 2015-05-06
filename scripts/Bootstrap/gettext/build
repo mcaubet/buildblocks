@@ -16,6 +16,7 @@ function em.configure() {
 		      --without-libiconv-prefix \
 		      --without-libintl-prefix \
 		      --with-included-libxml \
+		      --with-pic=yes \
 	|| exit 1
 }
 
