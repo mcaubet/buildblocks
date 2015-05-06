@@ -937,15 +937,13 @@ subcommand_avail() {
 #
 get_families () {
 	local -r module_hierarchy_root="$1"
-	if (( ${#FAMILIES[@]} == 0 )); then
-		if [[  -d "${module_hierarchy_root}" ]]; then
-		{
-			cd "${module_hierarchy_root}"
-			for f in *; do
-				FAMILIES+=( $f )
-			done
-		}
-		fi
+	if [[  -d "${module_hierarchy_root}" ]]; then
+	    {
+		    cd "${module_hierarchy_root}"
+		    for f in *; do
+			    FAMILIES+=( $f )
+		    done
+	    }
 	fi
 }
 
@@ -953,7 +951,6 @@ get_families () {
 # $1: root of modulefile hierarchy
 get_hierarchy_depth () {
 	local -r module_hierarchy_root="$1"
-	if (( ${#HIERARCHY_DEPTHS[@]} == 0 )); then
 	{
 		cd "${module_hierarchy_root}"
 		for family in "${FAMILIES[@]}"; do
@@ -964,16 +961,16 @@ get_hierarchy_depth () {
 			HIERARCHY_DEPTHS[$family]=${depth} 
 		done
 	};
-	fi
 }
 
 #
 # use [-a|--append|-p|--prepend] [directory|family|release...]
 #
 subcommand_use() {
-	get_families "${modulepath_root}"
-	get_hierarchy_depth "${modulepath_root}"
-
+	if (( ${#FAMILIES[@]} == 0 )); then
+	        get_families "${modulepath_root}"
+		get_hierarchy_depth "${modulepath_root}"
+	fi
 	print_info() {
 		local f
 		local r
@@ -1302,6 +1299,7 @@ subcommand_search() {
 			--src )
 				src_prefix=$2
 				check_pmodules_directories "${src_prefix}"
+				
 				shift
 				;;
 			-\? | -h | -H | --help )
@@ -1329,9 +1327,10 @@ subcommand_search() {
 	fi
 
 	module_hierarchy_root="${src_prefix}/${PSI_MODULES_ROOT}"
-	get_families "${module_hierarchy_root}"
-	get_hierarchy_depth "${module_hierarchy_root}"
-
+	if (( ${#FAMILIES[@]} == 0 )) || [[ ${src_prefix} != ${PSI_PREFIX} ]]; then
+	        get_families "${module_hierarchy_root}"
+		get_hierarchy_depth "${module_hierarchy_root}"
+	fi
 	
 	for module in "${modules[@]}"; do
 		search "${module}"

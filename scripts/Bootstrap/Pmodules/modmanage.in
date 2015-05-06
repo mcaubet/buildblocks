@@ -9,6 +9,8 @@ declare -r libdir=$(cd "${bindir}/../lib" && pwd)
 
 source "${libdir}/libpmodules.bash"
 
+PATH="${bindir}:${PATH}"
+
 print_version() {
 	echo "
 Pmodules ${version} using Tcl Environment Modules @MODULES_VERSION@
@@ -47,7 +49,7 @@ declare sargs=()
 
 subcommand_help_init() {
 	echo "
-init [--src=<src>] [--user=<user>] <dst>
+init [--src=<src>] [--user=<user>] [--version=<version>] <dst>
                 Initialize a new minimal Pmodule environment in directory
                 <dst>. The <user> parameter must only be present if
                  ${prog} is executed as root.
@@ -116,7 +118,7 @@ get_releasefile_name() {
 # - sync modulefile
 # - sync release file
 #
-# $1: relative modulefile path
+# $1: relative modulefile path (something like: Tools/gnuplot/5.0.0)
 # $2: source prefix of Pmodule environment
 # $3: target prefix of Pmodule environment
 #
@@ -150,6 +152,15 @@ sync_module() {
 	if [[ -e "${src_releasefile}" ]]; then
 	        $DRY rsync --links --perms --recursive \
 		     "${src_releasefile}" "${target_releasefile}" || return $?
+	fi
+	if [[ -L "${src_modulefile}" ]]; then
+	        local canonical_fname=$(readlink -f "${src_modulefile}")
+		local src_template=$(dirname "${canonical_fname}")
+		local modulename=$(basename "${src_template}")
+		local target_template="${target_prefix}/${PSI_TEMPLATES_DIR}/${modulename}"
+		$DRY rsync  --links --perms --recursive --delete \
+		     "${src_template}/" \
+		     "${target_template}"
 	fi
 }
 
@@ -224,12 +235,16 @@ subcommand_init() {
 	done
 	(( ${#target_prefixes[@]} != 0 )) || die 1 "Error: no target directory specified!"
 
-	if [[ -n "${src}" ]]; then
-		[[ -d "${src}" ]] || die 1 "Error: ${src}: source directory does not exist!"
-		[[ -r "${src}/config/profile.bash" ]] || \
-		    die 1 "Error: ${src}: shell profile does not exist or is not readable!"
-		source "${src}/config/profile.bash"
+	# if source is not passed as argument, derive it from script name
+	if [[ -z "${src}" ]]; then
+	    src=$(cd "${bindir}/../../../.." && pwd) 
 	fi
+	[[ -d "${src}" ]] || \
+	    die 1 "Error: ${src}: source directory does not exist!"
+	[[ -r "${src}/config/profile.bash" ]] || \
+	    die 1 "Error: ${src}: shell profile does not exist or is not readable!"
+	source "${src}/config/profile.bash"
+
 	local -i euid=$(id -u)
 	if (( euid == 0 )); then
 	        [[ -n "${user}" ]] || \
@@ -260,7 +275,7 @@ environment at '${PSI_PREFIX}'
 			get_YN_answer "Do you really want to re-run the initialization? (y/N) " || \
 				      die 1 "Abort ..."
 		fi
-
+		force='yes'
 		echo "Creating target directory '${target_prefix}'..."
 		$DRY mkdir -p "${target_prefix}" || die 1 "Error: make directory failed!"
 		echo
@@ -274,7 +289,7 @@ environment at '${PSI_PREFIX}'
 		$DRY mkdir -p "${dst}"
 		echo
 
-		echo "Syncing Pmodules ..."
+		echo "Syncing Pmodules ${PMODULES_VERSION} from '${src_prefix}' to '${target_prefix}'..."
 		sync_module "Tools/Pmodules/${PMODULES_VERSION}" \
 			    "${src_prefix}" \
 			    "${target_prefix}" || die 1 "Error: sync Pmodules failed!"
@@ -282,7 +297,7 @@ environment at '${PSI_PREFIX}'
 
 		dst="${target_prefix}/${PSI_CONFIG_DIR}/environment.bash"
 		echo "Adding installation source '${src_prefix}' to '${dst}'..."
-		sed -i .bak '/PMODULES_INSTALL_SOURCE/d' "${dst}"
+		sed -i.bak '/PMODULES_INSTALL_SOURCE/d' "${dst}"
 		echo "declare -x PMODULES_INSTALL_SOURCE=\"${src_prefix}\"" >> "${dst}"
 		echo
 
@@ -366,7 +381,7 @@ subcommand_install() {
 				 "${with[@]/#/--with=}" \
 				 "${releases[@]/#/--release=}" \
 				 --no-header --print-modulefiles \
-				 --src="${src_prefix}" 2>&1)
+				 --src="${src_prefix}"  2>&1 1>/dev/null)
 	(( n == 0 )) && die 0 "Nothing to install..."
 	echo -e "The following modules will be installed/updated:\n" 1>&2
 	for key in "${!modules_to_install[@]}"; do
@@ -420,7 +435,8 @@ subcommand_sync() {
 				exit 1
 				;;
 			* )
-				[[ -n "${src_prefix}" ]] && die 1 "Error: Only one source is allowed!"
+				[[ -n "${src_prefix}" ]] && \
+				    die 1 "Error: Only one source is allowed!"
 				src_prefix="$1"
 				;;
 		esac
@@ -432,23 +448,29 @@ subcommand_sync() {
 		dst_prefix="${PSI_PREFIX}"
 	fi
 	(
-		PSI_PREFIX="${dst_prefix}" check_pmodules_env || die 1 "Error: invalid destination modules environment!"
+		PSI_PREFIX="${dst_prefix}" check_pmodules_env || \
+		    die 1 "Error: invalid destination modules environment!"
 	) || die 1 "Giving up..."
+	
 	: ${src_prefix:=${PMODULES_INSTALL_SOURCE}} 
 	if [[ -z "${src_prefix}" ]]; then
             die 1 "Error: no source module environment was specified!"
         fi
 	(
-		PSI_PREFIX="${src_prefix}" check_pmodules_env || die 1 "Error: invalid source modules environment!"
+		PSI_PREFIX="${src_prefix}" check_pmodules_env || \
+		    die 1 "Error: invalid source modules environment!"
 	) || die 1 "Giving up..."
-	[[ "$( cd "$src_prefix"; pwd -P )" == "$( cd "$dst_prefix"; pwd -P )" ]] && die 1 "Error: source and destination are equal!"
+	[[ "$( cd "$src_prefix"; pwd -P )" == "$( cd "$dst_prefix"; pwd -P )" ]] && \
+	    die 1 "Error: source and destination are equal!"
 	local modbin=${PMODULES_HOME#"${PSI_PREFIX}/"}/bin/modulecmd.tcl
 	local file_type_src=$( file -b "${src_prefix}/${modbin}" 2>&1 || echo err1 )
 	local file_type_dst=$( file -b "${dst_prefix}/${modbin}" 2>&1 || echo err2 )
-	[[ "${file_type_src}" == "${file_type_dst}" ]] || die 1 "Error: The file signatures in the source and destination installation do not match!"
+	[[ "${file_type_src}" == "${file_type_dst}" ]] || \
+	    die 1 "Error: The file signatures in the source and destination installation do not match!"
 	unset -v file_type_src file_type_dst
 	local dialog_script="${PMODULES_HOME}/bin/dialog.bash"
-	[[ -r "$dialog_script" ]] || die 1 "Error: Unable to find dialog script of installation $dialog_script";
+	[[ -r "$dialog_script" ]] || \
+	    die 1 "Error: Unable to find dialog script of installation $dialog_script";
 
 	DIALOG_LIB=1                # use dialog script as a library
 	source "$dialog_script"     # dialog functions
@@ -464,9 +486,11 @@ subcommand_sync() {
 		selected_modules+=( "${args[2]}${path}/${args[0]}" )
 	}
 
-	module_picker "${dst_prefix}" "${src_prefix}" || {      # this calls module_out for each selected module, filling up the selected_modules array
-            echo "Abort!"
-            exit 1
+	module_picker "${dst_prefix}" "${src_prefix}" || {
+		# this calls module_out for each selected module,
+		#filling up the selected_modules array
+		echo "Abort!"
+		exit 1
 	}
 
 	local -a destination_modules=( $(cd "${dst_prefix}/${PSI_MODULES_ROOT}"; find -L . -type f | while read f; do n=${f##*/}; [[ "${n:0:1}" == "." ]] || echo ${f#./}; done) )
