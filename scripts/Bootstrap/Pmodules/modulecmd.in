@@ -954,7 +954,7 @@ get_hierarchy_depth () {
 	{
 		cd "${module_hierarchy_root}"
 		for family in "${FAMILIES[@]}"; do
-			local  tmp=$(find "${family}" -depth -type f -o -type l | head -1)
+			local  tmp=$(find "${family}/" -depth -type f -o -type l | head -1)
 			local -a tmp2=( ${tmp//\// } )
 			local depth=${#tmp2[@]}
 			let depth-=3
