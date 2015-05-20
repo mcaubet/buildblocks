@@ -132,6 +132,7 @@ sync_module() {
 	local -r rel_module_prefix=$( get_module_prefix "${rel_modulefile}" )
 	local -r rel_releasefile=$( get_releasefile_name "${rel_modulefile}" )
 
+	# install/update module
 	if [[ ! -d "${target_prefix}/${rel_module_prefix}" ]] || [[ "${force}" == 'yes' ]]; then
 		$DRY mkdir -p "${target_prefix}/${rel_module_prefix}" || return $?
 		$DRY rsync --links --perms --recursive --delete \
@@ -143,18 +144,25 @@ sync_module() {
 	local -r target_modulefile="${target_prefix}/${PSI_MODULES_ROOT}/${rel_modulefile}"
 	local -r target_releasefile="${target_prefix}/${PSI_MODULES_ROOT}/${rel_releasefile}"
 
+	# create target directory for module- and release-file
 	if [[ -e "${src_modulefile}" ]] || [[ -e "${src_releasefile}" ]]; then
 	        local dir=$( dirname "${target_modulefile}" )
 		$DRY mkdir -p "${dir}" || return $?
 	fi
+
+	# copy modulefile
 	if [[ -e "${src_modulefile}" ]]; then
 	        $DRY rsync --links --perms --recursive \
 		     "${src_modulefile}" "${target_modulefile}" || return $?
 	fi
+
+	# copy release-file
 	if [[ -e "${src_releasefile}" ]]; then
 	        $DRY rsync --links --perms --recursive \
 		     "${src_releasefile}" "${target_releasefile}" || return $?
 	fi
+
+	# if modulefile is a sym-link, sync link target file
 	if [[ -L "${src_modulefile}" ]]; then
 	        local canonical_fname=$(readlink -f "${src_modulefile}")
 		local src_template=$(dirname "${canonical_fname}")
@@ -238,7 +246,7 @@ subcommand_init() {
 	done
 	(( ${#target_prefixes[@]} != 0 )) || die 1 "Error: no target directory specified!"
 
-	# if source is not passed as argument, derive it from script name
+	# if source directory is not passed as argument, derive it from script name
 	if [[ -z "${src}" ]]; then
 	    src=$(cd "${bindir}/../../../.." && pwd) 
 	fi
