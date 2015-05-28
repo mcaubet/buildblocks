@@ -670,6 +670,8 @@ function em.make_all() {
 			_write_runtime_dependencies
 			_write_build_dependencies
 		fi
+		[[ ${enable_cleanup_build} == yes ]] && em.cleanup_build
+		[[ ${enable_cleanup_src} == yes ]] && em.cleanup_src
 		
 	else
  		echo "Not rebuilding $P/$V ..."
@@ -677,7 +679,6 @@ function em.make_all() {
 	if [[ ${bootstrap} == 'no' ]]; then
 		_set_link
 	fi
-	[[ ${building} == yes ]] && em.cleanup_build
 	return 0
 }
 
@@ -688,6 +689,8 @@ force_rebuild='no'
 ENVIRONMENT_ARGS=''
 dry_run='no'
 bootstrap='no'
+enable_cleanup_build='yes'
+enable_cleanup_src='no'
 
 em.cleanup_env
 
@@ -719,6 +722,22 @@ while (( $# > 0 )); do
 		;;
 	-? | -h | --help )
 		usage
+		;;
+	--disable-cleanup )
+		enable_cleanup_build='no'
+		enable_cleanup_src='no'
+		;;
+	--enable-cleanup-build )
+		enable_cleanup_build='yes'
+		;;
+	--disable-cleanup-build )
+		enable_cleanup_build='no'
+		;;
+	--enable-cleanup-src )
+		enable_cleanup_src='yes'
+		;;
+	--disable-cleanup-src )
+		enable_cleanup_src='no'
 		;;
 	--dry-run )
 		dry_run='yes'
@@ -762,6 +781,7 @@ if [[ ${bootstrap} == no ]]; then
 fi
 
 P=$(basename $(dirname "${BUILDSCRIPT}"))
+P=${P%.*}
 _P=$(echo $P | tr [:lower:] [:upper:])
 _P=${_P//-/_}
 _V=${_P}_VERSION
