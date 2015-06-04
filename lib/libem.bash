@@ -33,7 +33,7 @@ declare -xr BUILD_VERSIONSFILE="${BUILD_CONFIGDIR}/versions.conf"
 
 declare -x  PREFIX=''
 declare -x  DOCDIR=''
-declare -x  MODULE_FAMILY=''
+declare -x  MODULE_GROUP=''
 declare	-x  MODULE_RELEASE=''
 declare     cur_module_release=''
 
@@ -125,14 +125,18 @@ function em.supported_os() {
 	die 0 "${P}: Not available for ${OS}."
 }
 
-function em.add_to_family() {
+function em.add_to_group() {
 	if [[ -z ${1} ]]; then
-		die 42 "${FUNCNAME}: Missing family argument."
+		die 42 "${FUNCNAME}: Missing group argument."
 	fi
-	if [[ ! -d ${PSI_PREFIX}/${PSI_TEMPLATES_DIR}/${1} ]]; then
-		die 43 "${1}: family does not exist."
+	if [[ ! -d ${PMODULES_ROOT}/${PMODULES_TEMPLATES_DIR}/${1} ]]; then
+		die 43 "${1}: group does not exist."
 	fi
-	MODULE_FAMILY=$1
+	MODULE_GROUP=$1
+}
+
+em.add_to_family() {
+	em.add_to_group "$@"
 }
 
 function em.set_build_dependencies() {
@@ -213,7 +217,8 @@ function _load_build_dependencies() {
 				die 1 "$m: oops: build failed..."
 			fi
 		fi
-		local modulepath_root="${PSI_PREFIX}/${PSI_MODULES_ROOT}"
+		# :FIXME: this doesn't work any more!
+		local modulepath_root="${PMODULES_ROOT}/${PMODULES_MODULEFILES_DIR}"
 		local tmp=$( module display "${m}" 2>&1 | grep -m1 -- "${modulepath_root}" )
 		tmp=${tmp/${modulepath_root}\/}
 		tmp=${tmp%%/*}
@@ -227,6 +232,8 @@ function _load_build_dependencies() {
 			# unstable and release not yet set
 			DEPEND_RELEASE='unstable'
 		fi
+
+		
 		echo "Loading module: ${m}"
 		module load "${m}"
 	done
@@ -340,8 +347,8 @@ function find_tarball() {
 
 #setup module specific environment
 function _setup_env2() {
-	if [[ -z ${MODULE_FAMILY} ]]; then
-		die 1 "$P: family not set."
+	if [[ -z ${MODULE_GROUP} ]]; then
+		die 1 "$P: group not set."
 	fi
 
 	# overwrite environment variables with values we got on the cmd line
@@ -363,7 +370,7 @@ function _setup_env2() {
 	# build module name
 	# :FIXME: the MODULE_PREFIX should be derived from MODULE_NAME
 	# :FIXME: this should be read from a configuration file
-	case ${MODULE_FAMILY} in
+	case ${MODULE_GROUP} in
 		Tools )
 			MODULE_RPREFIX="${P}/${V}"
 			MODULE_NAME="${P}/${V}"
@@ -428,12 +435,12 @@ function _setup_env2() {
 			MODULE_NAME+="${P}/${V}"
 			;;
 		* )
-			die 1 "$P: oops: unknown family: ${MODULE_FAMILY}"
+			die 1 "$P: oops: unknown group: ${MODULE_GROUP}"
 			;;
 	esac
 
 	# set PREFIX of module
-	PREFIX="${PSI_PREFIX}/${MODULE_FAMILY}/${MODULE_RPREFIX}"
+	PREFIX="${PMODULES_ROOT}/${MODULE_GROUP}/${MODULE_RPREFIX}"
 
 	# get module release if already installed
 	local saved_modulepath=${MODULEPATH}
@@ -493,8 +500,8 @@ function _setup_env2() {
 
 # redefine function for bootstrapping
 function _setup_env2_bootstrap() {
-	if [[ -z ${MODULE_FAMILY} ]]; then
-		die 1 "$P: family not set."
+	if [[ -z ${MODULE_GROUP} ]]; then
+		die 1 "$P: group not set."
 	fi
 
         if [[ -z $V ]]; then
@@ -507,10 +514,10 @@ function _setup_env2_bootstrap() {
 	fi
 	MODULE_SRCDIR="${BUILD_TMPDIR}/src/${P/_serial}-$V"
 	MODULE_BUILDDIR="${BUILD_TMPDIR}/build/$P-$V"
-	MODULE_FAMILY='Tools'
+	MODULE_GROUP='Tools'
 	MODULE_NAME="Pmodules/${PMODULES_VERSION}"
 	# set PREFIX of module
-	PREFIX="${PSI_PREFIX}/${MODULE_FAMILY}/${MODULE_NAME}"
+	PREFIX="${PMODULES_ROOT}/${MODULE_GROUP}/${MODULE_NAME}"
 	
 	MODULE_RELEASE='unstable'
 	info "${MODULE_NAME}: will be released as \"${MODULE_RELEASE}\""
@@ -571,8 +578,8 @@ function em.install_doc() {
 	install -m0444 "${MODULE_DOCFILES[@]/#/${MODULE_SRCDIR}/}" "${BUILDSCRIPT}" "${DOCDIR}"
 }
 
-function _set_link() {
-	local -r link_name="${PSI_PREFIX}/${PSI_MODULES_ROOT}/${MODULE_FAMILY}/${MODULE_NAME}"
+function _set_legacy_link() {
+	local -r link_name="${PMODULES_ROOT}/${PMODULES_MODULEFILES_DIR}/${MODULE_GROUP}/${MODULE_NAME}"
 	local -r dir_name=${link_name%/*}
 	local -r release_file="${dir_name}/.release-${MODULE_NAME##*/}"
 	if [[ ! -e "${_path}" ]]; then
@@ -581,9 +588,29 @@ function _set_link() {
 		    mkdir -p "${dir_name}"
 		    cd "${dir_name}"
 		    local x
-		    IFS='/' x=( ${dir_name/${PSI_PREFIX}\/${PSI_MODULES_ROOT}\/} )
+		    IFS='/' x=( ${dir_name/${PMODULES_ROOT}\/${PMODULES_MODULEFILES_DIR}\/} )
 		    local n=${#x[@]}
-		    local -r _target="../"$(eval printf "../%.s" {1..${n}})${PSI_TEMPLATES_DIR##*/}/"${MODULE_FAMILY}/${P}/modulefile"
+		    local -r _target="../"$(eval printf "../%.s" {1..${n}})${PMODULES_TEMPLATES_DIR##*/}/"${MODULE_GROUP}/${P}/modulefile"
+		    ln -fs "${_target}" "${MODULE_NAME##*/}"
+	    )
+	fi
+	info "${MODULE_NAME}: set release to '${MODULE_RELEASE}'"
+	echo "${MODULE_RELEASE}" > "${release_file}"
+}
+
+function _set_link() {
+	local -r link_name="${PMODULES_ROOT}/${MODULE_GROUP}/${PMODULES_MODULEFILES_DIR}/${MODULE_NAME}"
+	local -r dir_name=${link_name%/*}
+	local -r release_file="${dir_name}/.release-${MODULE_NAME##*/}"
+	if [[ ! -e "${_path}" ]]; then
+	    (
+		    info "Setting new sym-link \"${link_name}\" ..."
+		    mkdir -p "${dir_name}"
+		    cd "${dir_name}"
+		    local x
+		    IFS='/' x=( ${dir_name/${PMODULES_ROOT}\/${MODULE_GROUP}\/} )
+		    local n=${#x[@]}
+		    local -r _target="../"$(eval printf "../%.s" {1..${n}})${PMODULES_TEMPLATES_DIR##*/}/"${MODULE_GROUP}/${P}/modulefile"
 		    ln -fs "${_target}" "${MODULE_NAME##*/}"
 	    )
 	fi
@@ -677,6 +704,9 @@ function em.make_all() {
  		echo "Not rebuilding $P/$V ..."
 	fi
 	if [[ ${bootstrap} == 'no' ]]; then
+		if [[ -d "${PMODULES_ROOT}/${PMODULES_MODULEFILES_DIR}" ]]; then
+			_set_legacy_link
+		fi
 		_set_link
 	fi
 	return 0
@@ -765,7 +795,7 @@ fi
 
 # while bootstraping the module command is not yet available
 if [[ ${bootstrap} == no ]]; then
-        source	"${PSI_PREFIX}/${PSI_CONFIG_DIR}/profile.bash"
+        source	"${PMODULES_ROOT}/${PMODULES_CONFIG_DIR}/profile.bash"
 	MODULECMD="${PMODULES_HOME}/bin/modulecmd"
 	[[ -x ${MODULECMD} ]] || die 1 "${MODULECMD}: no such executable"
 	module use unstable
@@ -788,8 +818,8 @@ _V=${_P}_VERSION
 
 eval "${ENVIRONMENT_ARGS}"
 
-if [[ -n ${PSI_RELEASES} ]]; then
-        declare -r releases="${PSI_RELEASES}"
+if [[ -n ${PMODULES_DEFINED_RELEASES} ]]; then
+        declare -r releases="${PMODULES_DEFINED_RELEASES}"
 else
 	# set defaults, if file doesn't exist or isn't readable
 	declare -r releases=":unstable:stable:deprecated:"

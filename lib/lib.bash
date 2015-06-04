@@ -56,7 +56,7 @@ error() {
 }
 
 debug() {
-	[[ ${PSI_DEBUG} ]] || return 0
+	[[ ${PMODULES_DEBUG} ]] || return 0
 	log 2 "$@"
 }
 
