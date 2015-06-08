@@ -1028,7 +1028,7 @@ subcommand_use() {
 			# ...
 			# elif is directory
 			# ...
-			local modulfiles_dir="${PMODULES_ROOT}/${arg}/${PMODULES_MODULEFILES_DIR}"
+			local modulefiles_dir="${PMODULES_ROOT}/${arg}/${PMODULES_MODULEFILES_DIR}"
 			if [[ ${arg} == -a ]] || [[ ${arg} == --append ]]; then
 			        subcommand_switches='--append'
 			elif [[ ${arg} == -p ]] || [[ ${arg} == --prepend ]]; then
