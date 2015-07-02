@@ -2,7 +2,19 @@
 
 source "$(dirname $0)/../../../lib/libpmodules.bash"
 
+
 pmodules.configure() {
+	case ${COMPILER} in
+	gcc )
+		CC='gcc'
+		;;
+	intel )
+		CC='icc'
+		;;
+	* )
+		die 3 "Oops: unknown compiler: ${COMPILER}"
+		;;
+	esac
 	cat <<EOF > "${MODULE_SRCDIR}/make.inc"
 SHELL = /bin/sh
 PLAT = 
@@ -13,7 +25,7 @@ EOF
 	cat <<EOF > "${MODULE_SRCDIR}/Makefile.rule"
 VERSION = 0.2.9
 TARGET = CORE2
-CC = gcc
+CC = ${CC}
 BINARY=64
 USE_THREAD = 0
 USE_OPENMP = 0
@@ -44,6 +56,6 @@ pmodules.add_to_group 'Compiler'
 pmodules.set_runtime_dependencies "${COMPILER}"
 pmodules.set_build_dependencies "${COMPILER}"
 pmodules.set_docfiles 'LICENSE' 'README.md'
-pmodules.set_supported_compilers 'gcc'
+pmodules.set_supported_compilers 'gcc' 'intel'
 pmodules.make_all
 pmodules.cleanup_src
