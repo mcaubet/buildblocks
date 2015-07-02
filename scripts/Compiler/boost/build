@@ -3,7 +3,9 @@
 source "$(dirname $0)/../../../lib/libpmodules.bash"
 
 # :TODO: detect compiler
-TOOLSET=gcc
+TOOLSET=intel-linux
+
+BOOST_BUILD_PATH="${MODULE_BUILDDIR}"
 
 pmodules.configure() {
 	cd "${MODULE_SRCDIR}"
@@ -11,6 +13,7 @@ pmodules.configure() {
 		--prefix="${PREFIX}" \
 		--with-libraries=all \
 		--with-python-root="${PYTHON_PREFIX}" \
+		-with-toolset=${TOOLSET} \
 		|| exit 1
 }
 
