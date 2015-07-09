@@ -4,11 +4,14 @@ declare -r BASE_DIR=$(cd "$(dirname $0)/../.." && pwd)
 declare -r BOOTSTRAP_DIR="${BASE_DIR}/scripts/Bootstrap"
 declare -r SRC_DIR="${BOOTSTRAP_DIR}/Pmodules"
 
-source "${BOOTSTRAP_DIR}/Pmodules_version.conf"
+source "${BASE_DIR}/lib/lib.bash"
+
+read_versions "${BOOTSTRAP_DIR}/Pmodules_version.conf"
 
 unset PMODULES_HOME
 source "/opt/psi/config/environment.bash"
 
+echo "Installing to ${PMODULES_HOME} ..."
 sed_cmd="s:@PMODULES_HOME@:${PMODULES_HOME}:g;"
 sed_cmd+="s:@PMODULES_VERSION@:${PMODULES_VERSION}:g;"
 sed_cmd+="s:@MODULES_VERSION@:${MODULES_VERSION}:g"
