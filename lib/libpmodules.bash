@@ -845,7 +845,7 @@ if [[ ${bootstrap} == no ]]; then
 		fi
 	done
 else
-	source "${BUILD_BASEDIR}/scripts/Bootstrap/Pmodules_version.conf"
+	read_versions "${BUILD_BASEDIR}/scripts/Bootstrap/Pmodules_version.conf"
 	unset PMODULES_HOME
 	source "/opt/psi/config/environment.bash"
 fi
