@@ -1,4 +1,4 @@
-#!@PMODULES_HOME@/bin/bash --noprofile --norc
+#!@PMODULES_HOME@/bin/bash --noprofile
 #
 
 #set -o nounset
