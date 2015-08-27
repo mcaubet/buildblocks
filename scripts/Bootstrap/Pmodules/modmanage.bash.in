@@ -21,7 +21,7 @@ _exit () {
 }
 
 _err () {
-	info "Got an error in function '${FUNCNAME[1]}', line ${BASH_LINENO[0]}"
+	info "Oops: got an error in function '${FUNCNAME[1]}', line ${BASH_LINENO[0]}"
 	die 1 "Aborting ..."
 }
 
@@ -60,7 +60,6 @@ Available SubCommands and Args:
                 Synchronize modules.
 "
 }
-
 
 declare force='no'
 declare dry_run='no'
@@ -347,10 +346,57 @@ subcommand_install() {
 	local -r target_prefix="${PMODULES_ROOT}"
 	local    rel_modulefile=''
 	local -A modules_to_install
-
+	local -A _modules_to_group
+	local -A _hierarchy_nodes
+	while read output; do
+		local _group=${output%/modulefiles/*}
+		local _abs_modulename="${output#*/modulefiles/}"
+		_modules_to_group[${_abs_modulename}]=${_group}
+		IFS='/'
+		local -a _items=(${_abs_modulename})
+		IFS=${_saved_IFS}
+		local -i _n=${#_items[*]}
+		if (( _n >= 4 )); then
+		    local _key=$( IFS='/'; echo "${_items[*]:$_n-4:2}" )
+		    _hierarchy_nodes[$_key]=${_group}
+		fi
+	done < <({ cd "${src_prefix}" && find */modulefiles -type l -o -type f  \! -name ".*"; } )
+	
+	resolve_dependencies_of_module () {
+	 	local -r __rel_modulefile=$1
+		# :FIXME: This must be initialized with all "root" groups
+		local -a __modulepath=("${src_prefix}/Tools/modulefiles" "${src_prefix}/Programming/modulefiles")
+	 	IFS='/'
+	 	local -a _items=(${__rel_modulefile})
+	 	IFS=${_saved_IFS}
+		local -i _n=${#_items[@]}
+		local -i _i
+		local _prefix="${src_prefix}/${_items[0]}"
+		for (( _i = _n-2; _i >= 2; _i-=2 )); do
+			_prefix+="/${_items[$_i]}/${_items[_i+1]}"
+		done
+		local __dep
+		while read __dep; do
+			[[ -z ${__dep} ]] && continue
+			local __long_module_name=$(find "${__modulepath[@]}" -path "*/${__dep}" | head -n 1 )
+			__long_module_name=${__long_module_name/${src_prefix}\/}
+			modules_to_install[${__long_module_name/}]='.'
+			if [[ -n ${_hierarchy_nodes[${__dep}]} ]]; then
+				local __path="${src_prefix}/${_hierarchy_nodes[${__dep}]}/modulefiles/"
+				__path+="${__long_module_name/*\/modulefiles\/}"
+				__modulepath+=( "${__path}" )
+			fi
+		done < "${_prefix}/.dependencies"
+	}
+	
 	resolve_dependencies () {
-		for rel_modulefile in "${!modules_to_install[@]}"; do
-			:
+		local _saved_IFS=${IFS}; 
+
+		# a relative modulefile is something like:
+		#     MPI/modulefiles/gcc/4.8.4/openmpi/1.8.4/hdf5/1.8.14
+		local _rel_modulefile
+		for _rel_modulefile in "${!modules_to_install[@]}"; do
+			resolve_dependencies_of_module "${_rel_modulefile}"
 		done
 	}
 
