@@ -1,8 +1,8 @@
-#!/bin/bash
+#!/usr/bin/env pbuild
 
-source "$(dirname $0)/../../../lib/libpmodules.bash"
+export NO_APPLE_COMMON_CRYPTO=1
 
-pmodules.configure() {
+pbuild::configure() {
 	cd "${MODULE_SRCDIR}"
 	"${MODULE_SRCDIR}"/configure \
 		--prefix="${PREFIX}" \
@@ -10,15 +10,20 @@ pmodules.configure() {
 		|| exit 1
 }
 
-pmodules.build() {
+pbuild::build() {
         cd "${MODULE_SRCDIR}"
         make
 }
 
-pmodules.add_to_group 'Tools'
-pmodules.set_runtime_dependencies 'Tcl' 'Tk'
-pmodules.set_docfiles 'COPYING' 'README'
-pmodules.make_all
+pbuild::install() {
+        cd "${MODULE_SRCDIR}"
+        make install
+}
+
+pbuild::add_to_group 'Tools'
+pbuild::set_runtime_dependencies 'Tcl' 'Tk'
+pbuild::set_docfiles 'COPYING' 'README'
+pbuild::make_all
 
 # Local Variables:
 # mode: sh
