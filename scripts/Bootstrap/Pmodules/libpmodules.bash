@@ -5,33 +5,63 @@ if [[  -z ${bindir} ]]; then
 	bindir=$(cd "${bindir}"/.. && pwd)"/bin"
 fi
 
-log() {
+pmodules::get_options() {
+	"${bindir}/getopt" "$@"
+}
+
+pmodules::check_env_vars() {
+	[[ -n "${PMODULES_ROOT}" ]] &&
+	    [[ -n "${PMODULES_CONFIG_DIR}" ]] &&
+	    [[ -n "${PMODULES_TEMPLATES_DIR}" ]] &&
+	    [[ -n "${PMODULES_HOME}" ]] &&
+	    [[ -n "${PMODULES_VERSION}" ]] || std::die 1 "
+Error: the module environment you are going to use as source has not been
+initialized properly!"
+}
+
+pmodules::check_directories() {
+	local -r src_prefix="$1"
+
+	[[ -d "${src_prefix}" ]] &&
+	    [[ -d "${src_prefix}/${PMODULES_CONFIG_DIR}" ]] &&
+	    [[ -d "${src_prefix}/${PMODULES_TEMPLATES_DIR}" ]] &&
+	    [[ -d "${src_prefix}/Tools/Pmodules/${PMODULES_VERSION}" ]] || std::die 1 "
+Error: the module environment '${src_prefix}' has not been initialized properly!"
+}
+
+pmodules::check_env() {
+	pmodules::check_env_vars
+	pmodules::check_directories "${PMODULES_ROOT}"
+}
+
+
+std::log() {
         local -ri fd=$1
         local -r fmt="$2\n"
         shift 2
         printf -- "$fmt" "$@" 1>&$fd
 }
 
-info() {
-        log 2 "$1" "${@:2}"
+std::info() {
+        std::log 2 "$1" "${@:2}"
 }
 
-error() {
-        log 2 "$1" "${@:2}"
+std::error() {
+        std::log 2 "$1" "${@:2}"
 }
 
-debug() {
+std::debug() {
         [[ ${PMODULES_DEBUG} ]] || return 0
-        log 2 "$@"
+        std::log 2 "$@"
 }
 
-die() {
+std::die() {
         local -ri ec=$1
         shift
         if [[ -n $@ ]]; then
                 local -r fmt=$1
                 shift
-                log 2 "$fmt" "$@"
+                std::log 2 "$fmt" "$@"
         fi
         exit $ec
 }
@@ -41,7 +71,7 @@ die() {
 #
 # $1: prompt
 #
-get_YN_answer() {
+std::get_YN_answer() {
 	local -r prompt="$1"
 	local ans
 	read -p "${prompt}" ans
@@ -56,7 +86,7 @@ get_YN_answer() {
 #
 # return normalized abolute pathname
 # $1: filename
-get_abspath() {
+std::get_abspath() {
 	local -r fname=$1
 	[[ -r "${fname}" ]] || return 1
 	if [[ -d ${fname} ]]; then
@@ -67,36 +97,7 @@ get_abspath() {
 	fi
 }
 
-get_options() {
-	"${bindir}/getopt" "$@"
-}
-
-check_pmodules_env_vars() {
-	[[ -n "${PMODULES_ROOT}" ]] &&
-	    [[ -n "${PMODULES_CONFIG_DIR}" ]] &&
-	    [[ -n "${PMODULES_TEMPLATES_DIR}" ]] &&
-	    [[ -n "${PMODULES_HOME}" ]] &&
-	    [[ -n "${PMODULES_VERSION}" ]] || die 1 "
-Error: the module environment you are going to use as source has not been
-initialized properly!"
-}
-
-check_pmodules_directories() {
-	local -r src_prefix="$1"
-
-	[[ -d "${src_prefix}" ]] &&
-	    [[ -d "${src_prefix}/${PMODULES_CONFIG_DIR}" ]] &&
-	    [[ -d "${src_prefix}/${PMODULES_TEMPLATES_DIR}" ]] &&
-	    [[ -d "${src_prefix}/Tools/Pmodules/${PMODULES_VERSION}" ]] || die 1 "
-Error: the module environment '${src_prefix}' has not been initialized properly!"
-}
-
-check_pmodules_env() {
-	check_pmodules_env_vars
-	check_pmodules_directories "${PMODULES_ROOT}"
-}
-
-append_path () {
+std::append_path () {
         local -r P=$1
         local -r d=$2
 
@@ -109,7 +110,7 @@ append_path () {
         fi
 }
 
-prepend_path () {
+std::prepend_path () {
         local -r P=$1
         local -r d=$2
 
@@ -122,7 +123,7 @@ prepend_path () {
         fi
 }
 
-remove_path() {
+std::remove_path() {
         local -r P=$1
         local -r d=$2
 	local new_path=''
@@ -135,6 +136,19 @@ remove_path() {
 	eval ${P}="${new_path:1}"
 }
 
+#
+# split file name
+#
+std::split_fname() {
+        local -r savedIFS="${IFS}"
+        IFS='/'
+        local std__split_fname_result__=( $(echo "${@: -1}") )
+        IFS=${savedIFS}
+        eval $1=\(\"\${std__split_fname_result__[@]}\"\)
+	if (( $# >= 3 )); then
+	        eval $2=${#std__split_fname_result__[@]}
+	fi
+}
 
 # Local Variables:
 # mode: sh
