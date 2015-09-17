@@ -12,8 +12,8 @@ case ${OS} in
 Darwin )
 	pmodules.pre_configure() {
 		# for the time being: on Mac OS X we need GL/gl.h from MacPorts:
-		append_path C_INLCUDE_PATH '/opt/local/include'
-		append_path CPLUS_INCLUDE_PATH '/opt/local/include'
+		std::append_path C_INLCUDE_PATH '/opt/local/include'
+		std::append_path CPLUS_INCLUDE_PATH '/opt/local/include'
 	}
 	;;
 esac
