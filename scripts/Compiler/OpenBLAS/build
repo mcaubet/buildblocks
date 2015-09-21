@@ -1,9 +1,6 @@
-#!/bin/bash
+#!/usr/bin/env modbuild
 
-source "$(dirname $0)/../../../lib/libpmodules.bash"
-
-
-pmodules.configure() {
+pbuild::configure() {
 	case ${COMPILER} in
 	gcc )
 		CC='gcc'
@@ -37,12 +34,12 @@ COMMON_PROF = -pg
 EOF
 }
 
-pmodules.build() {
+pbuild::build() {
 	cd "${MODULE_SRCDIR}"
 	make
 }
 
-pmodules.install() {
+pbuild::install() {
 	make PREFIX="${PREFIX}" install
 	# We have to build shared libs and remove them here.
 	# Building with NOSHARED gives an error during install -
@@ -52,10 +49,10 @@ pmodules.install() {
 	#( cd "${PREFIX}/lib"; ln -fs
 }
 
-pmodules.add_to_group 'Compiler'
-pmodules.set_runtime_dependencies "${COMPILER}"
-pmodules.set_build_dependencies "${COMPILER}"
-pmodules.set_docfiles 'LICENSE' 'README.md'
-pmodules.set_supported_compilers 'gcc' 'intel'
-pmodules.make_all
-pmodules.cleanup_src
+pbuild::add_to_group 'Compiler'
+pbuild::set_runtime_dependencies "${COMPILER}"
+pbuild::set_build_dependencies "${COMPILER}"
+pbuild::set_docfiles 'LICENSE' 'README.md'
+pbuild::set_supported_compilers 'gcc' 'intel'
+pbuild::make_all
+pbuild::cleanup_src

@@ -1,19 +1,17 @@
-#!/bin/bash
+#!/usr/bin/env modbuild
 
-source "$(dirname $0)/../../../lib/libpmodules.bash"
-
-pmodules.configure() {
+pbuild::configure() {
 	:
 }
 
-pmodules.build() {
+pbuild::build() {
 	:
 }
 
-pmodules.install() {
+pbuild::install() {
 	cd "${MODULE_SRCDIR}"
 	rsync --exclude=".info" --delete --verbose --archive . "${PREFIX}"
 }
 
-pmodules.add_to_group 'Programming'
-pmodules.make_all
+pbuild::add_to_group 'Programming'
+pbuild::make_all

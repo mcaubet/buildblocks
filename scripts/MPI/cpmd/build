@@ -1,19 +1,17 @@
-#!/bin/bash
+#!/usr/bin/env modbuild
 
-source "$(dirname $0)/../../../lib/libpmodules.bash"
-
-pmodules.configure() {
+pbuild::configure() {
 	cp "${BUILDSCRIPT_DIR}/Makefile" "${MODULE_BUILDDIR}"		|| exit 1
 	cp "${MODULE_SRCDIR}/irat.inc" "${MODULE_BUILDDIR}"	|| exit 1
 }
 
-pmodules.install() {
+pbuild::install() {
 	mkdir -p "${PREFIX}/bin"
 	cp "${MODULE_BUILDDIR}/cpmd.x" "${PREFIX}/bin"
 }
 
-pmodules.add_to_group 'MPI'
-pmodules.set_runtime_dependencies "${COMPILER}" "${MPI}"
-pmodules.set_build_dependencies "${COMPILER}" "${MPI}"
-pmodules.make_all
+pbuild::add_to_group 'MPI'
+pbuild::set_runtime_dependencies "${COMPILER}" "${MPI}"
+pbuild::set_build_dependencies "${COMPILER}" "${MPI}"
+pbuild::make_all
 

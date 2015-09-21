@@ -1,12 +1,10 @@
-#!/bin/bash
+#!/usr/bin/env modbuild
 
-source "$(dirname $0)/../../../lib/libpmodules.bash"
-
-pmodules.pre_configure() {
+pbuild::pre_configure() {
 	./autogen.sh
 }
 
-pmodules.configure() {
+pbuild::configure() {
 	CC=$MPICC
 	CXX=$MPICXX
 	F77=$MPIF77
@@ -23,20 +21,20 @@ pmodules.configure() {
 		|| exit 1
 }
 
-pmodules.build() {
+pbuild::build() {
 	make -C src
 	make -C tools 
 }
 
-pmodules.install() {
+pbuild::install() {
 	make -C src install
 	make -C tools install
 }
 
 
-pmodules.add_to_group 'HDF5'
-pmodules.set_runtime_dependencies "${COMPILER}" "${MPI}" 'hdf5'
-pmodules.set_build_dependencies   "autoconf" "automake" "libtool" "${COMPILER}" "${MPI}" "hdf5"
-pmodules.set_docfiles 'AUTHORS' 'COPYING'
-pmodules.make_all
+pbuild::add_to_group 'HDF5'
+pbuild::set_runtime_dependencies "${COMPILER}" "${MPI}" 'hdf5'
+pbuild::set_build_dependencies   "autoconf" "automake" "libtool" "${COMPILER}" "${MPI}" "hdf5"
+pbuild::set_docfiles 'AUTHORS' 'COPYING'
+pbuild::make_all
 

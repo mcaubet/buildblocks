@@ -1,8 +1,6 @@
-#!/bin/bash
+#!/usr/bin/env modbuild
 
-source "$(dirname $0)/../../../lib/libpmodules.bash"
-
-pmodules.configure() {
+pbuild::configure() {
 	unset F90
 	"${MODULE_SRCDIR}"/configure \
 		--prefix="${PREFIX}" \
@@ -12,8 +10,8 @@ pmodules.configure() {
 }
 
 
-pmodules.add_to_group 'Compiler'
-pmodules.set_runtime_dependencies "${COMPILER}"
-pmodules.set_build_dependencies "${COMPILER}"
-pmodules.set_docfiles 'COPYRIGHT' 'README'
-pmodules.make_all
+pbuild::add_to_group 'Compiler'
+pbuild::set_runtime_dependencies "${COMPILER}"
+pbuild::set_build_dependencies "${COMPILER}"
+pbuild::set_docfiles 'COPYRIGHT' 'README'
+pbuild::make_all

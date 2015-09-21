@@ -1,8 +1,6 @@
-#!/bin/bash
+#!/usr/bin/env modbuild
 
-source "$(dirname $0)/../../../lib/libpmodules.bash"
-
-pmodules.configure() {
+pbuild::configure() {
 	"${MODULE_SRCDIR}"/configure \
 		--prefix="${PREFIX}" \
 		|| exit 1
@@ -11,8 +9,8 @@ pmodules.configure() {
 # use system gcc to compile
 declare -rx CC=gcc
 
-pmodules.add_to_group 'Programming'
-pmodules.set_docfiles \
+pbuild::add_to_group 'Programming'
+pbuild::set_docfiles \
 	AUTHORS \
 	COPYING \
 	ChangeLog \
@@ -20,8 +18,8 @@ pmodules.set_docfiles \
 	NEWS \
 	README \
 	THANKS
-pmodules.set_build_dependencies 'm4' 'autoconf'
-pmodules.make_all
+pbuild::set_build_dependencies 'm4' 'autoconf'
+pbuild::make_all
 
 # Local Variables:
 # mode: sh

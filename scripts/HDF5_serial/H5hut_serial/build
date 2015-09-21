@@ -1,8 +1,6 @@
-#!/bin/bash
+#!/usr/bin/env modbuild
 
-source "$(dirname $0)/../../../lib/libpmodules.bash"
-
-pmodules.configure() {
+pbuild::configure() {
 	(cd "${MODULE_SRCDIR}" && ./autogen.sh)
 	"${MODULE_SRCDIR}"/configure \
 		--prefix="${PREFIX}" \
@@ -13,18 +11,18 @@ pmodules.configure() {
 		|| exit 1
 }
 
-pmodules.build() {
+pbuild::build() {
 	make -C src
 	make -C tools 
 }
 
-pmodules.install() {
+pbuild::install() {
 	make -C src install
 	make -C tools install
 }
 
-pmodules.add_to_group 'HDF5_serial'
-pmodules.set_runtime_dependencies "${COMPILER}" 'hdf5_serial'
-pmodules.set_build_dependencies   "autoconf" "automake" "libtool" "${COMPILER}" "vtk" "hdf5_serial"
-pmodules.make_all
+pbuild::add_to_group 'HDF5_serial'
+pbuild::set_runtime_dependencies "${COMPILER}" 'hdf5_serial'
+pbuild::set_build_dependencies   "autoconf" "automake" "libtool" "${COMPILER}" "vtk" "hdf5_serial"
+pbuild::make_all
 

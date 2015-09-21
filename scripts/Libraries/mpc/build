@@ -1,8 +1,6 @@
-#!/bin/bash
+#!/usr/bin/env modbuild
 
-source "$(dirname $0)/../../../lib/libpmodules.bash"
-
-pmodules.configure() {
+pbuild::configure() {
 	"${MODULE_SRCDIR}"/configure \
 		--prefix="${PREFIX}" \
 		--with-gmp=$GMP_PREFIX \
@@ -15,7 +13,7 @@ pmodules.configure() {
 declare -rx CC=gcc
 
 module use 'Libraries'
-pmodules.add_to_group 'Libraries'
-pmodules.set_build_dependencies 'gmp' 'mpfr'
-pmodules.make_all
+pbuild::add_to_group 'Libraries'
+pbuild::set_build_dependencies 'gmp' 'mpfr'
+pbuild::make_all
 

@@ -1,8 +1,6 @@
-#!/bin/bash
+#!/usr/bin/env modbuild
 
-source "$(dirname $0)/../../../lib/libpmodules.bash"
-
-pmodules.configure() {
+pbuild::configure() {
 	cat <<EOF > "${MODULE_SRCDIR}/make.inc"
 PLAT		= 
 SuperLUroot 	= \${PREFIX}
@@ -28,21 +26,21 @@ CDEFS        = -DAdd_
 EOF
 }
 
-pmodules.build() {
+pbuild::build() {
 	cd "${MODULE_SRCDIR}"
 	mkdir -p "${PREFIX}/lib"
 	make
 }
 
-pmodules.install() {
+pbuild::install() {
 	make install
 	mkdir -p "${PREFIX}/include"
 	install -m 0444 "${MODULE_SRCDIR}"/SRC/*.h "${PREFIX}/include"
 }
 
-pmodules.add_to_group 'Compiler'
-pmodules.set_runtime_dependencies "${COMPILER}"
-pmodules.set_build_dependencies "${COMPILER}" 'OpenBLAS'
-pmodules.set_docfiles 'README'
-pmodules.make_all
-pmodules.cleanup_src
+pbuild::add_to_group 'Compiler'
+pbuild::set_runtime_dependencies "${COMPILER}"
+pbuild::set_build_dependencies "${COMPILER}" 'OpenBLAS'
+pbuild::set_docfiles 'README'
+pbuild::make_all
+pbuild::cleanup_src

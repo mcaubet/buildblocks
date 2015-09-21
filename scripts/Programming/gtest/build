@@ -1,9 +1,7 @@
-#!/bin/bash
+#!/usr/bin/env modbuild
 
-source "$(dirname $0)/../../../lib/libpmodules.bash"
-
-pmodules.add_to_group 'Programming'
-pmodules.set_runtime_dependencies ""
-pmodules.set_build_dependencies   "${COMPILER}"
-pmodules.make_all
+pbuild::add_to_group 'Programming'
+pbuild::set_runtime_dependencies ""
+pbuild::set_build_dependencies   "${COMPILER}"
+pbuild::make_all
 

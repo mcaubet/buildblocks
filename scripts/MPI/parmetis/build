@@ -1,8 +1,6 @@
-#!/bin/bash
+#!/usr/bin/env modbuild
 
-source "$(dirname $0)/../../../lib/libpmodules.bash"
-
-pmodules.configure() {
+pbuild::configure() {
 	CC=$MPICC
 	CXX=$MPICXX
 	F77=$MPIF77
@@ -11,7 +9,7 @@ pmodules.configure() {
 	FORTRAN=$MPIFORTRAN
 }
 
-pmodules.build() {
+pbuild::build() {
 	local -ri MAJOR_VERSION=${V%%.*}
 	if (( MAJOR_VERSION == 3 )) ; then
 		cd "${MODULE_SRCDIR}"
@@ -39,15 +37,15 @@ pmodules.build() {
 	fi
 }
 
-pmodules.install() {
+pbuild::install() {
 	:
 }
 
 
-pmodules.add_to_group 'MPI'
-pmodules.set_runtime_dependencies "${COMPILER}" "${MPI}"
-pmodules.set_build_dependencies "${COMPILER}" "${MPI}"
-pmodules.set_docfiles 'CHANGES' 'INSTALL' 'LICENSE.txt' 'README' 'VERSION' 
-pmodules.make_all
-pmodules.cleanup_src
+pbuild::add_to_group 'MPI'
+pbuild::set_runtime_dependencies "${COMPILER}" "${MPI}"
+pbuild::set_build_dependencies "${COMPILER}" "${MPI}"
+pbuild::set_docfiles 'CHANGES' 'INSTALL' 'LICENSE.txt' 'README' 'VERSION' 
+pbuild::make_all
+pbuild::cleanup_src
 

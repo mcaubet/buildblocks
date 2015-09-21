@@ -1,8 +1,6 @@
-#!/bin/bash
+#!/usr/bin/env modbuild
 
-source "$(dirname $0)/../../../lib/libpmodules.bash"
-
-pmodules.configure() {
+pbuild::configure() {
 	"${MODULE_SRCDIR}"/configure \
 		--prefix="${PREFIX}" \
 		--disable-shared \
@@ -13,6 +11,6 @@ pmodules.configure() {
 declare -rx CC=gcc
 declare -rx CPP=/usr/bin/cpp
 
-pmodules.add_to_group 'Libraries'
-pmodules.make_all
+pbuild::add_to_group 'Libraries'
+pbuild::make_all
 

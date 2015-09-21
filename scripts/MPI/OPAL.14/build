@@ -1,14 +1,11 @@
-#!/bin/bash
+#!/usr/bin/env modbuild
 
 P='OPAL'
-
-source "$(dirname $0)/../../../lib/libpmodules.bash"
-
 
 module use unstable
 
 # add -fopenmp to CC and CXX, if you want to compile with OpenMP
-pmodules.configure() {
+pbuild::configure() {
 	cmake \
 		-DCMAKE_INSTALL_PREFIX="${PREFIX}" \
 		-DCMAKE_BUILD_TYPE=RELEASE \
@@ -16,9 +13,9 @@ pmodules.configure() {
 		"${MODULE_SRCDIR}"
 }
 
-pmodules.add_to_group 'MPI'
-pmodules.set_runtime_dependencies "${COMPILER}" "${MPI}"
-pmodules.set_build_dependencies 'cmake' "${COMPILER}" "${MPI}" 'boost' 'hdf5' 'H5hut' 'trilinos' 'gsl'
-pmodules.set_supported_compilers 'gcc/4.7' 'gcc/4.8'
-pmodules.make_all
+pbuild::add_to_group 'MPI'
+pbuild::set_runtime_dependencies "${COMPILER}" "${MPI}"
+pbuild::set_build_dependencies 'cmake' "${COMPILER}" "${MPI}" 'boost' 'hdf5' 'H5hut' 'trilinos' 'gsl'
+pbuild::set_supported_compilers 'gcc/4.7' 'gcc/4.8'
+pbuild::make_all
 

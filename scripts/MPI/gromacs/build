@@ -1,8 +1,6 @@
-#!/bin/bash
+#!/usr/bin/env modbuild
 
-source "$(dirname $0)/../../../lib/libpmodules.bash"
-
-pmodules.configure() {
+pbuild::configure() {
 	cmake \
 		-DCMAKE_INSTALL_PREFIX="${PREFIX}" \
 		-DCMAKE_BUILD_TYPE=RELEASE \
@@ -14,12 +12,12 @@ pmodules.configure() {
 }
 
 
-pmodules.add_to_group 'MPI'
-pmodules.set_runtime_dependencies "${COMPILER}" "${MPI}"
-pmodules.set_build_dependencies "${COMPILER}" "${MPI}" cmake
-pmodules.set_docfiles \
+pbuild::add_to_group 'MPI'
+pbuild::set_runtime_dependencies "${COMPILER}" "${MPI}"
+pbuild::set_build_dependencies "${COMPILER}" "${MPI}" cmake
+pbuild::set_docfiles \
 		AUTHORS \
 		COPYING \
 		README
-pmodules.make_all
+pbuild::make_all
 

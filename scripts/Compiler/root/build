@@ -1,6 +1,4 @@
-#!/bin/bash
-
-source "$(dirname $0)/../../../lib/libpmodules.bash"
+#!/usr/bin/env modbuild
 
 case ${OS} in
 Darwin )
@@ -12,7 +10,7 @@ Darwin )
 	;;
 esac
 
-pmodules.configure() {
+pbuild::configure() {
 	"${MODULE_SRCDIR}"/configure \
 		--disable-ldap \
 		--disable-mysql \
@@ -27,11 +25,11 @@ pmodules.configure() {
 		|| exit 1
 }
 
-pmodules.build() {
+pbuild::build() {
 	make -j 4
 }
 
-pmodules.install() {
+pbuild::install() {
 	make clean
 
 	rm -f  Makefile
@@ -66,7 +64,7 @@ pmodules.install() {
 	mv "${PREFIX}/README"  "${DOCDIR}"
 }
 
-pmodules.add_to_group 'Compiler'
-pmodules.set_runtime_dependencies "${COMPILER}"
-pmodules.set_build_dependencies "${COMPILER}"
-pmodules.make_all
+pbuild::add_to_group 'Compiler'
+pbuild::set_runtime_dependencies "${COMPILER}"
+pbuild::set_build_dependencies "${COMPILER}"
+pbuild::make_all

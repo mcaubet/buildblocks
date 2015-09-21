@@ -1,10 +1,8 @@
-#!/bin/bash
-
-source "$(dirname $0)/../../../lib/libpmodules.bash"
+#!/usr/bin/env modbuild
 
 declare -rx AR=ar
 
-pmodules.configure() {
+pbuild::configure() {
 	BLAS_PREFIX=$OPENBLAS_PREFIX
 	LAPACK_PREFIX=$OPENBLAS_PREFIX
 
@@ -64,9 +62,9 @@ pmodules.configure() {
            "${MODULE_SRCDIR}" || exit 1
 }
 
-pmodules.add_to_group 'MPI'
-pmodules.set_runtime_dependencies "${COMPILER}" "${MPI}" 'OpenBLAS' 'parmetis'
-pmodules.set_build_dependencies 'cmake' "${COMPILER}" "${MPI}" 'OpenBLAS' 'parmetis'
-pmodules.set_docfiles Copyright.txt LICENSE README RELEASE_NOTES
-pmodules.make_all
+pbuild::add_to_group 'MPI'
+pbuild::set_runtime_dependencies "${COMPILER}" "${MPI}" 'OpenBLAS' 'parmetis'
+pbuild::set_build_dependencies 'cmake' "${COMPILER}" "${MPI}" 'OpenBLAS' 'parmetis'
+pbuild::set_docfiles Copyright.txt LICENSE README RELEASE_NOTES
+pbuild::make_all
 

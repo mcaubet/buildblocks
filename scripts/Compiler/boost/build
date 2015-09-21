@@ -1,13 +1,11 @@
-#!/bin/bash
-
-source "$(dirname $0)/../../../lib/libpmodules.bash"
+#!/usr/bin/env modbuild
 
 # :TODO: detect compiler
 TOOLSET=intel-linux
 
 BOOST_BUILD_PATH="${MODULE_BUILDDIR}"
 
-pmodules.configure() {
+pbuild::configure() {
 	cd "${MODULE_SRCDIR}"
 	"${MODULE_SRCDIR}"/bootstrap.sh \
 		--prefix="${PREFIX}" \
@@ -17,7 +15,7 @@ pmodules.configure() {
 		|| exit 1
 }
 
-pmodules.build() {
+pbuild::build() {
 	cd "${MODULE_SRCDIR}"
 	./b2 \
 		--build-type=minimal \
@@ -30,7 +28,7 @@ pmodules.build() {
 		stage
 }
 
-pmodules.install() {
+pbuild::install() {
 	cd "${MODULE_SRCDIR}"
 	./b2 \
 		--build-type=minimal \
@@ -43,8 +41,8 @@ pmodules.install() {
 		install
 }
 
-pmodules.add_to_group 'Compiler'
-pmodules.set_runtime_dependencies "${COMPILER}"
-pmodules.set_build_dependencies "${COMPILER}" 'Python'
-pmodules.make_all
+pbuild::add_to_group 'Compiler'
+pbuild::set_runtime_dependencies "${COMPILER}"
+pbuild::set_build_dependencies "${COMPILER}" 'Python'
+pbuild::make_all
 

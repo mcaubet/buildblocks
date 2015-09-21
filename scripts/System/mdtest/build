@@ -1,24 +1,22 @@
-#!/bin/bash
+#!/usr/bin/env modbuild
 
-source "$(dirname $0)/../../../lib/libpmodules.bash"
-
-pmodules.configure() {
+pbuild::configure() {
 	:
 }
 
-pmodules.build() {
+pbuild::build() {
         cd "${MODULE_SRCDIR}"
 
 	make -j ${JOBS}
 }
 
-pmodules.install() {
+pbuild::install() {
         cd "${MODULE_SRCDIR}"
 	mkdir -p ${PREFIX}/bin
 	install -m 0755 mdtest "${PREFIX}/bin"
 }
 
-#pmodules.supported_os 'Linux'
-pmodules.add_to_group 'System'
-pmodules.set_build_dependencies "${COMPILER}" "${MPI}"
-pmodules.make_all
+#pbuild::supported_os 'Linux'
+pbuild::add_to_group 'System'
+pbuild::set_build_dependencies "${COMPILER}" "${MPI}"
+pbuild::make_all
