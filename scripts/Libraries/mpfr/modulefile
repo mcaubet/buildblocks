@@ -1,0 +1,16 @@
+#%Module1.0
+
+set whatis	"GNU Multiple-Precision Floating-point library with correct Rounding"
+set url		"http://www.mpfr.org/"
+set license	"GNU GPL v3 / GNU LGPL v3"
+set maintainer	"Achim Gsell <achim.gsell@psi.ch>"
+
+set help	"
+The main goal of MPFR is to provide a library for multiple-precision
+floating-point computation which is both efficient and has a well-
+defined semantics. It copies the good ideas from the ANSI/IEEE-754
+standard for double-precision floating-point arithmetic (53-bit
+significand).
+"
+
+source		$env(PSI_LIBMODULES)

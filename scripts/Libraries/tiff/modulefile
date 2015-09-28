@@ -1,0 +1,15 @@
+#%Module1.0
+
+set whatis	"set of C functions that support the manipulation of TIFF image files."
+set url		"http://www.libtiff.org/"
+set license	"BSD-like, see: http://libtiff.org/misc.html"
+set maintainer	"Achim Gsell <achim.gsell@psi.ch>"
+
+set help	"
+This software provides support for the Tag Image File Format (TIFF), a
+widely used format for storing image data. The latest version of the TIFF
+specification is available on-line in several different formats, as are a
+number of Technical Notes (TTN's).
+"
+ 
+source		$env(PSI_LIBMODULES)

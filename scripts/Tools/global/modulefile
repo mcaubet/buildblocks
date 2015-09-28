@@ -1,0 +1,22 @@
+#%Module1.0
+
+set whatis	"source code tag system"
+set url		"http://www.gnu.org/software/global/"
+set license	"GNU GPL v3"
+set maintainer	"Achim Gsell <achim.gsell@psi.ch>"
+
+set help	"
+GNU GLOBAL is a source code tag system that works the same way across
+diverse environments, such as Emacs editor, Vi editor, Less viewer, Bash
+shell, various web browsers, etc. You can locate specified tags, such as
+functions, macros, structs, classes, in your source files and move there
+easily. It is useful for hacking large projects which contain many
+sub-directories, many #ifdef and many main() functions. It is similar to
+ctags or etags, but is different from them at the point of independence of
+any editor. It runs on a UNIX (POSIX) compatible operating system, like GNU
+and BSD. 
+"
+
+source		$env(PSI_LIBMODULES)
+
+

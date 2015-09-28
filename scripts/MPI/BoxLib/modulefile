@@ -1,0 +1,35 @@
+#%Module1.0
+
+set whatis	"block-structured AMR framework"
+set url		"https://ccse.lbl.gov/BoxLib/index.html"
+set license	"BSD"
+set licensefile "license.txt"
+set maintainer	"Achim Gsell <achim.gsell@psi.ch>"
+
+set help	"
+BoxLib contains all the functionality needed to write a parallel,
+block-structured AMR application. The fundamental parallel abstraction is
+the MultiFab, which holds the data on the union of grids at a level. A
+MultiFab is composed of FAB's; each FAB is an array of data on a single
+grid. During each MultiFab operation the FAB's composing that MultiFab are
+distributed among the cores. MultiFab's at each level of refinement are
+distributed independently. The software supports two data distribution
+schemes, as well as a dynamic switching scheme that decides which approach
+to use based on the number of grids at a level and the number of processors.
+The first scheme is based on a heuristic knapsack algorithm; the second is
+based on the use of a Morton-ordering space-filling curve. MultiFab
+operations are performed with an owner computes rule with each processor
+operating independently on its local data. For operations that require data
+owned by other processors, the MultiFab operations are preceded by a data
+exchange between processors. Each processor contains meta-data that is
+needed to fully specify the geometry and processor assignments of the
+MultiFab's. At a minimum, this requires the storage of an array of boxes
+specifying the index space region for each AMR level of refinement. The
+meta-data can thus be used to dynamically evaluate the necessary
+communication patterns for sharing data amongst processors, enabling us to
+optimize communications patterns within the algorithm. One of the advantages
+of computing with fewer, larger grids in the hybrid OpenMP--MPI approach
+is that the size of the meta-data is substantially reduced.
+"
+
+source		$env(PSI_LIBMODULES)

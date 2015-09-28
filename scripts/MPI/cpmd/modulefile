@@ -1,0 +1,12 @@
+#%Module1.0
+
+module-whatis		"plane wave/pseudopotential implementation of Density Functional Theory"
+module-url		"http://cpmd.org/"
+module-license		"?"
+module-maintainer	"Achim Gsell <achim.gsell@psi.ch>"
+module-help	"
+The CPMD code is a parallelized plane wave / pseudopotential implementation
+of Density Functional Theory, particularly designed for ab-initio molecular
+dynamics.
+"
+

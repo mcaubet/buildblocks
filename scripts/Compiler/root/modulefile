@@ -1,0 +1,16 @@
+#%Module1.0
+
+set whatis	"CERN root"
+set url		"http://root.cern.ch/"
+set license	"GNU LGPL v2"
+set maintainer	"Achim Gsell <achim.gsell@psi.ch>"
+set help	"
+ROOT is an object-oriented framework aimed at solving the data analysis
+challenges of high-energy physics. There are two key words in this
+definition, object oriented and framework. First, we explain what we
+mean by a framework and then why it is an object-oriented framework.
+"
+
+source		$env(PSI_LIBMODULES)
+
+setenv	ROOTSYS	$PREFIX	

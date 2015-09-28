@@ -1,0 +1,15 @@
+#%Module1.0
+
+set whatis	"C++ libraries"
+set url		"http://www.boost.org"
+set license	"Boost Software License"
+set maintainer	"Achim Gsell <achim.gsell@psi.ch>"
+set help	"
+Boost is a set of libraries for the C++ programming language that provide
+support for tasks and structures such as linear algebra, pseudorandom number
+generation, multithreading, image processing, regular expressions, and unit
+testing. It contains over eighty individual libraries.
+(Wikipedia)
+"
+
+source		$env(PSI_LIBMODULES)

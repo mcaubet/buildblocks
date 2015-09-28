@@ -1,0 +1,28 @@
+#%Module1.0
+
+# OPAL_PREFIX is also used by OpenMPI!
+set dont-setenv { OPAL_PREFIX }
+
+set whatis	"Object Oriented Particle Accelerator Library"
+set url		"http://amas.psi.ch/OPAL"
+set license	"PSI"
+set maintainer	"Achim Gsell <achim.gsell@psi.ch>"
+
+set help	"
+OPAL is a C++ framework for general particle accelerator simulations. It
+includes various beam line element descriptions and methods for single
+particle optics, namely maps up to arbitrary order, symplectic integration
+schemes and lastly time integration. OPAL is based on IPPL (Independent
+Parallel Particle Layer) which adds parallel capabilities. Main functions
+inherited from IPPL are: structured rectangular grids, fields and parallel
+FFT and particles with the respective interpolation operators. Other
+features are, expression templates and massive parallelism (up to 65000
+processors) which makes is possible to tackle the largest problems in the
+field. A new iterative solver handles arbitrary complex boundary conditions
+and benefiting from the new geometry class. 
+"
+
+source		$env(PSI_LIBMODULES)
+setenv          OPAL_EXE_PATH   "${PREFIX}/bin"
+
+set-family OPAL

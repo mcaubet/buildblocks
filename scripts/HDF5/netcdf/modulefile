@@ -1,0 +1,14 @@
+#%Module1.0
+
+set whatis	"Network Common Data Form"
+set url		"http://www.unidata.ucar.edu/software/netcdf/"
+set license	"BSD-like, see \${NETCDF_DIR}/share/doc/netcdf/COPYRIGHT"
+set maintainer	"Achim Gsell <achim.gsell@psi.ch>"
+
+set help	"
+NetCDF is a set of software libraries and self-describing, machine-
+independent data formats that support the creation, access, and
+sharing of array-oriented scientific data.
+"
+
+source		$env(PSI_LIBMODULES)
