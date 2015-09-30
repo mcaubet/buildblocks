@@ -3,6 +3,8 @@
 case ${OS} in
 Darwin )
 	export NO_APPLE_COMMON_CRYPTO=1
+	# we use 'asciidoc' from MacPorts
+	PATH+=':/opt/local/bin'
 	;;
 esac
 
@@ -17,11 +19,16 @@ pbuild::configure() {
 pbuild::build() {
         cd "${MODULE_SRCDIR}"
         make
+
+	make -C contrib/subtree prefix="${prefix}"
 }
 
 pbuild::install() {
         cd "${MODULE_SRCDIR}"
         make install
+        make install-doc
+	make -C contrib/subtree prefix="${PREFIX}" install
+	make -C contrib/subtree prefix="${PREFIX}" install-doc
 }
 
 pbuild::add_to_group 'Tools'
