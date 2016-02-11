@@ -12,6 +12,7 @@ esac
 
 pbuild::configure() {
 	"${MODULE_SRCDIR}"/configure \
+		--disable-asimage \
 		--disable-ldap \
 		--disable-mysql \
 		--disable-opengl \
@@ -64,6 +65,7 @@ pbuild::install() {
 	mv "${PREFIX}/README"  "${DOCDIR}"
 }
 
+module use unstable
 pbuild::add_to_group 'Compiler'
 pbuild::set_runtime_dependencies "${COMPILER}"
 pbuild::set_build_dependencies "${COMPILER}"
