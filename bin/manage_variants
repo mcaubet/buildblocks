@@ -6,11 +6,23 @@ declare variants=$2
 
 declare -r OS=$(uname -s)
 
-while read versions release oss dependencies; do
-      	 [[ "${oss}" =~ "${OS}" ]] || continue
-	 versions_a=( ${versions//,/ } )
-	 dependencies_a=( ${dependencies//,/ } )
-	 for version in "${versions_a[@]}"; do
-	         "${buildblock}"  "${version}" --release=${release} "${dependencies_a[@]/#/--with=}"
-	 done
+# File format example
+# 1.10.2	Linux,Darwin	unstable	gcc/4.8.5
+declare -a toks=()
+declare version=''
+declare oss=''
+declare release=''
+declare -a dependencies=()
+
+while read -a toks; do
+	# skip comment and empty line
+	(( ${#toks[@]} == 0 )) && continue
+	[[ "${toks[0]:0:1}" == "#" ]] && continue
+	version=${toks[0]}
+	oss=${toks[1]}
+	release=${toks[2]}
+	dependencies=( ${toks[@]:3} )
+
+	[[ "${oss}" =~ "${OS}" ]] || continue
+	"${buildblock}"  "${version}" --release=${release} "${dependencies[@]/#/--with=}"
 done < "${variants}"
