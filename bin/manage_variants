@@ -25,4 +25,8 @@ while read -a toks; do
 
 	[[ "${oss}" =~ "${OS}" ]] || continue
 	"${buildblock}"  "${version}" --release=${release} "${dependencies[@]/#/--with=}"
+	if [[ $? != 0 ]]; then
+		echo "Failed building:  ${version} --release=${release} ${dependencies[@]/#/--with=}" 1>&2
+		exit 42
+	fi
 done < "${variants}"
