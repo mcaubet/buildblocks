@@ -1,2 +1,2 @@
-1.0.2	Linux,Darwin	stable		gmp/5.1.1 mpfr/3.1.2
-1.0.3	Linux,Darwin	stable		gmp/6.1.0 mpfr/3.1.4
+1.0.2	stable		b:gmp/5.1.1 b:mpfr/3.1.2
+1.0.3	stable		b:gmp/6.1.0 b:mpfr/3.1.4

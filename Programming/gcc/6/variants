@@ -1,1 +1,1 @@
-6.1.0	Linux,Darwin	unstable	gmp/6.1.0 mpfr/3.1.4 mpc/1.0.3
+gcc/6.1.0	unstable	b:gmp/6.1.0 b:mpfr/3.1.4 b:mpc/1.0.3

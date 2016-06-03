@@ -39,8 +39,6 @@ pbuild::install() {
 }
 
 pbuild::add_to_group 'Compiler'
-pbuild::set_runtime_dependencies "${COMPILER}"
-pbuild::set_build_dependencies "${COMPILER}"
 pbuild::set_docfiles 'LICENSE' 'README.md'
 pbuild::set_supported_compilers 'gcc'
 pbuild::make_all

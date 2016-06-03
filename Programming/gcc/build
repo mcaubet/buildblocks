@@ -1,5 +1,11 @@
 #!/usr/bin/env modbuild
 
+pbuild::patch_sources_Darwin() {
+	if [[ "${V_MAJOR}" == "4" ]]; then
+		patch -p1 < "${BUILD_BLOCK_DIR}/${V_MAJOR}/non-dead-strip.patch"
+	fi
+}
+
 pbuild::configure() {
 	"${MODULE_SRCDIR}"/configure \
 		--prefix="${PREFIX}" \
@@ -10,17 +16,15 @@ pbuild::configure() {
 		--enable-lto \
 		--disable-multilib \
 		--with-pkgversion="PSI Environment Module" \
+		--with-build-config=bootstrap-debug \
 		|| exit 1
 }
-
 
 # use system gcc to compile
 declare -rx CC=gcc
 declare -rx CXX=g++
 
-module use 'Libraries'
 pbuild::add_to_group 'Programming'
-#pbuild::set_build_dependencies 'gmp' 'mpfr' 'mpc'
 pbuild::set_docfiles 'COPYING' 'COPYING.LIB' 'COPYING.RUNTIME' 'COPYING3' 'COPYING3.LIB' 'NEWS' 'README'
 pbuild::make_all
 

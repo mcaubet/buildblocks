@@ -15,6 +15,5 @@ pbuild::install() {
 
 
 pbuild::add_to_group 'MX'
-pbuild::set_build_dependencies ''
 pbuild::make_all
 

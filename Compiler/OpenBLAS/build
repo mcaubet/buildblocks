@@ -35,7 +35,6 @@ EOF
 }
 
 pbuild::build() {
-	cd "${MODULE_SRCDIR}"
 	make
 }
 
@@ -50,8 +49,7 @@ pbuild::install() {
 }
 
 pbuild::add_to_group 'Compiler'
-pbuild::set_runtime_dependencies "${COMPILER}"
-pbuild::set_build_dependencies "${COMPILER}"
+pbuild::compile_in_sourcetree
 pbuild::set_docfiles 'LICENSE' 'README.md'
 pbuild::set_supported_compilers 'gcc' 'intel'
 pbuild::make_all

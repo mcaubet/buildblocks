@@ -18,8 +18,6 @@ pbuild::set_docfiles \
 	'THANKS' \
 	'TODO'
 
-pbuild::set_runtime_dependencies "${COMPILER}"
-pbuild::set_build_dependencies "${COMPILER}"
 pbuild::make_all
 
 # Local Variables:

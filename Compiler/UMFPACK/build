@@ -30,13 +30,13 @@ pbuild::build() {
 }
 
 pbuild::install() {
+	cd "${MODULE_SRCDIR}/UMFPACK"
 	install -d "${PREFIX}/include"
 	install -d "${PREFIX}/lib"
 	make PREFIX="${PREFIX}" install
 }
 
 pbuild::add_to_group 'Compiler'
-pbuild::set_runtime_dependencies "${COMPILER}" 'OpenBLAS'
-pbuild::set_build_dependencies "${COMPILER}" 'OpenBLAS'
+pbuild::compile_in_sourcetree
 pbuild::make_all
-#pbuild::cleanup_src
+pbuild::cleanup_src
