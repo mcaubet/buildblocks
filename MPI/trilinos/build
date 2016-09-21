@@ -63,8 +63,6 @@ pbuild::configure() {
 }
 
 pbuild::add_to_group 'MPI'
-pbuild::set_runtime_dependencies "${COMPILER}" "${MPI}" 'OpenBLAS' 'parmetis'
-pbuild::set_build_dependencies 'cmake' "${COMPILER}" "${MPI}" 'OpenBLAS' 'parmetis'
 pbuild::set_docfiles Copyright.txt LICENSE README RELEASE_NOTES
 pbuild::make_all
 
