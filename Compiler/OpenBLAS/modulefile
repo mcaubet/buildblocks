@@ -1,12 +1,12 @@
 #%Module1.0
 
-set whatis	"optimized BLAS and LAPACK library."
-set url		"http://www.openblas.net/"
-set license	"BSD"
-set maintainer	"Achim Gsell <achim.gsell@psi.ch>"
-set help	"
-The BLAS (Basic Linear Algebra Subprograms) are routines that provide
-standard building blocks for performing basic vector and matrix operations.
+module-whatis		"optimized BLAS and LAPACK library."
+module-url		"http://www.openblas.net/"
+module-license		"BSD"
+module-maintainer	"Achim Gsell <achim.gsell@psi.ch>"
+module-help		"
+BLAS (Basic Linear Algebra Subprograms) are routines that provide
+dard building blocks for performing basic vector and matrix operations.
 The Level 1 BLAS perform scalar, vector and vector-vector operations, the
 Level 2 BLAS perform matrix-vector operations, and the Level 3 BLAS perform
 matrix-matrix operations. Because the BLAS are efficient, portable, and
@@ -23,8 +23,6 @@ estimating condition numbers. Dense and banded matrices are handled, but
 not general sparse matrices. In all areas, similar functionality is
 provided for real and complex matrices, in both single and double precision.
 "
-
-source		$env(PSI_LIBMODULES)
 
 setenv		BLASLIB	$PREFIX/libopenblas.a
 
