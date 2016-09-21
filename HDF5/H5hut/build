@@ -5,7 +5,7 @@ if [[ ${V_MAJOR} == 1 ]]; then
 fi
 
 pbuild::pre_configure() {
-	./autogen.sh
+	: ./autogen.sh
 }
 
 pbuild::configure() {
