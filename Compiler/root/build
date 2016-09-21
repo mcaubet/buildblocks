@@ -63,10 +63,10 @@ pbuild::install() {
 
 	mkdir -p "${PREFIX}"
 	cp -rv * "${PREFIX}"
-	mkdir -p "${DOCDIR}"
-	rsync --archive --verbose	 "${PREFIX}/LICENSE"	"${DOCDIR}/LICENSE"
+	mkdir -p "${PREFIX}/${_DOCDIR}"
+	rsync --archive --verbose	 "${PREFIX}/LICENSE"	"${PREFIX}${_DOCDIR}/LICENSE"
 	rsync --archive --verbose	 "${PREFIX}/man/"	"${PREFIX}/share/man/"
-	rsync --archive --verbose	 "${PREFIX}/README/"	"${DOCDIR}/README/" 
+	rsync --archive --verbose	 "${PREFIX}/README/"	"${PREFIX}/{_DOCDIR}/README/" 
 
 	rm -rf	 "${PREFIX}/LICENSE"
 	rm -rf	 "${PREFIX}/man/"
@@ -101,8 +101,5 @@ pbuild::post_install() {
 	done
 }
 
-module use unstable
 pbuild::add_to_group 'Compiler'
-pbuild::set_runtime_dependencies "${COMPILER}"
-pbuild::set_build_dependencies "${COMPILER}"
 pbuild::make_all
