@@ -12,6 +12,7 @@ openmpi/1.8.4	deprecated	gcc/4.9.3
 openmpi/1.8.8	deprecated	gcc/4.8.4
 openmpi/1.8.8	stable		gcc/4.8.5
 openmpi/1.8.8	stable		gcc/4.9.3
+openmpi/1.8.8	stable		gcc/4.9.4
 openmpi/1.8.8	deprecated	gcc/5.2.0
 openmpi/1.8.8	stable		gcc/5.3.0
 openmpi/1.8.8	unstable	gcc/6.1.0
