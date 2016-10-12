@@ -11,6 +11,5 @@ declare -rx CC=gcc
 
 pbuild::add_to_group 'Programming'
 pbuild::set_docfiles 'AUTHORS' 'COPYING' 'NEWS' 'README' 'THANKS'
-pbuild::set_build_dependencies 'autoconf' 'automake'
 pbuild::make_all
 
