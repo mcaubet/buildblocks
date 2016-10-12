@@ -7,5 +7,4 @@ pbuild::configure() {
 }
 
 pbuild::add_to_group 'Libraries'
-pbuild::set_build_dependencies "${COMPILER}"
 pbuild::make_all
