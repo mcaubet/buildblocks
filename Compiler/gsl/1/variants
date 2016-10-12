@@ -4,3 +4,4 @@ gsl/1.15             stable     gcc/4.8.4
 gsl/1.15             stable     gcc/4.8.5 
 gsl/1.15             deprecated gcc/4.9.2 
 gsl/1.15             stable     gcc/4.9.3 
+gsl/1.15             unstable	gcc/6.2.0 

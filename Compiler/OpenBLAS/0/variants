@@ -4,3 +4,4 @@ OpenBLAS/0.2.9       stable     gcc/4.8.4
 OpenBLAS/0.2.9       stable     gcc/4.8.5
 OpenBLAS/0.2.9       stable     gcc/4.9.2
 OpenBLAS/0.2.9       unstable	gcc/6.1.0
+OpenBLAS/0.2.9       unstable	gcc/6.2.0
