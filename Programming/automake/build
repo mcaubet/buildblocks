@@ -18,7 +18,6 @@ pbuild::set_docfiles \
 	NEWS \
 	README \
 	THANKS
-pbuild::set_build_dependencies 'm4' 'autoconf'
 pbuild::make_all
 
 # Local Variables:
