@@ -1,5 +1,7 @@
 #!/usr/bin/env modbuild
 
+#SOURCE_URL="http://github.com/xianyi/$P/archive/v$V.tar.gz"
+
 pbuild::configure() {
 	case ${COMPILER} in
 	gcc )

@@ -1,5 +1,7 @@
 #!/usr/bin/env modbuild
 
+SOURCE_URL="https://cmake.org/files/v${V_MAJOR}.${V_MINOR}/$P-$V.tar.gz"
+
 declare bootstrap_flags=''
 
 case $OS in

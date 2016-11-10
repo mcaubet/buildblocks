@@ -1,5 +1,7 @@
 #!/usr/bin/env modbuild
 
+SOURCE_URL="https://www.python.org/ftp/python/$V/$P-$V.tgz"
+
 export LDFLAGS=""
 export CPPFLAGS=""
 
