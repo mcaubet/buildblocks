@@ -6,9 +6,5 @@ pbuild::configure() {
 		|| exit 1
 }
 
-# use system gcc to compile
-#declare -rx CC=gcc
-
-pbuild::set_build_dependencies "${COMPILER}"
 pbuild::add_to_group 'Programming'
 pbuild::make_all
