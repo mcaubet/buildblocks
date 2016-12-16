@@ -1,5 +1,7 @@
 #!/usr/bin/env modbuild
 
+SOURCE_URL="http://trilinos.csbsju.edu/download/files/trilinos-$V-Source.tar.bz2"
+
 declare -rx AR=ar
 
 pbuild::configure() {
