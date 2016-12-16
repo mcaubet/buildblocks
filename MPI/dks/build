@@ -1,0 +1,23 @@
+#!/usr/bin/env modbuild
+
+pbuild::configure() {
+	export CXX=mpicxx
+	export CC=mpicc
+	cmake \
+		-DCMAKE_INSTALL_PREFIX="${PREFIX}"  "${MODULE_SRCDIR}" \
+		|| exit 1
+}
+
+pbuild::install() {
+	install -d "${PREFIX}/lib"
+	make install
+}
+
+pbuild::add_to_group 'MPI'
+pbuild::make_all
+
+# Local Variables:
+# mode: sh
+# sh-basic-offset: 8
+# tab-width: 8
+# End:

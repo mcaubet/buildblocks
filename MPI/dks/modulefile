@@ -1,0 +1,9 @@
+#%Module1.0
+
+module-whatis		"Dynamic Kernel Scheduler"
+#module-url		"http://"
+module-license		"PSI"
+module-maintainer	"Achim Gsell <achim.gsell@psi.ch>"
+
+module-help	"
+"
