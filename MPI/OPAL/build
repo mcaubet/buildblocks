@@ -1,6 +1,5 @@
 #!/usr/bin/env modbuild
 
-module use unstable
 
 # add -fopenmp to CC and CXX, if you want to compile with OpenMP
 pbuild::configure() {
@@ -8,12 +7,11 @@ pbuild::configure() {
 		-DCMAKE_INSTALL_PREFIX="${PREFIX}" \
 		-DCMAKE_BUILD_TYPE=RELEASE \
 		-DENABLE_SAAMG_SOLVER=TRUE \
+		-DENABLE_DKS=ON \
 		"${MODULE_SRCDIR}"
 }
 
 pbuild::add_to_group 'MPI'
-pbuild::set_runtime_dependencies "${COMPILER}" "${MPI}"
-pbuild::set_build_dependencies 'cmake' "${COMPILER}" "${MPI}" 'boost' 'hdf5' 'H5hut' 'trilinos' 'ippl' 'gsl'
-pbuild::set_supported_compilers 'gcc/4.7' 'gcc/4.8'
+pbuild::set_supported_compilers 'gcc/4.7' 'gcc/4.8' 'gcc/4.9' 'gcc/5.4'
 pbuild::make_all
 
