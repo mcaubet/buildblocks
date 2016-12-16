@@ -44,8 +44,8 @@ pbuild::install() {
 }
 
 pbuild::post_install_Linux() {
-	cp -av "${INSTANTCLIENT_LIBRARY_DIR}"/*  "${PREFIX}"/lib
-	cp -av "${INSTANTCLIENT_INCLUDE_DIR}"/*  "${PREFIX}"/include
+	install -m 0644 "${INSTANTCLIENT_LIBRARY_DIR}"/*  "${PREFIX}"/lib
+	install -m 0644 "${INSTANTCLIENT_INCLUDE_DIR}"/*  "${PREFIX}"/include
 }
 
 pbuild::add_to_group 'Compiler'
