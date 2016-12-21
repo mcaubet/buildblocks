@@ -20,19 +20,7 @@ PLAT =
 DRVOPTS  = \$(NOOPT)
 ARCHFLAGS= -ru
 EOF
-#	cat <<EOF > "${MODULE_SRCDIR}/Makefile.rule"
-#VERSION = 0.2.9
-#TARGET = CORE2
-#CC = ${CC}
-#BINARY=64
-#USE_THREAD = 0
-#USE_OPENMP = 0
-#NO_SHARED = 1
-#NO_WARMUP = 1
-#NO_AFFINITY = 1
-#FCOMMON_OPT = -frecursive
-#COMMON_PROF = -pg
-#EOF
+	echo "USE_SIMPLE_THREADED_LEVEL3 = 1" >> "${MODULE_SRCDIR}/Makefile.rule"
 }
 
 pbuild::build() {
