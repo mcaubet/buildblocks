@@ -53,7 +53,7 @@ hdf5/1.8.17	stable		gcc/4.9.4 openmpi/1.10.4
 hdf5/1.8.17	stable		gcc/5.4.0 openmpi/1.10.4
 hdf5/1.8.17	stable		gcc/6.2.0 openmpi/1.10.4
 
-hdf5/1.8.18	unstable	gcc/4.8.5 openmpi/1.10.4
-hdf5/1.8.18	unstable	gcc/4.9.4 openmpi/1.10.4
-hdf5/1.8.18	unstable	gcc/5.4.0 openmpi/1.10.4
-hdf5/1.8.18	unstable	gcc/6.2.0 openmpi/1.10.4
+hdf5/1.8.18	stable		gcc/4.8.5 openmpi/1.10.4
+hdf5/1.8.18	stable		gcc/4.9.4 openmpi/1.10.4
+hdf5/1.8.18	stable		gcc/5.4.0 openmpi/1.10.4
+hdf5/1.8.18	stable		gcc/6.2.0 openmpi/1.10.4
