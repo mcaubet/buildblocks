@@ -28,6 +28,10 @@ Linux )
 	;;
 esac
 
+pbuild::patch_sources_Linux() {
+	patch -p1 < "${BUILD_BLOCK_DIR}/${V_MAJOR}/cmake_oracle12.patch"
+}
+
 pbuild::configure() {
 	cmake "${MODULE_SRCDIR}" \
 		${config_args} \
