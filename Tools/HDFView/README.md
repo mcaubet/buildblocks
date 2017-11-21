@@ -40,4 +40,4 @@ Download the package from https://www.hdfgroup.org/downloads/hdfview/. The compr
 ## Install files for Pmodules
 
 1. `install --mode 0644 "$BUILDBLOCK_DIR/modulefile" "$MODULEFILES_DIR/$P/$V"`
-2. `echo "$RELEASE" > "$MODULEFILES_DIR/$P/.release-$V"
+2. `echo "$RELEASE" > "$MODULEFILES_DIR/$P/.release-$V"`
