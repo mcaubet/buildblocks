@@ -2,7 +2,7 @@
 
 ## Notations
 
-`$PMODULES_ROOT`: root of Pmodules environment. AT PSI this is `/opt/psi`.
+`$PMODULES_ROOT`: root of Pmodules environment. At PSI this is `/opt/psi`.
 
 `$GRP`: group the module is installed in, here 'Tools'
 
