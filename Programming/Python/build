@@ -24,13 +24,13 @@ pbuild::post_install() {
 	PATH+=":${PREFIX}/bin"
 	cd "${BUILD_BLOCK_DIR}"
 	"${PREFIX}/bin/python" 'get-pip.py'
-	pip install numpy
-	pip install scipy
-	pip install matplotlib
-	pip install ipython
-	pip install pandas
-	pip install sympy
-	pip install nose
+	pip${V_MAJOR} install numpy
+	pip${V_MAJOR} install scipy
+	pip${V_MAJOR} install matplotlib
+	pip${V_MAJOR} install ipython
+	pip${V_MAJOR} install pandas
+	pip${V_MAJOR} install sympy
+	pip${V_MAJOR} install nose
 }
 
 pbuild::add_to_group 'Programming'
