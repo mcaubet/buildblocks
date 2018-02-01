@@ -3,6 +3,13 @@
 SOURCE_URL="http://www.open-mpi.org/software/ompi/v${V_MAJOR}.${V_MINOR}/downloads/openmpi-$V.tar.bz2"
 
 pbuild::configure() {
+	declare -a config_args=()
+	case "$OS" in
+		Linux )
+			config_args+=( "--with-cuda=${CUDA_HOME}" )
+			;;
+	esac
+
 	"${MODULE_SRCDIR}"/configure \
 		--prefix="${PREFIX}" \
 		--enable-mpi-cxx \
@@ -14,6 +21,7 @@ pbuild::configure() {
 		--enable-smp-locks \
 		--with-sge=yes \
 		--with-slurm=yes \
+		"${config_args[@]}" \
 		|| exit 1
 }
 
