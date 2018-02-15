@@ -27,31 +27,28 @@ pbuild::configure() {
 
 	case "${OS}" in
 	Darwin )
-		local -r prefix='/opt/local'
-		"${MODULE_SRCDIR}"/configure \
-			--prefix="${PREFIX}" \
-			"${conf_args[@]}" \
-			--with-as=${prefix}/bin/as \
-			--with-ld=${prefix}/bin/ld \
-			--with-ar=${prefix}/bin/ar \
-			AR_FOR_TARGET=${prefix}/bin/ar \
-			AS_FOR_TARGET=${prefix}/bin/as \
-			LD_FOR_TARGET=${prefix}/bin/ld \
-			NM_FOR_TARGET=${prefix}/bin/nm \
-			OBJDUMP_FOR_TARGET=${prefix}/bin/objdump \
-			RANLIB_FOR_TARGET=${prefix}/bin/ranlib \
-			STRIP_FOR_TARGET=${prefix}/bin/strip \
-			OTOOL=${prefix}/bin/otool \
-			OTOOL64=${prefix}/bin/otool \
-			|| exit 1
+		local -r prefix='/usr'
+		conf_args+=( "--with-as=${prefix}/bin/as" )
+		conf_args+=( "--with-ld=${prefix}/bin/ld" )
+		conf_args+=( "--with-ar=${prefix}/bin/ar" )
+		export	AR_FOR_TARGET=${prefix}/bin/ar \
+		export	AS_FOR_TARGET=${prefix}/bin/as \
+		export	LD_FOR_TARGET=${prefix}/bin/ld \
+		export	NM_FOR_TARGET=${prefix}/bin/nm \
+		export	OBJDUMP_FOR_TARGET=${prefix}/bin/objdump \
+		export	RANLIB_FOR_TARGET=${prefix}/bin/ranlib \
+		export	STRIP_FOR_TARGET=${prefix}/bin/strip \
+		export	OTOOL=${prefix}/bin/otool \
+		export	OTOOL64=${prefix}/bin/otool \
 		;;
-	Linux )
-		"${MODULE_SRCDIR}"/configure \
-			--prefix="${PREFIX}" \
-			"${conf_args[@]}" \
-			|| exit 1
+	* )
+		echo "Unsupported OS '${OS}'!"
 		;;
 	esac
+	"${MODULE_SRCDIR}"/configure \
+		--prefix="${PREFIX}" \
+		"${conf_args[@]}" \
+		|| exit 1
 }
 
 # use system gcc to compile
