@@ -4,11 +4,9 @@ SOURCE_URL="http://www.open-mpi.org/software/ompi/v${V_MAJOR}.${V_MINOR}/downloa
 
 pbuild::configure() {
 	declare -a config_args=()
-	case "$OS" in
-		Linux )
-			config_args+=( "--with-cuda=${CUDA_HOME}" )
-			;;
-	esac
+	if [[ -n "${CUDA_VERSION}" ]]; then	
+		config_args+=( "--with-cuda=${CUDA_HOME}" )
+	fi
 
 	"${MODULE_SRCDIR}"/configure \
 		--prefix="${PREFIX}" \
