@@ -11,8 +11,15 @@ parmetis/4.0.3	unstable	gcc/4.9.4 openmpi/1.10.4 b:cmake/3.6.3
 parmetis/4.0.3	unstable	gcc/5.4.0 openmpi/1.10.4 b:cmake/3.6.3
 parmetis/4.0.3	unstable	gcc/6.2.0 openmpi/1.10.4 b:cmake/3.6.3
 
-parmetis/4.0.3	unstable	gcc/6.2.0 openmpi/2.0.1  b:cmake/3.4.1
+parmetis/4.0.3	unstable	gcc/6.2.0 openmpi/2.0.1  b:cmake/3.6.3
 
-parmetis/4.0.3	stable		gcc/7.3.0 openmpi/1.10.7 b:cmake/3.4.1
-parmetis/4.0.3	stable		gcc/7.3.0 openmpi/2.1.2  b:cmake/3.4.1
-parmetis/4.0.3	stable		gcc/7.3.0 openmpi/3.0.0  b:cmake/3.4.1
+parmetis/4.0.3	stable		gcc/7.3.0 openmpi/1.10.7 b:cmake/3.6.3
+parmetis/4.0.3	stable		gcc/7.3.0 openmpi/2.1.2  b:cmake/3.6.3
+parmetis/4.0.3	stable		gcc/7.3.0 openmpi/3.0.0  b:cmake/3.6.3
+parmetis/4.0.3	stable		clang-macos/9.0.0 openmpi/1.10.7 b:cmake/3.6.3
+parmetis/4.0.3	stable		clang-macos/9.0.0 openmpi/2.1.2  b:cmake/3.6.3
+parmetis/4.0.3	stable		clang-macos/9.0.0 openmpi/3.0.0  b:cmake/3.6.3
+
+parmetis/4.0.3	stable		intel/17.4 openmpi/1.10.7 b:cmake/3.6.3
+parmetis/4.0.3	stable		intel/17.4 openmpi/2.1.2  b:cmake/3.6.3
+parmetis/4.0.3	stable		intel/17.4 openmpi/3.0.0  b:cmake/3.6.3
