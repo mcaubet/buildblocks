@@ -1,1 +1,3 @@
+mpich/3.2.1	stable		gcc/6.4.0
+mpich/3.2.1	stable		gcc/7.3.0
 mpich/3.2.1	unstable	intel/17.4
