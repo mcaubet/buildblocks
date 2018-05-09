@@ -42,54 +42,25 @@ https://ops.aps.anl.gov/publish/Pelegant_manual/node2.html
 module load gcc/7.3.0 gsl/2.4 mpich/3.2.1
 ```
 
+## Set used versions
+```
+SDDS_VERSION=3.6.1
+ELEGANT_VERSION=34.2.0
+```
+
 ## Setup Environment
 ```
 DOWNLOAD_DIR='/afs/psi.ch/software/Pmodules/distfiles/elegant'
-PREFIX=/opt/psi/MPI/elegant/34.2.0/mpich/3.2.1/gcc/7.3.0
+PREFIX=/opt/psi/MPI/elegant/${ELEGANT_VERSION}/${MPI}/${MPI_VERSION}/${COMPILER}/${COMPILER_VERSION}
 
+export EPICS_BASE="${PREFIX}/epics/base"
 export HOST_ARCH=linux-x86_64
 export EPICS_HOST_ARCH=linux-x86_64
-export RPN_DEFNS="${PREFIX}/RPN_DEFNS/defns.rpn
+export RPN_DEFNS="${PREFIX}/RPN_DEFNS/defns.rpn"
 ```
 
-## Prepare build environment
-
-EPICS base configuration
-```
-mkdir -p "${PREFIX}"
-cd "${PREFIX}"
-tar xvf "${DOWNLOAD_DIR}/epics.base.configure.tar.gz"
-cd epics/base
-make
-```
-
-Prepare configuration files for EPICS build system
-```
-cd "${PREFIX}"
-tar xvf "${DOWNLOAD_DIR}/epics.extensions.configure.tar.gz 
-```
-
-Prepare configuration files for elegant and other OAG apps
-```
-cd "${PREFIX}"
-tar xvf "${DOWNLOAD_DIR}/oag.apps.configure.tar.gz 
-```
-
-## Base configuration for SDDS and elegant
 ```
 ARGS=()
-ARGS+=( "AR=ar -rc" )
-ARGS+=( "LD=ld -r" )
-ARGS+=( "RANLIB=ranlib" )
-ARGS+=( "GNU_DIR=${GCC_DIR}" )
-ARGS+=( "CLAPACK_LIB=${ATLAS_LIBRARY_DIR}" )
-ARGS+=( "ATLAS_LIB=${ATLAS_LIBRARY_DIR}" )
-ARGS+=( "ATLAS_INCLUDE=${ATLAS_INCLUDE_DIR}" )
-ARGS+=( "SYSGSL=1" )
-ARGS+=( "LAPACK=0" )
-ARGS+=( "GFORTRAN=1" )
-ARGS+=( "CLAPACK=1" )
-ARGS+=( "EPICS_BASE=${PREFIX}/epics/base" )
 ARGS+=( "INSTALL_LOCATION=${PREFIX}" )
 ARGS+=( "INSTALL_LIB=${PREFIX}/lib" )
 ARGS+=( "INSTALL_SHRLIB=${PREFIX}/lib" )
@@ -97,17 +68,44 @@ ARGS+=( "INSTALL_TCLLIB=${PREFIX}/lib" )
 ARGS+=( "INSTALL_BIN=${PREFIX}/bin" )
 ```
 
-== Compile SDDS
+## Prepare base build environment
+
+EPICS base configuration
 ```
-cd ${PREFIX}/epics/extensions/src/SDDS/
-make "${ARGS[@]}" OP_SYS_LDLIBS="-lgfortran -lquadmath -lf2c" -C png
-make "${ARGS[@]}" OP_SYS_LDLIBS="-lgfortran -lquadmath -lf2c" -C pgapack
-make "${ARGS[@]}" OP_SYS_LDLIBS="-lgfortran -lquadmath -lf2c"
-make "${ARGS[@]}" OP_SYS_LDLIBS="-lgfortran -lquadmath -lf2c" MPI=1 -C SDDSlib
+mkdir -p "${PREFIX}"
+mkdir -p "${RPN_DEFNS%/*}"
+cp "${DOWNLOAD_DIR}/defns.rpn" "${RPN_DEFNS}"
+cd "${PREFIX}"
+tar xvf "${DOWNLOAD_DIR}/epics.base.configure.tar.gz"
+cd epics/base
+make
 ```
 
-== Compile elegant
+## Unpack EPICS extensions and OAG apps configuration
+
 ```
+cd "${PREFIX}"
+tar xvf "${DOWNLOAD_DIR}/epics.extensions.configure.tar.gz"
+tar xvf "${DOWNLOAD_DIR}/oag.apps.configure.tar.gz"
+cd "${PREFIX}/oag/apps/configure"
+```
+
+## Build required tools and libraries from SDDS
+```
+cd "${PREFIX}"
+tar xvf "${DOWNLOAD_DIR}/SDDS.${SDDS_VERSION}.tar.gz"
+make -e "${ARGS[@]}" -C namelist
+make -e "${ARGS[@]}" -C pgapack
+make -e "${ARGS[@]}" -C SDDSlib
+make -e "${ARGS[@]}" -C SDDSlib clean
+make -e "${ARGS[@]}" MPI=1 -C SDDSlib
+```
+
+== Compile (P)elegant
+```
+cd "${PREFIX}"
+tar xvf "${DOWNLOAD_DIR}/elegant.${ELEGANT_VERSION}"
+
 PATH+=":${PREFIX}/bin"
 
 cd "${PREFIX}/oag/apps/src/physics"
