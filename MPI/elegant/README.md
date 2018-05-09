@@ -39,7 +39,7 @@ https://ops.aps.anl.gov/publish/Pelegant_manual/node2.html
 ## Required Modules
 
 ```
-module load gcc/7.3.0 gsl/2.4 openblas/0.2.20 mpich/3.2.1
+module load gcc/7.3.0 gsl/2.4 OpenBLAS/0.2.20 mpich/3.2.1
 ```
 
 ## Set used versions
