@@ -39,7 +39,7 @@ https://ops.aps.anl.gov/publish/Pelegant_manual/node2.html
 ## Required Modules
 
 ```
-module load gcc/7.3.0 gsl/2.4 mpich/3.2.1
+module load gcc/7.3.0 gsl/2.4 openblas/0.2.20 mpich/3.2.1
 ```
 
 ## Set used versions
@@ -61,11 +61,13 @@ export RPN_DEFNS="${PREFIX}/RPN_DEFNS/defns.rpn"
 
 ```
 ARGS=()
+ARGS+=( "EPICS_BASE=${PREFIX}" )
 ARGS+=( "INSTALL_LOCATION=${PREFIX}" )
 ARGS+=( "INSTALL_LIB=${PREFIX}/lib" )
 ARGS+=( "INSTALL_SHRLIB=${PREFIX}/lib" )
 ARGS+=( "INSTALL_TCLLIB=${PREFIX}/lib" )
 ARGS+=( "INSTALL_BIN=${PREFIX}/bin" )
+ARGS+=( "SYSGSL=1")
 ```
 
 ## Prepare base build environment
@@ -88,35 +90,42 @@ cd "${PREFIX}"
 tar xvf "${DOWNLOAD_DIR}/epics.extensions.configure.tar.gz"
 tar xvf "${DOWNLOAD_DIR}/oag.apps.configure.tar.gz"
 cd "${PREFIX}/oag/apps/configure"
+make -e
 ```
+
+>
+You have to fix the `clean::` target in `${PREFIX}/oag/apps/configure/PYTHON_RULES`
 
 ## Build required tools and libraries from SDDS
 ```
 cd "${PREFIX}"
 tar xvf "${DOWNLOAD_DIR}/SDDS.${SDDS_VERSION}.tar.gz"
+cd "${PREFIX}/epics/extensions/src/SDDS/"
+make -e "${ARGS[@]}" -C fftpack
+make -e "${ARGS[@]}" -C lzma
+make -e "${ARGS[@]}" -C matlib
+make -e "${ARGS[@]}" -C mdblib
+make -e "${ARGS[@]}" -C mdbcommon
+make -e "${ARGS[@]}" -C mdbmth
+make -e "${ARGS[@]}" -C meschach
 make -e "${ARGS[@]}" -C namelist
 make -e "${ARGS[@]}" -C pgapack
+make -e "${ARGS[@]}" -C rpns/code
 make -e "${ARGS[@]}" -C SDDSlib
 make -e "${ARGS[@]}" -C SDDSlib clean
-make -e "${ARGS[@]}" MPI=1 -C SDDSlib
+make    "${ARGS[@]}" MPI=1 -C SDDSlib
 ```
 
-== Compile (P)elegant
+## Compile (P)elegant
+
 ```
 cd "${PREFIX}"
-tar xvf "${DOWNLOAD_DIR}/elegant.${ELEGANT_VERSION}"
+tar xvf "${DOWNLOAD_DIR}/elegant.${ELEGANT_VERSION}.tar.gz"
 
 PATH+=":${PREFIX}/bin"
 
-cd "${PREFIX}/oag/apps/src/physics"
-make "${ARGS[@]}" OP_SYS_LDLIBS="-lreadline -lncurses -lgfortran -lquadmath -lf2c -lm -lrt -ldl"
-
-cd "${PREFIX}/oag/apps/src/xraylib"
-make "${ARGS[@]}" OP_SYS_LDLIBS="-lreadline -lncurses -lgfortran -lquadmath -lf2c -lm -lrt -ldl"
-
 cd "${PREFIX}/oag/apps/src/elegant"
-make "${ARGS[@]}" OP_SYS_LDLIBS="-lreadline -lncurses -lgfortran -lquadmath -lf2c -lm -lrt -ldl"
-make "${ARGS[@]}" OP_SYS_LDLIBS="-lreadline -lncurses -lgfortran -lquadmath -lf2c -lm -lrt -ldl" Pelegant
-make "${ARGS[@]}" OP_SYS_LDLIBS="-lreadline -lncurses -lgfortran -lquadmath -lf2c -lm -lrt -ldl" -C elegantTools
-make "${ARGS[@]}" OP_SYS_LDLIBS="-lreadline -lncurses -lgfortran -lquadmath -lf2c -lm -lrt -ldl" -C sddsbrightness
+make -e "${ARGS[@]}"
+make clean
+make    "${ARGS[@]}"  Pelegant
 ```
