@@ -5,12 +5,9 @@
 >
 Go down for PSI build instructions!
 
-Instructions to setup `epics/base`, `epics/extensions` compile `SDDS` and `elegant`:
+Instructions to setup `epics/base`, `epics/extensions` compile `SDDS` and `elegant`. The instructions to build from source are almost at the end of the page:
 
 https://www.aps.anl.gov/Accelerator-Operations-Physics/Software/installationGuide_Linux
-
-> 
-Instructions to compile from source are almost at the end of the page!
 
 Instructions to build `Pelegant`:
 
@@ -42,86 +39,100 @@ https://ops.aps.anl.gov/publish/Pelegant_manual/node2.html
 ## Required Modules
 
 ```
-module load gcc/7.3.0 gsl/2.4 mpich/3.2.1
+module load gcc/7.3.0 gsl/2.4 OpenBLAS/0.2.20 mpich/3.2.1
+```
+
+## Set used versions
+```
+SDDS_VERSION=3.6.1
+ELEGANT_VERSION=34.2.0
 ```
 
 ## Setup Environment
 ```
 DOWNLOAD_DIR='/afs/psi.ch/software/Pmodules/distfiles/elegant'
-PREFIX=/opt/psi/MPI/elegant/34.2.0/mpich/3.2.1/gcc/7.3.0
+PREFIX=/opt/psi/MPI/elegant/${ELEGANT_VERSION}/${MPI}/${MPI_VERSION}/${COMPILER}/${COMPILER_VERSION}
 
+export EPICS_BASE="${PREFIX}/epics/base"
 export HOST_ARCH=linux-x86_64
 export EPICS_HOST_ARCH=linux-x86_64
-export RPN_DEFNS="${PREFIX}/RPN_DEFNS/defns.rpn
+export RPN_DEFNS="${PREFIX}/RPN_DEFNS/defns.rpn"
+export PERLLIB="${PREFIX}/lib/perl"
 ```
 
-## Prepare build environment
-
-EPICS base configuration
-```
-mkdir -p "${PREFIX}"
-cd "${PREFIX}"
-tar xvf "${DOWNLOAD_DIR}/epics.base.configure.tar.gz"
-cd epics/base
-make
-```
-
-Prepare configuration files for EPICS build system
-```
-cd "${PREFIX}"
-tar xvf "${DOWNLOAD_DIR}/epics.extensions.configure.tar.gz 
-```
-
-Prepare configuration files for elegant and other OAG apps
-```
-cd "${PREFIX}"
-tar xvf "${DOWNLOAD_DIR}/oag.apps.configure.tar.gz 
-```
-
-## Base configuration for SDDS and elegant
 ```
 ARGS=()
-ARGS+=( "AR=ar -rc" )
-ARGS+=( "LD=ld -r" )
-ARGS+=( "RANLIB=ranlib" )
-ARGS+=( "GNU_DIR=${GCC_DIR}" )
-ARGS+=( "CLAPACK_LIB=${ATLAS_LIBRARY_DIR}" )
-ARGS+=( "ATLAS_LIB=${ATLAS_LIBRARY_DIR}" )
-ARGS+=( "ATLAS_INCLUDE=${ATLAS_INCLUDE_DIR}" )
-ARGS+=( "SYSGSL=1" )
-ARGS+=( "LAPACK=0" )
-ARGS+=( "GFORTRAN=1" )
-ARGS+=( "CLAPACK=1" )
-ARGS+=( "EPICS_BASE=${PREFIX}/epics/base" )
+ARGS+=( "GNU_BIN=$GCC_DIR/bin" )
+ARGS+=( "LD=/usr/bin/ld" )
+ARGS+=( "AR=/usr/bin/ar -rc" )
+ARGS+=( "RANLIB=/usr/bin/ranlib" )
+ARGS+=( "EPICS_BASE=${PREFIX}" )
 ARGS+=( "INSTALL_LOCATION=${PREFIX}" )
 ARGS+=( "INSTALL_LIB=${PREFIX}/lib" )
 ARGS+=( "INSTALL_SHRLIB=${PREFIX}/lib" )
 ARGS+=( "INSTALL_TCLLIB=${PREFIX}/lib" )
 ARGS+=( "INSTALL_BIN=${PREFIX}/bin" )
+ARGS+=( "SYSGSL=1")
 ```
 
-== Compile SDDS
+## Prepare base build environment
+
+EPICS base configuration
 ```
-cd ${PREFIX}/epics/extensions/src/SDDS/
-make "${ARGS[@]}" OP_SYS_LDLIBS="-lgfortran -lquadmath -lf2c" -C png
-make "${ARGS[@]}" OP_SYS_LDLIBS="-lgfortran -lquadmath -lf2c" -C pgapack
-make "${ARGS[@]}" OP_SYS_LDLIBS="-lgfortran -lquadmath -lf2c"
-make "${ARGS[@]}" OP_SYS_LDLIBS="-lgfortran -lquadmath -lf2c" MPI=1 -C SDDSlib
+mkdir -p "${PREFIX}"
+mkdir -p "${RPN_DEFNS%/*}"
+cp "${DOWNLOAD_DIR}/defns.rpn" "${RPN_DEFNS}"
+cd "${PREFIX}"
+tar xvf "${DOWNLOAD_DIR}/epics.base.configure.tar.gz"
+cd epics/base
+make -e "${ARGS[@]}"
 ```
 
-== Compile elegant
+## Unpack EPICS extensions and OAG apps configuration
+
 ```
+ARGS+=( "TOOLS=${PREFIX}/bin")
+cd "${PREFIX}"
+tar xvf "${DOWNLOAD_DIR}/epics.extensions.configure.tar.gz"
+tar xvf "${DOWNLOAD_DIR}/oag.apps.configure.tar.gz"
+cd "${PREFIX}/oag/apps/configure"
+sed -i "s/clean::/clean:/" RULES_PYTHON
+make -e "${ARGS[@]}"
+```
+
+>
+You have to fix the `clean::` target in `${PREFIX}/oag/apps/configure/PYTHON_RULES`
+
+## Build required tools and libraries from SDDS
+```
+cd "${PREFIX}"
+tar xvf "${DOWNLOAD_DIR}/SDDS.${SDDS_VERSION}.tar.gz"
+cd "${PREFIX}/epics/extensions/src/SDDS/"
+make -e "${ARGS[@]}" -C fftpack   && \
+make -e "${ARGS[@]}" -C lzma      && \
+make -e "${ARGS[@]}" -C matlib    && \
+make -e "${ARGS[@]}" -C mdbcommon && \
+make -e "${ARGS[@]}" -C mdblib    && \
+make -e "${ARGS[@]}" -C mdbmth    && \
+make -e "${ARGS[@]}" -C meschach  && \
+make -e "${ARGS[@]}" -C namelist  && \
+make -e "${ARGS[@]}" -C pgapack   && \
+make -e "${ARGS[@]}" -C rpns/code && \
+make -e "${ARGS[@]}" -C SDDSlib   && \
+make -e "${ARGS[@]}" -C SDDSlib clean
+make    "${ARGS[@]}" MPI=1 -C SDDSlib
+```
+
+## Compile (P)elegant
+
+```
+cd "${PREFIX}"
+tar xvf "${DOWNLOAD_DIR}/elegant.${ELEGANT_VERSION}.tar.gz"
+
 PATH+=":${PREFIX}/bin"
 
-cd "${PREFIX}/oag/apps/src/physics"
-make "${ARGS[@]}" OP_SYS_LDLIBS="-lreadline -lncurses -lgfortran -lquadmath -lf2c -lm -lrt -ldl"
-
-cd "${PREFIX}/oag/apps/src/xraylib"
-make "${ARGS[@]}" OP_SYS_LDLIBS="-lreadline -lncurses -lgfortran -lquadmath -lf2c -lm -lrt -ldl"
-
 cd "${PREFIX}/oag/apps/src/elegant"
-make "${ARGS[@]}" OP_SYS_LDLIBS="-lreadline -lncurses -lgfortran -lquadmath -lf2c -lm -lrt -ldl"
-make "${ARGS[@]}" OP_SYS_LDLIBS="-lreadline -lncurses -lgfortran -lquadmath -lf2c -lm -lrt -ldl" Pelegant
-make "${ARGS[@]}" OP_SYS_LDLIBS="-lreadline -lncurses -lgfortran -lquadmath -lf2c -lm -lrt -ldl" -C elegantTools
-make "${ARGS[@]}" OP_SYS_LDLIBS="-lreadline -lncurses -lgfortran -lquadmath -lf2c -lm -lrt -ldl" -C sddsbrightness
+make -e "${ARGS[@]}"
+make clean
+make    "${ARGS[@]}"  Pelegant
 ```
