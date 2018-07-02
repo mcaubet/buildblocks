@@ -1,7 +1,10 @@
 #!/usr/bin/env modbuild
 
-SOURCE_URL="lammps-2017.8.tar.gz"
-
+pbuild::add_to_group 'MPI'
+pbuild::set_download_url="file:///lammps-2017.8.tar.gz"
+pbuild::set_docfiles \
+		LICENSE \
+		README
 pbuild::compile_in_sourcetree
 
 pbuild::configure() {
@@ -18,9 +21,5 @@ pbuild::install() {
 	strip "${PREFIX}/bin/lmp_omp"
 }
 
-pbuild::add_to_group 'MPI'
-pbuild::set_docfiles \
-		LICENSE \
-		README
 pbuild::make_all
 
