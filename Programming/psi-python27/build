@@ -9,7 +9,7 @@ pbuild::build() {
 }
 
 pbuild::install() {
-	cd "${MODULE_SRCDIR}"
+	cd "${SRC_DIR}"
 	rsync --exclude=".info" --delete --verbose --archive . "${PREFIX}"
 }
 
