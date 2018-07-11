@@ -34,7 +34,7 @@ pbuild::configure() {
 		|| exit 1
 }
 
-pbuild::build() {
+pbuild::compile() {
 	make -C src
 	make -C tools 
 }

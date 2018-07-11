@@ -26,7 +26,7 @@ TBB =
 EOF
 }
 
-pbuild::build() {
+pbuild::compile() {
 	cd "${SRC_DIR}/UMFPACK"
 	make TARGET=CORE2 BINARY=64 USE_THREAD=0 NO_SHARED=1
 }

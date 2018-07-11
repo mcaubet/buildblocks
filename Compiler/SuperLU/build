@@ -37,7 +37,7 @@ pbuild::configure() {
 }
 fi
 
-pbuild::build() {
+pbuild::compile() {
 	if (( V_MAJOR < 5 )); then
 		cd "${SRC_DIR}"
 		mkdir -p "${PREFIX}/lib"

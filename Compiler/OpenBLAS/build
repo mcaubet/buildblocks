@@ -30,7 +30,7 @@ EOF
 	sed -i.bak "s/MACOSX_DEPLOYMENT_TARGET=.*/MACOSX_DEPLOYMENT_TARGET=$MACOSX_DEPLOYMENT_TARGET/" "${SRC_DIR}/Makefile.system"
 }
 
-pbuild::build() {
+pbuild::compile() {
 	make -j3
 }
 

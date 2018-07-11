@@ -11,7 +11,7 @@ pbuild::configure() {
 		--with-liblinear=included
 }
 
-pbuild::build() {
+pbuild::compile() {
 	cd "${SRC_DIR}"
 	make -j "${JOBS}"
 }

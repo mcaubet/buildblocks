@@ -4,7 +4,7 @@ pbuild::configure() {
 	:
 }
 
-pbuild::build() {
+pbuild::compile() {
 	cd "${SRC_DIR}"
 	make
 }

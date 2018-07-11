@@ -57,7 +57,7 @@ pbuild::configure() {
 	cp -v "${BUILDBLOCK_DIR}/files/Makefile-${V_MAJOR}" "${SRC_DIR}/Makefile"
 }
 
-pbuild::build() {
+pbuild::compile() {
 	cd "${SRC_DIR}"
 	which $CC
 	make OTHER_CXXFLAGS="-std=c++11 -I$PWD/include" OTHER_LDFLAGS="-L/Applications/Xcode.app/Contents/Frameworks -lLTO"

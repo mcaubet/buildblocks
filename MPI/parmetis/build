@@ -32,7 +32,7 @@ pbuild::configure() {
 	fi
 }
 
-pbuild::build() {
+pbuild::compile() {
 	CC=$MPICC
 	CXX=$MPICXX
 	F77=$MPIF77

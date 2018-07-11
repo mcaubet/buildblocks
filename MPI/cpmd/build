@@ -16,7 +16,7 @@ pbuild::configure() {
 	./configure.sh "${target}" || exit 1
 }
 
-pbuild::build() {
+pbuild::compile() {
 	make
 }
 

@@ -36,7 +36,7 @@ CDEFS        = -DAdd__
 EOF
 }
 
-pbuild::build() {
+pbuild::compile() {
 	cd "${SRC_DIR}"
 	mkdir -p "${PREFIX}/lib"
 	make

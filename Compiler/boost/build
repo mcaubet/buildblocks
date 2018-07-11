@@ -13,7 +13,7 @@ pbuild::configure() {
 		|| exit 1
 }
 
-pbuild::build() {
+pbuild::compile() {
 	cd "${SRC_DIR}"
 	./b2 \
 		--build-type=minimal \

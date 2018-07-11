@@ -22,7 +22,7 @@ pbuild::configure() {
 		|| exit 1
 }
 
-pbuild::build() {
+pbuild::compile() {
 	make check
 	make 
 	make install

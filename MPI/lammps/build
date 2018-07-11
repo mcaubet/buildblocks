@@ -11,7 +11,7 @@ pbuild::configure() {
 	cp -v "${BUILDBLOCK_DIR}/files/Makefile.PSI" "${BUILD_DIR}/src/MAKE/MINE"
 }
 
-pbuild::build() {
+pbuild::compile() {
 	make -C src PSI
 }
 
