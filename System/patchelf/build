@@ -1,12 +1,3 @@
 #!/usr/bin/env modbuild
 
-pbuild::configure() {
-	"${SRC_DIR}"/configure \
-		--prefix="${PREFIX}" \
-		|| exit 1
-}
-
-pbuild::supported_os 'Linux'
-pbuild::add_to_group 'System'
-pbuild::set_build_dependencies "${COMPILER}"
-pbuild::make_all
+pbuild::set_download_url "https://nixos.org/releases/$P/$P-$V/$P-$V.tar.bz2"
