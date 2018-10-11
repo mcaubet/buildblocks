@@ -1,0 +1,11 @@
+#%Module1.0
+
+module-whatis		"parse command-line arguments from shell scripts"
+module-url		"http://frodo.looijaard.name/project/getopt"
+module-license		"GNU GPLv2"
+module-maintainer	"Achim Gsell <achim.gsell@psi.ch>"
+
+module-help		"
+Getopt(1) is a program to help shell scripts parse command-line parameters.
+"
+

@@ -1,0 +1,43 @@
+#!/usr/bin/env modbuild
+
+pbuild::set_download_url "http://frodo.looijaard.name/system/files/software/$P/$P-${V_PKG}.tar.gz"
+pbuild::compile_in_sourcetree
+
+module use System
+
+pbuild::pre_configure_Linux() {
+	pbuild::add_patch "files/Makefile.patch"
+}
+
+pbuild::configure() {
+	:
+}
+
+pbuild::compile() {
+	case ${OS} in
+		Linux )
+			declare -x LDFLAGS="-lintl"
+			;;
+		Darwin )
+			declare -x LDFLAGS="-lintl -liconv -framework CoreFoundation"
+			;;
+	esac
+
+	make -e all
+}
+
+pbuild::install() {
+	declare -x DESTDIR="${PREFIX}"
+	declare -x prefix=''
+	make -e install
+}
+
+pbuild::cleanup_build() {
+	make -e realclean
+}
+
+# Local Variables:
+# mode: sh
+# sh-basic-offset: 8
+# tab-width: 8
+# End:
