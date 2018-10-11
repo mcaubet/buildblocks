@@ -1,12 +1,6 @@
 #!/usr/bin/env modbuild
 
-SOURCE_URL="https://sourceforge.net/projects/math-atlas/files/Stable/$V/atlas$V.tar.bz2"
-
-pbuild::configure() {
-	"${SRC_DIR}"/configure \
-		--prefix="${PREFIX}" \
-		|| exit 1
-}
+pbuild::set_download_url "https://sourceforge.net/projects/math-atlas/files/Stable/$V/atlas${V_PKG}.tar.bz2"
 
 pbuild::add_to_group 'Compiler'
 pbuild::make_all
