@@ -1,0 +1,20 @@
+#!/usr/bin/env modbuild
+
+pbuild::add_to_group 'Tools'
+
+pbuild::set_download_url "https://github.com/uclouvain/$P/archive/v$V.tar.gz"
+pbuild::add_docfiles 'LICENSE'
+pbuild::add_docfiles 'THANKS.md'
+pbuild::add_docfiles 'AUTHORS.md'
+pbuild::add_docfiles 'NEWS.md'
+pbuild::add_docfiles 'CHANGELOG.md'
+pbuild::add_docfiles 'INSTALL.md'
+pbuild::add_docfiles 'README.md'
+
+pbuild::make_all
+
+# Local Variables:
+# mode: sh
+# sh-basic-offset: 8
+# tab-width: 8
+# End:
