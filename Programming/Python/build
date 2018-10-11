@@ -1,20 +1,16 @@
 #!/usr/bin/env modbuild
 
-SOURCE_URL="https://www.python.org/ftp/python/$V/$P-$V.tgz"
+pbuild::set_download_url "https://www.python.org/ftp/python/${V_PKG}/$P-${V_PKG}.tgz"
+pbuild::add_to_group 'Programming'
 
-export LDFLAGS=""
-export CPPFLAGS=""
-pbuild::configure() {
-	export LDFLAGS="-L${OPENSSL_LIBRARY_DIR}"
-	export CPPFLAGS="-fPIC -I${OPENSSL_INCLUDE_DIR} -I${OPENSSL_INCLUDE_DIR}/openssl"
-	export LD_LIBRARY_PATH+=":${PREFIX}/lib"
-	"${SRC_DIR}"/configure \
-		--prefix="${PREFIX}" \
-		--enable-shared \
-		|| exit 1
+pbuild::pre_configure() {
+	pbuild::add_configure_args "LDFLAGS=-L${OPENSSL_LIBRARY_DIR}"
+	pbuild::add_configure_args "CPPFLAGS=-fPIC -I${OPENSSL_INCLUDE_DIR} -I${OPENSSL_INCLUDE_DIR}/openssl"
+	pbuild::add_configure_args "--enable-shared"
 }
 
 pbuild::post_install() {
+	export LD_LIBRARY_PATH+=":${PREFIX}/lib"
 	export LDFLAGS="-L${OPENSSL_LIBRARY_DIR}"
 	export CPPFLAGS="-I${OPENSSL_INCLUDE_DIR} -I${OPENSSL_INCLUDE_DIR}/openssl"
 	export LD_LIBRARY_PATH+=":${PREFIX}/lib"
@@ -34,6 +30,4 @@ pbuild::post_install() {
 	#pip${V_MAJOR} install mpi4py
 }
 
-pbuild::add_to_group 'Programming'
-pbuild::make_all
 
