@@ -1,4 +1,4 @@
-#%PModule
+#%Pmodule
 
 module-whatis		"portable command-line driven graphing utility"
 module-url		"http://www.gnuplot.info/"
