@@ -8,12 +8,11 @@ pbuild::add_to_group 'HDF5'
 pbuild::compile_in_sourcetree
 pbuild::add_patch 'files/Makefile.pncf.sed.patch'
 
-pbuild::add_docfile README.txt
-pbuild::add_docfile V32-CHANGES.txt
-pbuild::add_docfile VERSION.txt
-pbuild::add_docfile HTML/gpl.txt
+pbuild::add_docfiles README.txt
+pbuild::add_docfiles V32-CHANGES.txt
+pbuild::add_docfiles VERSION.txt
+pbuild::add_docfiles HTML/gpl.txt
 
-declare	config_args=()
 declare BIN=''
 
 pbuild::post_prep() {
@@ -22,40 +21,59 @@ pbuild::post_prep() {
 }
 
 pbuild::pre_configure_Darwin() {
-	cp -av "${BUILDBLOCK_DIR}/files/Makeinclude.OSX_x86_gfortmpi" "ioapi"
-	BIN='OSX_x86_gfortmpi'
+	case "${COMPILER}" in
+	gcc )
+		BIN='OSX_x86_gfortmpi'
+		cp -av "${BUILDBLOCK_DIR}/files/Makeinclude.${BIN}" "ioapi"
+		;;
+	* )
+		std::die 4 "Compiler '${COMPILER}' is not supported on ${OS}!"
+		;;
+	esac
 }
 
 pbuild::pre_configure_Linux() {
-	BIN='Linux2_x86_64gfortmpi'
+	case "${COMPILER}" in
+	pgi )
+		BIN='Linux2_x86pg_pgcc_mpi_nomp'
+		cp -av "${BUILDBLOCK_DIR}/files/Makeinclude.${BIN}" "ioapi"
+		;;
+	gcc )
+		BIN='Linux2_x86_64gfortmpi'
+		;;
+	* )
+		std::die 4 "Compiler '${COMPILER}' is not supported on ${OS}!"
+		;;
+	esac
 }
 
 pbuild::pre_configure() {
 	cp Makefile.template Makefile
-	config_args+=( "BASEDIR=${SRC_DIR}" )
-	config_args+=( "CPLMODE=pncf" )
-	config_args+=( "INSTALL=${PREFIX}" )
-	config_args+=( "NCFLIBS=-lpnetcdf -lnetcdf -lnetcdff -lgfortran" )
-	config_args+=( "BIN=${BIN}" )
-	config_args+=( "FIXDIR=${PREFIX}/include" )
+	pbuild::add_configure_args "BASEDIR=${SRC_DIR}"
+	pbuild::add_configure_args "CPLMODE=pncf"
+	pbuild::add_configure_args "INSTALL=${PREFIX}"
+	pbuild::add_configure_args "NCFLIBS=-lpnetcdf -lnetcdf -lnetcdff -lgfortran"
+	pbuild::add_configure_args "BIN=${BIN}"
+	pbuild::add_configure_args "FIXDIR=${PREFIX}/include"
 }
 
 pbuild::configure() {
-	make "${config_args[@]}" configure
+	make "${CONFIGURE_ARGS[@]}" configure
 }
 
 pbuild::compile() {
-	make "${config_args[@]}" all
+	make "${CONFIGURE_ARGS[@]}" all
 }
 
 pbuild::install() {
-	mkdir -p "${PREFIX}"
-	make "${config_args[@]}" install
+	mkdir -vp "${PREFIX}"
+	make "${CONFIGURE_ARGS[@]}" install
 }
 
 pbuild::post_install() {
 	cd "${PREFIX}"
-	mkdir -p 'include'
+	mkdir -vp 'lib'
+	mkdir -vp 'include'
 	mv -v "${BIN}"/*.a	'lib'
 	mv -v "${BIN}"/*.mod	'include'
 	mv -v "${BIN}"		'bin'
