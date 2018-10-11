@@ -1,0 +1,20 @@
+#!/usr/bin/env modbuild
+
+pbuild::add_to_group 'Tools'
+
+pbuild::set_download_url "http://ftp.stack.nl/pub/users/dimitri/$P-$V.src.tar.gz"
+
+pbuild::add_docfiles 'BUILD.txt'
+pbuild::add_docfiles 'INSTALL'
+pbuild::add_docfiles 'LANGUAGE.HOWTO'
+pbuild::add_docfiles 'LICENSE'
+pbuild::add_docfiles 'README.md'
+pbuild::add_docfiles 'VERSION'
+
+pbuild::make_all
+
+# Local Variables:
+# mode: sh
+# sh-basic-offset: 8
+# tab-width: 8
+# End:
