@@ -1,6 +1,11 @@
 #!/usr/bin/env modbuild
 
-SOURCE_URL="http://github.com/xianyi/$P/archive/v$V.tar.gz"
+pbuild::set_download_url "http://github.com/xianyi/$P/archive/v${V_PKG}.tar.gz"
+
+pbuild::add_to_group 'Compiler'
+pbuild::compile_in_sourcetree
+pbuild::install_docfiles 'LICENSE' 'README.md'
+pbuild::set_supported_compilers 'gcc' 'intel' 'clang-macos'
 
 pbuild::configure() {
 	case ${COMPILER} in
@@ -24,29 +29,33 @@ DRVOPTS  = \$(NOOPT)
 ARCHFLAGS= -ru
 EOF
 	echo "USE_SIMPLE_THREADED_LEVEL3 = 1" >> "${SRC_DIR}/Makefile.rule"
-	echo "NO_AVX = 1" >> "${SRC_DIR}/Makefile.rule"
-	echo "NO_AVX2 = 1" >> "${SRC_DIR}/Makefile.rule"
-	echo "USE_THREAD = 0" >> "${SRC_DIR}/Makefile.rule"
-	sed -i.bak "s/MACOSX_DEPLOYMENT_TARGET=.*/MACOSX_DEPLOYMENT_TARGET=$MACOSX_DEPLOYMENT_TARGET/" "${SRC_DIR}/Makefile.system"
+	if pbuild::use_flag "avx"; then
+		echo "NO_AVX = 0" >> "${SRC_DIR}/Makefile.rule"
+	else
+		echo "NO_AVX = 1" >> "${SRC_DIR}/Makefile.rule"
+	fi
+	if pbuild::use_flag "avx2"; then
+		echo "NO_AVX2 = 0" >> "${SRC_DIR}/Makefile.rule"
+	else
+		echo "NO_AVX2 = 1" >> "${SRC_DIR}/Makefile.rule"
+	fi
+	if pbuild::use_flag "omp"; then
+		echo "USE_THREAD = 1" >> "${SRC_DIR}/Makefile.rule"
+	else
+		echo "USE_THREAD = 0" >> "${SRC_DIR}/Makefile.rule"
+	fi
 }
 
-pbuild::compile() {
-	make -j3
+pbuild::post_configure_Darwin() {
+	sed -i.bak "s/MACOSX_DEPLOYMENT_TARGET=.*/MACOSX_DEPLOYMENT_TARGET=$MACOSX_DEPLOYMENT_TARGET/" \
+		"${SRC_DIR}/Makefile.system"
 }
 
-pbuild::install() {
-	make PREFIX="${PREFIX}" install
+pbuild::post_install() {
 	# We have to build shared libs and remove them here.
 	# Building with NOSHARED gives an error during install -
 	# due to a bug in the Makefile(s).
 	rm -f "${PREFIX}/lib/"*.so
 	rm -f "${PREFIX}/lib/"*.dylib 
-	#( cd "${PREFIX}/lib"; ln -fs
 }
 
-pbuild::add_to_group 'Compiler'
-pbuild::compile_in_sourcetree
-pbuild::set_docfiles 'LICENSE' 'README.md'
-pbuild::set_supported_compilers 'gcc' 'intel' 'clang-macos'
-pbuild::make_all
-pbuild::cleanup_src
