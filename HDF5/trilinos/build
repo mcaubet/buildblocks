@@ -1,6 +1,9 @@
 #!/usr/bin/env modbuild
 
-SOURCE_URL="http://trilinos.csbsju.edu/download/files/trilinos-${V_PKG}-Source.tar.bz2"
+pbuild::set_download_url \
+	"https://github.com/$P/$P/tarball/$P-release-${V//./-}" \
+	"c8f2029fa36230b9f384c56139aaa33111227bcf653e73f7daf3c9efdecc1d2d" \
+	"$P-$V.tar.gz"
 
 declare -rx AR=ar
 
@@ -81,6 +84,6 @@ pbuild::configure() {
 }
 
 pbuild::add_to_group 'HDF5'
-pbuild::set_docfiles Copyright.txt LICENSE README RELEASE_NOTES
+pbuild::install_docfiles Copyright.txt LICENSE README RELEASE_NOTES
 pbuild::make_all
 
