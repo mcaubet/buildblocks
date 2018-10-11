@@ -1,0 +1,14 @@
+#%Module1.0
+
+module-whatis		"cryptographic library"
+module-url		"https://www.lysator.liu.se/~nisse/nettle/"
+module-license		"GNU GPL v2 / GNU LGPL v3"
+module-maintainer	"Achim Gsell <achim.gsell@psi.ch>"
+
+module-help		"
+Nettle is a cryptographic library that is designed to fit easily in more
+or less any context: In crypto toolkits for object-oriented languages (C++,
+Python, Pike, ...), in applications like LSH or GNUPG, or even in kernel
+space. "
+
+append-path	PKG_CONFIG_PATH	$PREFIX/lib64/pkgconfig
