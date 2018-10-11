@@ -1,0 +1,12 @@
+#%Module1.0
+
+module-whatis		"Network Common Data Form"
+module-url		"http://www.unidata.ucar.edu/software/netcdf/"
+module-license		"BSD-like, see \${NETCDF_DIR}/share/doc/netcdf/COPYRIGHT"
+module-maintainer	"Achim Gsell <achim.gsell@psi.ch>"
+
+module-help		"
+NetCDF is a set of software libraries and self-describing, machine-
+independent data formats that support the creation, access, and
+sharing of array-oriented scientific data.
+"
