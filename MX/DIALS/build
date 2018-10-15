@@ -7,6 +7,19 @@ pbuild::set_download_url \
 pbuild::set_sha256sum 'dials-v1-11-3-linux-x86_64.tar.xz:021b7856bd3f431bf15c4f9474a94e5b6fcbfc9966c10063b32766df84bcf107'
 pbuild::install_docfiles 'Copyright' 'ChangeLog' 'NEWS' 'README'
 
+pbuild::configure() {
+        :
+}
+
+pbuild::compile() {
+        :
+}
+
+pbuild::install() {
+        :
+}
+
+
 # Local Variables:
 # mode: sh
 # sh-basic-offset: 8
