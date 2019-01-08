@@ -2,36 +2,39 @@
 
 pbuild::set_download_url \
 	"http://www.open-mpi.org/software/ompi/v${V_MAJOR}.${V_MINOR}/downloads/openmpi-$V.tar.bz2"
+
 pbuild::set_sha256sum "openmpi-3.1.2.tar.bz2:c654ed847f34a278c52a15c98add40402b4a90f0c540779f1ae6c489af8a76c5"
-
-pbuild::configure() {
-	declare -a config_args=()
-	if [[ -n "${CUDA_VERSION}" ]]; then	
-		config_args+=( "--with-cuda=${CUDA_HOME}" )
-	fi
-
-	"${SRC_DIR}"/configure \
-		--prefix="${PREFIX}" \
-		--enable-mpi-cxx \
-		--enable-mpi-cxx-seek \
-		--enable-mpi-f90 \
-		--enable-mpi-profile \
-		--enable-orterun-prefix-by-default \
-		--enable-shared \
-		--enable-static \
-		--enable-smp-locks \
-		--with-sge=yes \
-		--with-slurm=yes \
-		"${config_args[@]}" \
-		|| exit 1
-}
-
-pbuild::post_install() {
-	if [[ -r /usr/lib64/libnuma.a ]]; then
-		:
-	fi
-}
 
 pbuild::add_to_group 'Compiler'
 pbuild::install_docfiles 'AUTHORS' 'LICENSE' 'NEWS' 'README'
-pbuild::make_all
+
+
+pbuild::pre_configure() {
+	if [[ -n "${CUDA_VERSION}" ]]; then	
+		pbuild::add_configure_args "--with-cuda=${CUDA_HOME}"
+	fi
+	pbuild::add_configure_args "--prefix=${PREFIX}"
+	pbuild::add_configure_args "--enable-mpi-cxx"
+	pbuild::add_configure_args "--enable-mpi-cxx-seek"
+	pbuild::add_configure_args "--enable-mpi-f90"
+	pbuild::add_configure_args "--enable-mpi-profile"
+	pbuild::add_configure_args "--enable-orterun-prefix-by-default"
+	pbuild::add_configure_args "--enable-shared"
+	pbuild::add_configure_args "--enable-static"
+	pbuild::add_configure_args "--enable-smp-locks"
+	pbuild::add_configure_args "--with-sge=yes"
+	pbuild::add_configure_args "--with-slurm=yes"
+}
+
+pbuild::post_install() {
+	if [[ -r /usr/lib64/libnuma.so ]]; then
+		cp -av /usr/lib64/libnuma.so.* "${PREFIX}/lib"
+	fi
+	if [[ -r /usr/lib64/libibverbs.so ]]; then
+		cp -av /usr/lib64/libibverbs.so.* "${PREFIX}/lib"
+	fi
+	if [[ -r /usr/lib64/librdmacm.so ]]; then
+		cp -av /usr/lib64/librdmacm.so.* "${PREFIX}/lib"
+	fi
+}
+
