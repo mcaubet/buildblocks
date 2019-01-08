@@ -1,0 +1,111 @@
+#!/usr/bin/env modbuild
+
+# :FIXME: must be merged with build6!
+
+pbuild::set_download_url "https://root.cern.ch/download/root_v${V_MAJOR}.${V_MINOR}.${V_PATCHLVL}.source.tar.gz"
+
+declare -a EXTRA_LIBS=()
+config_args=''
+
+case ${OS} in
+Darwin )
+	# cocoa doesn't work with GCC!?
+	#config_args='--enable-cocoa --disable-x11'
+	config_args+=' --with-finkdir=/opt/X11 --disable-cocoa'
+	;;
+Linux )
+	INSTANTCLIENT_INCLUDE_DIR='/usr/include/oracle/12.1/client64'
+	INSTANTCLIENT_LIBRARY_DIR='/usr/lib/oracle/12.1/client64/lib'
+	if [[ -e ${INSTANTCLIENT_INCLUDE_DIR} ]] && \
+           [[ -e ${INSTANTCLIENT_LIBRARY_DIR} ]]; then
+		EXTRA_LIBS+=( "${INSTANTCLIENT_LIBRARY_DIR}/libclntshcore.so" )
+		EXTRA_LIBS+=( "${INSTANTCLIENT_LIBRARY_DIR}/libclntshcore.so.12.1" )
+		EXTRA_LIBS+=( "${INSTANTCLIENT_LIBRARY_DIR}/libclntsh.so" )
+		EXTRA_LIBS+=( "${INSTANTCLIENT_LIBRARY_DIR}/libclntsh.so.12.1" )
+		EXTRA_LIBS+=( "${INSTANTCLIENT_LIBRARY_DIR}/libipc1.so" )
+		EXTRA_LIBS+=( "${INSTANTCLIENT_LIBRARY_DIR}/libmql1.so" )
+		EXTRA_LIBS+=( "${INSTANTCLIENT_LIBRARY_DIR}/libnnz12.so" )
+		EXTRA_LIBS+=( "${INSTANTCLIENT_LIBRARY_DIR}/libocci.so" )
+		EXTRA_LIBS+=( "${INSTANTCLIENT_LIBRARY_DIR}/libocci.so.12.1" )
+		EXTRA_LIBS+=( "${INSTANTCLIENT_LIBRARY_DIR}/libociei.so" )
+		EXTRA_LIBS+=( "${INSTANTCLIENT_LIBRARY_DIR}/libocijdbc12.so" )
+		EXTRA_LIBS+=( "${INSTANTCLIENT_LIBRARY_DIR}/libons.so" )
+		EXTRA_LIBS+=( "${INSTANTCLIENT_LIBRARY_DIR}/liboramysql12.so" )
+		config_args+=" --with-oracle-incdir=${INSTANTCLIENT_INCLUDE_DIR}"
+		config_args+=" --with-oracle-libdir=${INSTANTCLIENT_LIBRARY_DIR}"
+	fi
+	;;
+*)
+	;;
+esac
+
+# enabled by default
+# 	fftw3
+#	oracle
+#	xml
+#
+pbuild::configure() {
+	"${SRC_DIR}"/configure \
+		--enable-asimage \
+		--enable-mathmore \
+		--disable-ldap \
+		--disable-mysql \
+		--disable-opengl \
+		--disable-python \
+		--with-cc=${CC} \
+		--with-cxx=${CXX} \
+		--with-f77=${F77} \
+		--with-ld=${CXX} \
+		${config_args} \
+		|| exit 1
+}
+
+pbuild::compile() {
+	make -j 4
+}
+
+pbuild::install() {
+	make clean
+
+	mkdir -p "${PREFIX}"
+	cp -rv * "${PREFIX}"
+	mkdir -p "${PREFIX}/${_DOCDIR}"
+	rsync --archive --verbose	 "${PREFIX}/LICENSE"	"${PREFIX}/${_DOCDIR}/LICENSE"
+	rsync --archive --verbose	 "${PREFIX}/man/"	"${PREFIX}/share/man/"
+	rsync --archive --verbose	 "${PREFIX}/README/"	"${PREFIX}/${_DOCDIR}/README/" 
+
+	rm -rf	 "${PREFIX}/LICENSE"
+	rm -rf	 "${PREFIX}/man/"
+	rm -rf	 "${PREFIX}/README"
+
+	rm -f  Makefile
+	rm -rf config.*
+	rm -rf core
+	rm -rf io
+	rm -rf math
+	rm -rf net
+	rm -rf hist
+	rm -rf tree
+	rm -rf graf2d
+	rm -rf graf3d
+	rm -rf gui
+	rm -rf html
+	rm -rf montecarlo
+	rm -rf geom
+	rm -rf proof
+	rm -rf sql
+	rm -rf misc
+	rm -rf test
+	rm -rf tmva
+	rm -rf tutorials
+	rm -rf rootx
+}
+
+pbuild::post_install() {
+	for lib in "${EXTRA_LIBS[@]}"; do
+		cp -av "${lib}" "${PREFIX}"/lib
+	done
+}
+
+pbuild::add_to_group 'Compiler'
+pbuild::make_all
