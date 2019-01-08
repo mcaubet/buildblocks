@@ -45,9 +45,12 @@ hdf5_serial/1.8.19	stable		gcc/5.4.0
 hdf5_serial/1.8.19	stable		gcc/6.3.0
 hdf5_serial/1.8.19	stable		gcc/7.2.0
 
+hdf5_serial/1.8.20	stable		gcc/4.8.5 
 hdf5_serial/1.8.20	stable		gcc/5.5.0 
 hdf5_serial/1.8.20	stable		gcc/6.4.0 
 hdf5_serial/1.8.20	stable		gcc/7.3.0 
+hdf5_serial/1.8.20	stable		gcc/8.2.0 
+hdf5_serial/1.8.20	stable		intel/18.4 
 
 hdf5_serial/1.10.1	stable		gcc/4.8.5 
 hdf5_serial/1.10.1	stable		gcc/4.9.4 
@@ -72,3 +75,12 @@ hdf5_serial/1.10.2	stable		gcc/7.3.0
 hdf5_serial/1.10.2      stable		intel/18.2
 hdf5_serial/1.10.2	unstable	pgi/18.5
 hdf5_serial/1.10.2      stable		intel/18.3
+
+hdf5_serial/1.10.3	stable		gcc/4.8.5
+hdf5_serial/1.10.3	stable		gcc/5.5.0
+hdf5_serial/1.10.3	stable		gcc/6.4.0
+hdf5_serial/1.10.3	stable		gcc/7.3.0
+hdf5_serial/1.10.3	stable		gcc/8.2.0
+hdf5_serial/1.10.3	stable		intel/18.4
+
+hdf5_serial/1.10.4	stable		gcc/7.3.0

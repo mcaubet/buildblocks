@@ -1,25 +1,80 @@
 #!/usr/bin/env modbuild
 
+# pbuild::set_download_url "https://gitlab.psi.ch/caubet_m/merlin-software/raw/master/$P/$P-${V_PKG}.tar.gz"
+pbuild::set_download_url "https://github.com/lammps/lammps/archive/patch_15Nov2018.tar.gz"
+
 pbuild::add_to_group 'MPI'
-pbuild::set_download_url https://gitlab.psi.ch/Pmodules/download/raw/master/$P-$V.tar.gz
-pbuild::install_docfiles \
-		LICENSE \
-		README
+
+pbuild::install_docfiles README LICENSE
+
 pbuild::compile_in_sourcetree
 
+# pbuild::pre_configure() {
+#   pbuild::add_configure_args "-D CMAKE_BUILD_TYPE=RELEASE"
+# 
+#   pbuild::add_configure_args "-D BUILD_MPI=yes"
+#   pbuild::add_configure_args "-D BUILD_OMP=yes"
+#   pbuild::add_configure_args "-D PKG_USER-OMP=yes"
+#   pbuild::add_configure_args "-D PKG_BODY=yes"
+#   pbuild::add_configure_args "-D PKG_DIPOLE=yes"
+#   pbuild::add_configure_args "-D PKG_MOLECULE=yes"
+#   pbuild::add_configure_args "-D PKG_MPIIO=yes"
+#   pbuild::add_configure_args "-D PKG_REPLICA=yes"
+#   # pbuild::add_configure_args "-D PKG_REAX=yes"
+#   pbuild::add_configure_args "-D PKG_RIGID=yes"
+#   pbuild::add_configure_args "-D PKG_USER-REAXC=yes"
+# 
+# }
+
+# pbuild::configure() {
+# 	cp -v "${BUILDBLOCK_DIR}/files/Makefile.PSI" "${BUILD_DIR}/src/MAKE/MINE"
+# }
+#
 pbuild::configure() {
-	cp -v "${BUILDBLOCK_DIR}/files/Makefile.PSI" "${BUILD_DIR}/src/MAKE/MINE"
+  sed -i '/^CCFLAGS.*/ s/$/ -fopenmp/' ${BUILD_DIR}/src/MAKE/Makefile.mpi
+  sed -i '/^LINKFLAGS.*/ s/$/ -fopenmp/' ${BUILD_DIR}/src/MAKE/Makefile.mpi
 }
 
 pbuild::compile() {
-	make -C src PSI
+  echo BEGIN COMPILE
+  cd src
+  # make clean-all
+  # make no-all
+  make yes-user-omp
+  make yes-asphere
+  make yes-body
+  make yes-compress
+  make yes-coreshell
+  make yes-dipole
+  make yes-granular
+  make yes-manybody
+  make yes-kspace
+  make yes-mc
+  make yes-misc
+  make yes-molecule
+  make yes-mpiio
+  make yes-opt
+  make yes-python
+  make yes-replica
+  make yes-rigid
+  make yes-snap
+  make yes-user-eff
+  make yes-user-drude
+  make yes-user-reaxc
+  make yes-user-reaxc args="-m serial"
+  make yes-user-reaxc args="-m mpi"
+  make mpi
+  echo ENDCOMPILE
 }
 
 pbuild::install() {
 	install -m 0755 -d "${PREFIX}/bin"
-	install -m 0755  "${BUILD_DIR}/src/lmp_PSI" "${PREFIX}/bin/lmp_omp"
-	strip "${PREFIX}/bin/lmp_omp"
+  # Modify this for installing individual binaries
+	install -m 0755  "${BUILD_DIR}/src/lmp_mpi" "${PREFIX}/bin/"
+
+  # Strip all present binaries
+  for file in $(ls ${PREFIX}/bin/lmp_*)
+  do
+    strip "$file"
+  done
 }
-
-pbuild::make_all
-
