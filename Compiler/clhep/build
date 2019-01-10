@@ -1,0 +1,21 @@
+#!/usr/bin/env modbuild
+
+pbuild::set_download_url "http://proj-clhep.web.cern.ch/proj-clhep/DISTRIBUTION/tarFiles/$P-${V_PKG}.tgz"
+
+pbuild::add_to_group 'Compiler'
+
+pbuild::install_docfiles 'ChangeLog'
+pbuild::install_docfiles 'compilers.txt'
+pbuild::install_docfiles 'COPYING'
+pbuild::install_docfiles 'COPYING.LESSER'
+pbuild::install_docfiles 'README.md'
+
+pbuild::post_prep() {
+	mv CLHEP/* .
+}
+
+# Local Variables:
+# mode: sh
+# sh-basic-offset: 8
+# tab-width: 8
+# End:

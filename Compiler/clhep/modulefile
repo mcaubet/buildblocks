@@ -1,0 +1,13 @@
+#%Module1.0
+
+module-whatis		"class library for high energy physics"
+module-url		"https://proj-clhep.web.cern.ch/proj-clhep/"
+module-license		"GNU GPL, GNU GLPL"
+module-maintainer	"Achim Gsell <achim.gsell@psi.ch>"
+module-help 		"
+The CLHEP project was proposed by Leif Lönnblad at CHEP 92. It is intended
+to be a set of HEP-specific foundation and utility classes such as random
+generators, physics vectors, geometry and linear algebra. CLHEP is structured
+in a set of packages independent of any external package (interdependencies
+within CLHEP are allowed under certain conditions). 
+"
