@@ -1,8 +1,8 @@
 #!/usr/bin/env modbuild
 
 pbuild::set_download_url "http://www.mpich.org/static/downloads/$V/$P-${V_PKG}.tar.gz"
-
 pbuild::add_to_group 'Compiler'
+pbuild::install_docfiles 'COPYRIGHT' 'README'
 
 module use System
 
@@ -16,5 +16,3 @@ pbuild::pre_configure() {
 	fi
 }
 
-pbuild::install_docfiles 'COPYRIGHT' 'README'
-pbuild::make_all
