@@ -1,0 +1,52 @@
+#!/usr/bin/env modbuild
+
+
+pbuild::set_download_url "https://github.com/AMReX-Codes/$P/archive/${V_PKG}.tar.gz" "amrex-${V_PKG}.tar.gz"
+pbuild::add_to_group 'MPI'
+
+pbuild::install_docfiles 'CHANGES'
+pbuild::install_docfiles 'INSTALL'
+pbuild::install_docfiles 'license.txt'
+pbuild::install_docfiles 'README.txt'
+
+
+pbuild::pre_configure() {
+	pbuild::use_cmake
+	OPENMP=0
+	pbuild::use_flag "2d" && DIM=2
+	pbuild::use_flag "3d" && DIM=3
+
+	pbuild::add_configure_args "CC=${MPICC}"
+	pbuild::add_configure_args "CXX=${MPICXX}"
+	pbuild::add_configure_args "FC=${MPIF90}"
+	pbuild::add_configure_args "-DENABLE_PARTICLES=1"
+	pbuild::add_configure_args "-DENABLE_LINEAR_SOLVERS=1"
+	pbuild::add_configure_args "-DENABLE_LINEAR_SOLVERS_LEGACY=1"
+	pbuild::add_configure_args "-DDEBUG=OFF"
+	pbuild::add_configure_args "-DDIM=${DIM}"
+	pbuild::add_configure_args "-DENABLE_PIC=0"
+	pbuild::add_configure_args "-DENABLE_MPI=1"
+	pbuild::add_configure_args "-DENABLE_OMP=${OPENMP}"
+	pbuild::add_configure_args "-DENABLE_DP=1"
+	pbuild::add_configure_args "-DENABLE_EB=OFF"
+	pbuild::add_configure_args "-DENABLE_FORTRAN_INTERFACES=ON"
+	pbuild::add_configure_args "-DENABLE_FBASELIB=1"
+	pbuild::add_configure_args "-DENABLE_AMRDATA=OFF"
+	pbuild::add_configure_args "-DENABLE_DP_PARTICLES=1"
+	pbuild::add_configure_args "-DENABLE_FPE=0"
+	pbuild::add_configure_args "-DENABLE_ASSERTION=OFF"
+	pbuild::add_configure_args "-DENABLE_BASE_PROFILE=OFF"
+	pbuild::add_configure_args "-DENABLE_TINY_PROFILE=OFF"
+	pbuild::add_configure_args "-DENABLE_TRACE_PROFILE=OFF"
+	pbuild::add_configure_args "-DENABLE_MEM_PROFILE=OFF"
+	pbuild::add_configure_args "-DENABLE_COMM_PROFILE=OFF"
+	pbuild::add_configure_args "-DENABLE_BACKTRACE=OFF"
+	pbuild::add_configure_args "-DENABLE_PROFPARSER=OFF"
+	pbuild::add_configure_args "-DCMAKE_BUILD_TYPE=Release"
+}
+
+# Local Variables:
+# mode: sh
+# sh-basic-offset: 8
+# tab-width: 8
+# End:

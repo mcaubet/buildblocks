@@ -1,0 +1,10 @@
+#%Module1.0
+
+module-whatis		"Adaptive Mesh Refinment library for exascale"
+module-url		"https://amrex-codes.github.io/"
+module-license		"BSD like, see $PREFIX/share/doc/amrex/license.txt"
+module-maintainer	"Achim Gsell <achim.gsell@psi.ch>"
+module-help 		"
+A software framework for massively parallel, block-structured adaptive mesh
+refinement (AMR) applications.
+"
