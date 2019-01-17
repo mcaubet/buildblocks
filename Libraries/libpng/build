@@ -1,0 +1,15 @@
+#!/usr/bin/env modbuild
+
+V_XY=${V_MAJOR}${V_MINOR}
+pbuild::set_download_url "ftp://ftp-osl.osuosl.org/pub/$P/src/$P${V_XY}/$P-${V_PKG}.tar.xz"
+pbuild::add_to_group 'Libraries'
+
+pbuild::install_docfiles 'ANNOUNCE'
+pbuild::install_docfiles 'CHANGES'
+pbuild::install_docfiles 'LICENSE'
+pbuild::install_docfiles 'README'
+pbuild::install_docfiles 'TODO'
+
+pbuild::add_configure_args "--disable-shared"
+pbuild::add_configure_args "--with-pic"
+
