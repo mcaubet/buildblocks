@@ -1,0 +1,20 @@
+--- src.orig/libs/context/build/Jamfile.v2	2018-08-01 22:50:46.000000000 +0200
++++ src/libs/context/build/Jamfile.v2	2018-11-30 10:06:57.000000000 +0100
+@@ -613,6 +613,17 @@
+      <address-model>64
+      <architecture>x86
+      <binary-format>mach-o
++     <toolset>gcc
++   ;
++
++alias asm_sources
++   : asm/make_x86_64_sysv_macho_gas.S
++     asm/jump_x86_64_sysv_macho_gas.S
++     asm/ontop_x86_64_sysv_macho_gas.S
++   : <abi>sysv
++     <address-model>64
++     <architecture>x86
++     <binary-format>mach-o
+      <toolset>darwin
+    ;
+ 
