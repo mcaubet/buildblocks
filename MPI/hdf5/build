@@ -3,10 +3,10 @@
 pbuild::set_download_url "https://support.hdfgroup.org/ftp/HDF5/releases/$P-${V_MAJOR}.${V_MINOR}/$P-$V/src/hdf5-$V.tar.bz2"
 pbuild::add_to_group 'MPI'
 
-pbuild::add_docfiles ACKNOWLEDGMENTS
-pbuild::add_docfiles COPYING
-pbuild::add_docfiles MANIFEST
-pbuild::add_docfiles README.txt
+pbuild::install_docfiles ACKNOWLEDGMENTS
+pbuild::install_docfiles COPYING
+pbuild::install_docfiles MANIFEST
+pbuild::install_docfiles README.txt
 
 pbuild::pre_configure() {
 	pbuild::add_configure_args "CC=${MPICC}"
