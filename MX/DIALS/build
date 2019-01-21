@@ -18,7 +18,7 @@ pbuild::compile() {
 }
 
 pbuild::install() {
-        ./install --prefix=/opt/psi/MX/DIALS/${V}
+        ./install --prefix="${PREFIX}"
 }
 
 
