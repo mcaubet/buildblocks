@@ -15,7 +15,7 @@ pbuild::patch_sources_Darwin() {
 
 pbuild::configure() {
 	local -a conf_args=()
-	conf_args+=( "--enable-languages=c,c++,objc,obj-c++,lto,fortran" )
+	conf_args+=( "--enable-languages=c,c++,objc,obj-c++,lto,fortran,go" )
 	conf_args+=( "--with-gmp=${GMP_PREFIX}" )
 	conf_args+=( "--with-mpfr=${MPFR_PREFIX}" )
 	conf_args+=( "--with-mpc=${MPC_PREFIX}" )
