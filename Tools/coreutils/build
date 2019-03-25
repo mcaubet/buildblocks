@@ -1,0 +1,6 @@
+#!/usr/bin/env modbuild
+
+pbuild::set_download_url "http://ftp.gnu.org/gnu/coreutils/$P-${V_PKG}.tar.xz"
+pbuild::add_to_group 'Tools'
+
+#pbuild::add_configure_args "--bindir=${PREFIX}/sbin"
