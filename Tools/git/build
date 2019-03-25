@@ -9,7 +9,12 @@ pbuild::pre_configure_Darwin() {
 	export NO_APPLE_COMMON_CRYPTO=1
 }
 
+pbuild::post_configure_Linux() {
+	echo 'LIBC_CONTAINS_LIBINTL=' >> "${SRC_DIR}/config.mak.autogen"
+}
+
 pbuild::pre_configure() {
+	pbuild::add_configure_args "LIBS=-lintl"
 	pbuild::add_configure_args "--with-tcltk"
 	pbuild::add_configure_args "--with-perl=${PERL_PREFIX}/bin/perl"
 }
