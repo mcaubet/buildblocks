@@ -1,5 +1,18 @@
 #!/usr/bin/env modbuild
 
-pbuild::set_download_url "https://github.com/Blosc/hdf5-blosc/archive/v${V_PKG}.tar.gz"
+pbuild::set_download_url \
+	"https://github.com/Blosc/hdf5-blosc/archive/v${V_PKG}.tar.gz" \
+	"$P-${V_PKG}.tar.gz"
 pbuild::add_to_group 'HDF5_serial'
 pbuild::use_cmake
+
+pbuild::install() {
+	module use System
+	module load patchelf/0.8.1
+
+	mkdir -p "${PREFIX}/lib"
+	install -m 0644 "${BUILD_DIR}/blosc/lib/"lib* "${PREFIX}/lib"
+	install -m 0644 "${BUILD_DIR}"/lib*.so "${PREFIX}/lib"
+	patchelf --set-rpath "" "${PREFIX}"/lib/libH5Zblosc.so
+	patchelf --set-rpath "" "${PREFIX}"/lib/libblosc_filter.so
+}
