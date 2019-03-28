@@ -19,7 +19,9 @@ pbuild::pre_configure() {
 		clang-macos )
 			# we do not have Fortran in Xcode
 			pbuild::add_configure_args "--disable-fortran"
-			pbuild::add_configure_args "--disable-fortran2003"
+			if [[ "${V_MAJOR}.${V_MINOR}" == "1.8" ]]; then
+				pbuild::add_configure_args "--disable-fortran2003"
+			fi
 			;;
 		pgi )
 			# PGI uses GCC's include files, some object files and
@@ -40,10 +42,15 @@ pbuild::pre_configure() {
 			pbuild::add_configure_args "CXXFLAGS=-fPIC"
 			pbuild::add_configure_args "FCFLAGS=-fPIC"
 			pbuild::add_configure_args "--enable-fortran"
-			pbuild::add_configure_args "--enable-fortran2003"
+			if [[ "${V_MAJOR}.${V_MINOR}" == "1.8" ]]; then
+				pbuild::add_configure_args "--enable-fortran2003"
+			fi
 			;;
 		* )
 			pbuild::add_configure_args "--enable-fortran"
-			pbuild::add_configure_args "--enable-fortran2003"
+			if [[ "${V_MAJOR}.${V_MINOR}" == "1.8" ]]; then
+				pbuild::add_configure_args "--enable-fortran2003"
+			fi
+			;;
 	esac
 }
