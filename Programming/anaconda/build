@@ -1,0 +1,42 @@
+#!/usr/bin/env modbuild
+
+pbuild::add_to_group 'Programming'
+pbuild::prep() {
+    echo "prepping"
+    source "${BUILDBLOCK_DIR}/files/config-$V.sh"
+
+    mkdir -p "$SRC_DIR"
+    echo curl -fsSLo "$SRC_DIR/miniconda.sh" "https://repo.anaconda.com/miniconda/Miniconda2-${CONDA_VERSION}-Linux-x86_64.sh"
+    curl -fsSLo "$SRC_DIR/miniconda.sh" "https://repo.anaconda.com/miniconda/Miniconda2-${CONDA_VERSION}-Linux-x86_64.sh"
+}
+
+pbuild::configure() {
+    :
+}
+
+pbuild::compile() {
+    :
+}
+
+pbuild::install() {
+    source "${BUILDBLOCK_DIR}/files/config-$V.sh"
+
+    mkdir -p $PREFIX
+
+    # Install conda
+    bash "$SRC_DIR/miniconda.sh" -b -p $PREFIX/conda
+
+    # Load conda
+    source "$PREFIX/conda/etc/profile.d/conda.sh"
+
+    # Install anaconda versions
+    for PY in "${PYTHON_VERSION[@]}"; do
+        conda install -y anaconda=$V python=$PY
+    done
+
+    # Deactivate
+    source deactivate
+
+    # Unload conda; 
+    #unset $(set|sed -rn 's/^(_?conda[a-z_]*).*$/\1/pI');
+}
