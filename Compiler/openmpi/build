@@ -16,25 +16,28 @@ pbuild::pre_configure() {
 	pbuild::add_configure_args "--prefix=${PREFIX}"
 	pbuild::add_configure_args "--enable-mpi-cxx"
 	pbuild::add_configure_args "--enable-mpi-cxx-seek"
-	pbuild::add_configure_args "--enable-mpi-f90"
-	pbuild::add_configure_args "--enable-mpi-profile"
 	pbuild::add_configure_args "--enable-orterun-prefix-by-default"
 	pbuild::add_configure_args "--enable-shared"
 	pbuild::add_configure_args "--enable-static"
-	pbuild::add_configure_args "--enable-smp-locks"
 	pbuild::add_configure_args "--with-sge=yes"
 	pbuild::add_configure_args "--with-slurm=yes"
+	if (( V_MAJOR < 4 )); then
+		pbuild::add_configure_args "--enable-mpi-f90"
+		pbuild::add_configure_args "--enable-mpi-profile"
+		pbuild::add_configure_args "--enable-smp-locks"
+	elif (( V_MAJOR >= 4 )); then
+		pbuild::add_configure_args "--enable-mpi-fortran"
+	fi
 }
 
 pbuild::post_install() {
 	if [[ -r /usr/lib64/libnuma.so ]]; then
-		cp -av /usr/lib64/libnuma.so.* "${PREFIX}/lib"
+		cp -av /usr/lib64/libnuma.so.* "${PREFIX}/lib/fallback"
 	fi
 	if [[ -r /usr/lib64/libibverbs.so ]]; then
-		cp -av /usr/lib64/libibverbs.so.* "${PREFIX}/lib"
+		cp -av /usr/lib64/libibverbs.so.* "${PREFIX}/lib/fallback"
 	fi
 	if [[ -r /usr/lib64/librdmacm.so ]]; then
-		cp -av /usr/lib64/librdmacm.so.* "${PREFIX}/lib"
+		cp -av /usr/lib64/librdmacm.so.* "${PREFIX}/lib/fallback"
 	fi
 }
-
