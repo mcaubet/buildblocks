@@ -4,6 +4,3 @@
 # Should match the version distributed with anaconda
 CONDA_VERSION=4.5.12
 
-# List of python versions to install
-PYTHON_VERSIONS=(2.7)
-
