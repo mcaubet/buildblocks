@@ -1,6 +1,7 @@
 #!/usr/bin/env modbuild
+# Needs to be built with SSE2 and AVX2 support, but should run on architectures without this
 
-pbuild::add_to_group 'Compiler'
+pbuild::add_to_group 'MPI'
 
 pbuild::set_download_url "http://www.fftw.org/fftw-$V.tar.gz"
 pbuild::set_sha256sum "fftw-3.3.8.tar.gz:6113262f6e92c5bd474f2875fa1b01054c4ad5040f6b0da7c03c98821d9ae303"
