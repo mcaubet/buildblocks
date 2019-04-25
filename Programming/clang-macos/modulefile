@@ -1,0 +1,15 @@
+#%Module1.0
+
+module-whatis		"Dummy module for Xcode Clang Compiler."
+module-url		"https://developer.apple.com/xcode/"
+module-license		"Apple"
+module-maintainer	"Achim Gsell <achim.gsell@psi.ch>"
+
+module-help	"
+Dummy module for Xcode Clang compiler.
+"
+
+set-family	"Compiler"
+
+setenv		CC			/usr/bin/gcc
+setenv		CXX			/usr/bin/g++
