@@ -2,7 +2,8 @@
 
 # :FIXME: script does not work any more!
 
-SOURCE_URL="dks-1.1.2.tar.gz"
+pbuild::set_download_url "http://amas.web.psi.ch/Downloads/$P/src/$P-${V_PKG}.tar.gz"
+pbuild::add_to_group 'MPI'
 
 declare -ra vers=( ${V//./ } )
 
@@ -32,9 +33,6 @@ pbuild::install() {
 	install -d "${PREFIX}/lib"
 	make install
 }
-
-pbuild::add_to_group 'MPI'
-pbuild::make_all
 
 # Local Variables:
 # mode: sh
