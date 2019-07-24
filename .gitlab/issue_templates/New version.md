@@ -1,11 +1,10 @@
-# New module request
+# Request for a new version of an existing module
 
 ## Name and version
 
-Overlay: default
-Group: 
 Name:
 Version:
+Overlay: default
 
 ## Operating systems 
 
