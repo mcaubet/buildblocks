@@ -11,7 +11,9 @@ Installation
 1. A NAMD account is needed to download binaries
 2. Create new directory `/opt/psi/MPI/NAMD/$VERSION`
 3. Download the latest binary.
-   - Use `NAMD_$VERSION_Linux-x86_64-ibverbs-smp-CUDA.tar.gz`
+   - Use `NAMD_$VERSION_Linux-x86_64-verbs-smp-CUDA.tar.gz` for _gpu
+   - Use `NAMD_$VERSION_Linux-x86_64-verbs-smp.tar.gz` for non-gpu
+
 4. Unpack to the new directory with `tar -xzvf NAMD*.tar.gz --strip-components=1 -C /opt/psi/MPI/NAMD/$VERSION`
 5. Clean up:
 
