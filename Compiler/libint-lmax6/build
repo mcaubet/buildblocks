@@ -1,0 +1,27 @@
+#!/usr/bin/env modbuild
+
+pbuild::set_download_url "https://github.com/cp2k/libint-cp2k/releases/download/v${V_PKG}/libint-v${V_PKG}-cp2k-lmax-6.tgz"
+pbuild::add_to_group 'Compiler'
+
+#pbuild::install_docfiles 'CONTRIBUTING.md'
+#pbuild::install_docfiles 'LICENSE.md'
+#pbuild::install_docfiles 'README.md'
+
+pbuild::compile_in_sourcetree
+
+pbuild::post_prep() {
+	sed -i 's/(CXX)/(FC)/g' fortran/Makefile.in
+}
+
+pbuild::pre_configure() {
+	local -a cxxflags=()
+	cxxflags+=('-O2' '-fPIC' '-g1')
+	cxxflags+=('-fp-model precise' '-funroll-loops')
+	cxxflags+=('-traceback' '-xHost')
+
+	pbuild::add_configure_args "--with-cxx=${CXX}"
+	pbuild::add_configure_args "--with-cxx-optflags=${cxxflags[*]}"
+	pbuild::add_configure_args "--with-fc=ifort"
+	pbuild::add_configure_args "--enable-fortran"
+}
+

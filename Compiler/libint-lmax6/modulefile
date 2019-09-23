@@ -1,0 +1,11 @@
+#%Module1.0
+
+module-whatis		"evaluation of molecular integrals of many-body operators over Gaussian functions"
+module-url		"https://github.com/evaleev/libint"
+module-license		"GNU LGPL, version 3; GNU GPL, version 3"
+module-maintainer	"Achim Gsell <achim.gsell@psi.ch>"
+module-help		"
+A library for the evaluation of molecular integrals of many-body
+operators over Gaussian functions.
+"
+
