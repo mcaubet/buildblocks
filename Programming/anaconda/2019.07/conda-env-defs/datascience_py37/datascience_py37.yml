@@ -22,3 +22,5 @@ dependencies:
   - dask
   - dask-jobqueue
   - python-graphviz
+  - bayesian-optimization
+  
