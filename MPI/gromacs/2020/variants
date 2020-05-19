@@ -1,0 +1,2 @@
+gromacs/2020_sp  unstable gcc/7.4.0 openmpi/3.1.5_merlin6 cuda/10.0.130 Python/3.7.4 b:cmake/3.14.0
+gromacs/2020.2_sp  unstable gcc/7.5.0 openmpi/3.1.6_slurm cuda/10.0.130 Python/3.7.4 b:cmake/3.15.5

@@ -29,6 +29,10 @@ pbuild::pre_configure() {
   else
  	pbuild::add_configure_args "-DGMX_GPU=off"
   fi
-  # To remove: pbuild::add_configure_args "-DGMX_SIMD=SSE2"
+  # For GMX_SIMD the lowest instruction number you think might work on all nodes
+  #   |- Available numbers: http://manual.gromacs.org/documentation/2020/install-guide/index.html#simd-support
+  #   |- AVX_512 is only for newest Intel processors (Xeon Scalable Gold, Core i9, etc.)
+  #      AVX_512 will not work on old GPUs, this is why we chood AVX2_256 which are processors from 2013
+  pbuild::add_configure_args "-DGMX_SIMD=AVX2_256"
   pbuild::add_configure_args "-DGMX_BUILD_OWN_FFTW=on"
 }
