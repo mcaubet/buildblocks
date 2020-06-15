@@ -1,9 +1,6 @@
-# How to compile (P)elegant
+# Building a module for (P)elegant
 
 ## Official build instructions
-
->
-Go down for PSI build instructions!
 
 Instructions to setup `epics/base`, `epics/extensions` compile `SDDS` and `elegant`. The instructions to build from source are almost at the end of the page:
 
