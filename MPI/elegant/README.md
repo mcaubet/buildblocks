@@ -14,7 +14,7 @@ https://ops.aps.anl.gov/publish/Pelegant_manual/node2.html
 
 **Main page**
 
-* https://www1.aps.anl.gov/Accelerator-Operations-Physics/Software
+* https://www.aps.anl.gov/Accelerator-Operations-Physics/Software
 
 **Configuration files for EPICS build system (base and extensions)**
 
