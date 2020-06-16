@@ -58,13 +58,6 @@ ARGS+=( "AR=/usr/bin/ar -rc" )
 ARGS+=( "RANLIB=/usr/bin/ranlib" )
 ARGS+=( "EPICS_BASE=${EPICS_BASE}" )
 ARGS+=( "SYSGSL=1")
-
-#ARGS+=( "INSTALL_LOCATION=${PREFIX}" )
-#ARGS+=( "INSTALL_LIB=${PREFIX}/lib" )
-#ARGS+=( "INSTALL_SHRLIB=${PREFIX}/lib" )
-#ARGS+=( "INSTALL_TCLLIB=${PREFIX}/lib" )
-#ARGS+=( "INSTALL_BIN=${PREFIX}/bin" )
-
 ```
 
 ## Prepare base build environment
@@ -83,7 +76,7 @@ make -e "${ARGS[@]}"
 ## Unpack EPICS extensions and OAG apps configuration
 
 ```
-ARGS+=( "TOOLS=${PREFIX}/bin")
+#ARGS+=( "TOOLS=${PREFIX}/bin")
 cd "${PREFIX}"
 tar xvf "${DOWNLOAD_DIR}/epics.extensions.configure.tar.gz"
 tar xvf "${DOWNLOAD_DIR}/oag.apps.configure.tar.gz"
@@ -92,10 +85,9 @@ sed -i "s/clean::/clean:/" RULES_PYTHON
 make -e "${ARGS[@]}"
 ```
 
-> You have to fix the `clean::` target in `${PREFIX}/oag/apps/configure/PYTHON_RULES`
-
 ## Build required tools and libraries from SDDS
 ```
+
 cd "${PREFIX}"
 tar xvf "${DOWNLOAD_DIR}/SDDS.${SDDS_VERSION}.tar.gz"
 cd "${PREFIX}/epics/extensions/src/SDDS/"
@@ -104,42 +96,26 @@ sed -i -e  "s/\( sddsmatrixop_SYS_LIBS.*\)/\1 gfortran/" SDDSaps/pseudoInverse/M
 
 make -e "${ARGS[@]}" -C png   && \
 make -e "${ARGS[@]}"  
-
-
-make -e "${ARGS[@]}" -C pgapack   && \
-
-make -e "${ARGS[@]}" -C fftpack   && \
-make -e "${ARGS[@]}" -C lzma      && \
-make -e "${ARGS[@]}" -C matlib    && \
-make -e "${ARGS[@]}" -C mdbcommon && \
-make -e "${ARGS[@]}" -C mdblib    && \
-make -e "${ARGS[@]}" -C mdbmth    && \
-make -e "${ARGS[@]}" -C SDDSlib   && \
-make -e "${ARGS[@]}" -C SDDSaps/pseudoInverse OP_SYS_LDLIBS=-lgfortran
-
-make -e "${ARGS[@]}" -C meschach  && \
-make -e "${ARGS[@]}" -C namelist  && \
-make -e "${ARGS[@]}" -C rpns/code && \
-
-
-make -e "${ARGS[@]}" -C SDDSlib clean
-make    "${ARGS[@]}" MPI=1 -C SDDSlib
 ```
 
 ## Compile elegant
 
+```
+PATH+=":$PREFIX/epics/extensions/bin/linux-x86_64"
 cd "${PREFIX}"
 tar xvf "${DOWNLOAD_DIR}/elegant.${ELEGANT_VERSION}.tar.gz"
 cd "${PREFIX}/oag/apps/src/elegant"
-make -e "${ARGS[@]}" STATIC_BUILD=NO
+make "${ARGS[@]}" STATIC_BUILD=NO
+```
 
 ## Compile Pelegant
 
 ```
 cd "${PREFIX}/epics/extensions/src/SDDS/"
-make -e "${ARGS[@]}" -C SDDSlib clean
-make    "${ARGS[@]}" MPI=1 -C SDDSlib
+make "${ARGS[@]}" -C pgapack
+make "${ARGS[@]}" -C SDDSlib clean
+make "${ARGS[@]}" MPI=1 -C SDDSlib
 cd "${PREFIX}/oag/apps/src/elegant"
 make clean
-make    "${ARGS[@]}" STATIC_BUILD=NO Pelegant
+make SYSGSL=1 Pelegant
 ```
