@@ -57,12 +57,14 @@ ARGS+=( "LD=/usr/bin/ld" )
 ARGS+=( "AR=/usr/bin/ar -rc" )
 ARGS+=( "RANLIB=/usr/bin/ranlib" )
 ARGS+=( "EPICS_BASE=${EPICS_BASE}" )
-ARGS+=( "INSTALL_LOCATION=${PREFIX}" )
-ARGS+=( "INSTALL_LIB=${PREFIX}/lib" )
-ARGS+=( "INSTALL_SHRLIB=${PREFIX}/lib" )
-ARGS+=( "INSTALL_TCLLIB=${PREFIX}/lib" )
-ARGS+=( "INSTALL_BIN=${PREFIX}/bin" )
 ARGS+=( "SYSGSL=1")
+
+#ARGS+=( "INSTALL_LOCATION=${PREFIX}" )
+#ARGS+=( "INSTALL_LIB=${PREFIX}/lib" )
+#ARGS+=( "INSTALL_SHRLIB=${PREFIX}/lib" )
+#ARGS+=( "INSTALL_TCLLIB=${PREFIX}/lib" )
+#ARGS+=( "INSTALL_BIN=${PREFIX}/bin" )
+
 ```
 
 ## Prepare base build environment
@@ -102,8 +104,6 @@ sed -i -e  "s/\( sddsmatrixop_SYS_LIBS.*\)/\1 gfortran/" SDDSaps/pseudoInverse/M
 
 make -e "${ARGS[@]}" -C png   && \
 make -e "${ARGS[@]}"  
-make -e "${ARGS[@]}" -C SDDSlib clean
-make    "${ARGS[@]}" MPI=1 -C SDDSlib
 
 
 make -e "${ARGS[@]}" -C pgapack   && \
@@ -126,16 +126,20 @@ make -e "${ARGS[@]}" -C SDDSlib clean
 make    "${ARGS[@]}" MPI=1 -C SDDSlib
 ```
 
-## Compile (P)elegant
+## Compile elegant
 
-```
 cd "${PREFIX}"
 tar xvf "${DOWNLOAD_DIR}/elegant.${ELEGANT_VERSION}.tar.gz"
-
-PATH+=":${PREFIX}/bin"
-
 cd "${PREFIX}/oag/apps/src/elegant"
-make -e "${ARGS[@]}"
+make -e "${ARGS[@]}" STATIC_BUILD=NO
+
+## Compile Pelegant
+
+```
+cd "${PREFIX}/epics/extensions/src/SDDS/"
+make -e "${ARGS[@]}" -C SDDSlib clean
+make    "${ARGS[@]}" MPI=1 -C SDDSlib
+cd "${PREFIX}/oag/apps/src/elegant"
 make clean
-make    "${ARGS[@]}"  Pelegant
+make    "${ARGS[@]}" STATIC_BUILD=NO Pelegant
 ```
