@@ -1,0 +1,9 @@
+#%Module1.0
+
+module-whatis		"full-wave numerical solver for free-electron lasers."
+module-url		"https://github.com/arnaualba/mithra"
+module-license		"none"
+module-maintainer	"Achim Gsell <achim.gsell@psi.ch>"
+module-help 		"
+MITHRA is a full-wave numerical solver for free-electron lasers.
+"

@@ -1,0 +1,32 @@
+#!/usr/bin/env modbuild
+
+case ${V_PKG} in
+2020.8.27 )
+	commit='0bf2a64'
+	;;
+2.0.0 )
+	commit='21f8119'
+	;;
+* )
+	echo "Unsupported version!" 1>&2
+	;;
+esac
+
+
+pbuild::set_download_url "https://github.com/arnaualba/mithra/archive/${commit}.tar.gz"
+pbuild::add_to_group 'MPI'
+
+#pbuild::install_docfiles 'license.txt'
+pbuild::install_docfiles 'README.md'
+
+pbuild::compile_in_sourcetree
+
+pbuild::configure() {
+	:
+}
+
+# Local Variables:
+# mode: sh
+# sh-basic-offset: 8
+# tab-width: 8
+# End:
