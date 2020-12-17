@@ -2,7 +2,7 @@
 
 module-whatis           "a software environment for subtomogram averaging of cryo-EM data"
 module-url              "https://wiki.dynamo.biozentrum.unibas.ch/w/index.php/Main_Page"
-module-license          "GPLv2 license"
+module-license          "MIT (dynamo), MCR license (MCR library)"
 module-maintainer       "Spencer Bliven <spencer.bliven@psi.ch>"
 
 module-help             "
