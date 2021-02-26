@@ -40,3 +40,5 @@ hdf5/1.10.5	stable		gcc/{7.4.0,8.3.0} openmpi/3.1.4
 hdf5/1.10.6	stable		gcc/{7.5.0,8.4.0,9.3.0,10.1.0} openmpi/3.1.6
 
 hdf5/1.10.7	unstable	gcc/{7.5.0,8.4.0,9.3.0,10.2.0} openmpi/4.0.5
+
+hdf5/1.12.0	unstable	gcc/{7.5.0,8.4.0,9.3.0,10.2.0} openmpi/4.0.5
