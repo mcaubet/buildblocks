@@ -7,3 +7,4 @@ cuda/10.1.105	stable
 cuda/11.0.3     stable
 cuda/11.1.0     stable
 cuda/11.1.1     stable
+cuda/11.2.2     unstable
