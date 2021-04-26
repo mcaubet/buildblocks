@@ -1,0 +1,1 @@
+kokkos/3.3.01_dgx	unstable	gcc/{8.4.0,9.3.0,10.2.0} cuda/11.2.2 b:cmake/3.19.2

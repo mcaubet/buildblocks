@@ -1,0 +1,27 @@
+#!/usr/bin/env modbuild
+
+pbuild::set_download_url "https://github.com/kokkos/kokkos/archive/${V_PKG}/$P-${V_PKG}.tar.gz"
+
+pbuild::add_to_group 'Compiler'
+pbuild::install_docfiles \
+	'LICENSE'
+
+pbuild::pre_configure() {
+	local GPU='AMPERE80'
+	pbuild::add_configure_args "-DCMAKE_INSTALL_PREFIX=${PREFIX}"
+	pbuild::add_configure_args "-DCMAKE_CXX_COMPILER=${CC}"
+	pbuild::add_configure_args "-DCMAKE_BUILD_TYPE=Release"
+	pbuild::add_configure_args "-DKokkos_CXX_STANDARD=17"
+	pbuild::add_configure_args "-DKokkos_ENABLE_SERIAL=On"
+	pbuild::add_configure_args "-DKokkos_ARCH_${GPU}=On"
+	pbuild::add_configure_args "-DKokkos_ENABLE_OPENMP=Off"
+	pbuild::add_configure_args "-DKokkos_ENABLE_CUDA=On"
+	pbuild::add_configure_args "-DKokkos_CUDA_DIR=${CUDA_DIR}"
+	pbuild::add_configure_args "-DKokkos_ENABLE_CUDA_LAMBDA=On"
+	pbuild::add_configure_args "-DKokkos_ENABLE_CUDA_UVM=Off"
+}
+# Local Variables:
+# mode: sh
+# sh-basic-offset: 8
+# tab-width: 8
+# End:
