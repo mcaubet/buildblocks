@@ -13,6 +13,8 @@ pbuild::install_docfiles 'AUTHORS' 'LICENSE' 'NEWS' 'README'
 
 
 pbuild::pre_configure() {
+        unset PMIX_VERSION
+
 	if [[ -n "${CUDA_VERSION}" ]]; then	
 		pbuild::add_configure_args "--with-cuda=${CUDA_HOME}"
 	fi
@@ -25,6 +27,10 @@ pbuild::pre_configure() {
        	pbuild::add_configure_args "--with-hwloc=internal"
 	pbuild::add_configure_args "--with-slurm=yes"
 	pbuild::add_configure_args "--with-ucx=${UCX_PREFIX}"
+	pbuild::add_configure_args "--with-ofi-libdir=${LIBFABRIC_LIBRARY_DIR}"
+	pbuild::add_configure_args "--with-ofi=${LIBFABRIC_PREFIX}"
+	pbuild::add_configure_args "--with-pmix=${PMIX_PREFIX}"
+        pbuild::add_configure_args "--with-pmix-libdir=${PMIX_LIBRARY_DIR}"
 
         if pbuild::use_flag slurm || pbuild::use_flag dgx || pbuild::use_flag merlin6; then
 		pbuild::add_configure_args "--with-pmi"

@@ -31,5 +31,6 @@ openmpi/4.0.5-2_slurm   unstable   gcc/10.2.0 cuda/11.3.0 b:ucx/1.11.0_slurm
 openmpi/4.0.5-1_dgx     unstable   gcc/{8.4.0,9.3.0,10.2.0} cuda/11.2.2 b:ucx/1.10.0-1_dgx
 openmpi/4.1.0-1_dgx     unstable   gcc/10.2.0 cuda/11.2.2 b:ucx/1.10.0-1_dgx
 
+openmpi/4.1.1_merlin6   unstable   gcc/10.2.0 cuda/11.3.0 libfabric/1.13.0 ucx/1.11.0_slurm pmix/3.2.3 b:libevent/2.1.12 
 
 openmpi/4.0.4_slurm_libpmix unstable gcc/9.3.0
