@@ -1,0 +1,37 @@
+#!/usr/bin/env modbuild
+
+pbuild::add_to_group 'MX'
+
+
+pbuild::prep() {
+    :
+}
+
+pbuild::configure() {
+    :
+}
+
+pbuild::compile() {
+    :
+}
+
+pbuild::install() {
+    ALPHAFOLD_HOME="$PREFIX/alphafold"
+
+    local BRANCH
+    if [[ "${#V_RELEASE}" -eq 7 ]]; then
+        # Release looks like a git hash
+        BRANCH="${V_RELEASE}"
+    else
+        BRANCH="v${V_PKG}"
+    fi
+
+    git clone --depth=1 -b "$BRANCH" https://github.com/deepmind/alphafold.git "$ALPHAFOLD_HOME" || return $?
+    if ! [ -f "$ALPHAFOLD_HOME/alphafold/common/stereo_chemical_props.txt" ]; then
+        wget -q -P "$ALPHAFOLD_HOME/alphafold/common/" \
+            https://git.scicore.unibas.ch/schwede/openstructure/-/raw/7102c63615b64735c4941278d92b554ec94415f8/modules/mol/alg/src/stereo_chemical_props.txt
+    fi
+    wget -O "$ALPHAFOLD_HOME/run_alphafold.sh" \
+        https://raw.githubusercontent.com/kalininalab/alphafold_non_docker/main/run_alphafold.sh
+    chmod +x "$ALPHAFOLD_HOME/run_alphafold.sh"
+}
