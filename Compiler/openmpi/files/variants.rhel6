@@ -10,25 +10,25 @@ openmpi/1.8.8	deprecated	gcc/{4.8.5,5.2.0}
 openmpi/1.10.2	deprecated	gcc/{4.8.5,4.9.3,4.9.4,5.3.0,5.4.0,6.1.0,6.2.0}
 openmpi/1.10.2	deprecated	intel/15.3
 openmpi/1.10.4	deprecated	gcc/{4.8.5,4.9.4,5.4.0,6.2.0}
-openmpi/1.10.7	stable		gcc/{4.8.5,4.9.4,5.4.0} b:cuda/8.0.44
-openmpi/1.10.7	stable		gcc/{5.5.0,6.2.0,6.3.0,6.4.0,7.2.0,7.3.0,8.2.0}
-openmpi/1.10.7	stable		intel/17.4
+openmpi/1.10.7	deprecated	gcc/{4.8.5,4.9.4,5.4.0} b:cuda/8.0.44
+openmpi/1.10.7	deprecated	gcc/{5.5.0,6.2.0,6.3.0,6.4.0,7.2.0,7.3.0,8.2.0}
+openmpi/1.10.7	deprecated	intel/17.4
 
-openmpi/2.0.0	stable		gcc/6.1.0
-openmpi/2.0.0	stable		intel/16.3
-openmpi/2.0.1   stable		gcc/{4.9.4,5.4.0,6.2.0,6.3.0}
+openmpi/2.0.0	deprecated	gcc/6.1.0
+openmpi/2.0.0	deprecated	intel/16.3
+openmpi/2.0.1   deprecated	gcc/{4.9.4,5.4.0,6.2.0,6.3.0}
 
-openmpi/2.1.0	stable		gcc/7.1.0
-openmpi/2.1.1   stable          gcc/{6.4.0,7.2.0}
-openmpi/2.1.1   stable          intel/{17.1,17.4}
-openmpi/2.1.2	stable		gcc/7.3.0
-openmpi/2.1.2   stable          intel/17.4
-openmpi/2.1.5	stable		gcc/{4.8.5,5.5.0,6.4.0,7.3.0,8.2.0}
+openmpi/2.1.0	deprecated	gcc/7.1.0
+openmpi/2.1.1   deprecated	gcc/{6.4.0,7.2.0}
+openmpi/2.1.1   deprecated	intel/{17.1,17.4}
+openmpi/2.1.2	deprecated	gcc/7.3.0
+openmpi/2.1.2   deprecated	intel/17.4
+openmpi/2.1.5	deprecated	gcc/{4.8.5,5.5.0,6.4.0,7.3.0,8.2.0}
 
-openmpi/3.0.0   stable          gcc/{5.5.0,6.4.0,7.2.0,7.3.0}
-openmpi/3.0.0   stable          intel/17.4
-openmpi/3.0.1   stable		gcc/{5.5.0,6.4.0,7.3.0,8.1.0}
-openpmi/3.0.1   stable		intel/18.2
+openmpi/3.0.0   deprecated	gcc/{5.5.0,6.4.0,7.2.0,7.3.0}
+openmpi/3.0.0   deprecated	intel/17.4
+openmpi/3.0.1   deprecated	gcc/{5.5.0,6.4.0,7.3.0,8.1.0}
+openpmi/3.0.1   deprecated	intel/18.2
 openmpi/3.1.1	stable		gcc/{8.1.0,8.2.0}
 openmpi/3.1.2	stable		gcc/{7.3.0,8.2.0}
 openmpi/3.1.2	stable		intel/18.4
