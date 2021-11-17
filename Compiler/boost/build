@@ -13,13 +13,14 @@ pbuild::pre_configure() {
 	gcc )
 	        TOOLSET=gcc
 	        ;;
+	clang )
+		TOOLSET=clang
+		;;
 	* )
 	        std::die 1 "Unsupported compiler!"
 	        ;;
 	esac
-}
 
-pbuild::compile() {
         cd "${SRC_DIR}"
         ./bootstrap.sh \
                 --prefix="${PREFIX}" \
@@ -39,6 +40,9 @@ pbuild::compile() {
                 || exit 1
 }
 
+pbuild::compile() {
+	:
+}
 pbuild::install() {
 	:
 }
