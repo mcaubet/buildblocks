@@ -1,0 +1,18 @@
+#!/usr/bin/env modbuild
+
+pbuild::add_to_group 'Programming'
+pbuild::compile_in_sourcetree
+
+pbuild::set_download_url \
+	"https://github.com/$P/otp/releases/download/OTP-${V_PKG}/otp_src_${V_PKG}.tar.gz"
+#pbuild::set_sha256sum 'gnuplot-5.2.4.tar.gz:1515f000bd373aaa53b16183f274189d4f5e0ae47d22f434857933d16a4770cb'
+#pbuild::install_docfiles 'Copyright' 'NEWS' 'README'
+
+pbuild::pre_configure() {
+	:
+}
+# Local Variables:
+# mode: sh
+# sh-basic-offset: 8
+# tab-width: 8
+# End:
