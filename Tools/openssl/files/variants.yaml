@@ -1,0 +1,26 @@
+overlay: base
+relstage: stable
+openssl/1.0.2h:
+  - systems: rhel6
+    relstage: deprecated
+openssl/1.0.2j:
+  - systems: rhel6
+    relstage: deprecated
+openssl/1.0.2m:
+  - systems: rhel6
+    relstage: deprecated
+openssl/1.0.2o:
+  - systems: rhel6
+    relstage: deprecated
+openssl/1.0.2r:
+  - systems: rhel6
+openssl/1.1.1g:
+  - systems: rhel6
+openssl/1.1.1k:
+  - systems: rhel6
+openssl/1.1.1l:
+  - systems: rhel6
+openssl/1.1.1m:
+  - systems: rhel7
+openssl/1.1.1q:
+  - systems: rhel7
