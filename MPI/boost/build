@@ -20,6 +20,10 @@ pbuild::compile() {
 	gcc )
 	        TOOLSET=gcc
 	        ;;
+	intel )
+	        TOOLSET=intel-linux
+	        # TOOLSET=gcc
+	        ;;
 	* )
 	        std::die 1 "Unsupported compiler!"
 	        ;;
