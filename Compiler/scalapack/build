@@ -29,4 +29,3 @@ pbuild::install_docfiles 'README' 'LICENSE'
 pbuild::pre_configure_Linux() {
    pbuild::use_cmake
 }
-
