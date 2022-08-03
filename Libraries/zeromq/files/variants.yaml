@@ -1,0 +1,4 @@
+overlay: base
+group: Libraries
+zeromq/4.3.4:
+  - relstage: stable
