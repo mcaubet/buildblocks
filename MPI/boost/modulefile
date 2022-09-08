@@ -12,3 +12,4 @@ testing. It contains over eighty individual libraries.
 (Wikipedia)
 "
 
+setenv BOOST_ROOT "$PREFIX"
