@@ -1,0 +1,20 @@
+#!/usr/bin/env modbuild
+
+pbuild::set_download_url \
+	"https://github.com/git-lfs/git-lfs/archive/refs/tags/v3.2.0.tar.gz" \
+	"git-lfs-3.2.0.tar.gz"
+
+pbuild::compile_in_sourcetree
+#pbuild::install_docfiles 'COPYING' 'README.md'
+pbuild::add_to_group 'Tools'
+unset -f pbuild::configure
+
+pbuild::install() {
+	install ./bin/git-lfs "${PREFIX}/bin"
+}
+
+# Local Variables:
+# mode: sh
+# sh-basic-offset: 8
+# tab-width: 8
+# End:
