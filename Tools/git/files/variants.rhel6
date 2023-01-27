@@ -5,5 +5,5 @@ git/2.22.0 stable
 git/2.30.0 stable
 git/2.33.1 stable
 git/2.37.0 stable
-git/2.37.2 unstable git-lfs/3.3.0
-git/2.39.1 unstable git-lfs/3.3.0
+git/2.37.2 stable git-lfs/3.3.0
+git/2.39.1 stable git-lfs/3.3.0
