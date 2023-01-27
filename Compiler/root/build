@@ -35,6 +35,11 @@ pbuild::pre_configure_Linux() {
 		pbuild::add_configure_args "-DORACLE_PATH_LIB=${INSTANTCLIENT_LIBRARY_DIR}"
 		pbuild::add_configure_args "-DORACLE_OCI_VERSION=10G_R2"
 	fi
+	pbuild::add_configure_args "-Dbuiltin_fftw3=ON"
+	pbuild::add_configure_args "-Dxrootd=OFF"
+	pbuild::add_configure_args "-DCMAKE_CXX_STANDARD=17"
+	pbuild::add_configure_args "-DCXX_STANDARD_STRING=17"
+
 }
 
 pbuild::compile() {
@@ -50,5 +55,6 @@ pbuild::post_install_Linux() {
 		install -m 0644 "${INSTANTCLIENT_LIBRARY_DIR}"/*  "${PREFIX}"/lib
 		install -m 0644 "${INSTANTCLIENT_INCLUDE_DIR}"/*  "${PREFIX}"/include
 	fi
+	install -m 0644 "${GSL_LIBRARY_DIR}"/lib*.so.*  "${PREFIX}"/lib
 }
 
