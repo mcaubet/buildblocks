@@ -61,7 +61,14 @@ if { $kern == "Linux" } {
 	set target osx86-64
 }
 
-set libdir "$::env(PGI_PREFIX)/${target}/2018/mpi/openmpi"
+libdir="$::env(PGI_PREFIX)/${target}"
+if { $V == '18.5'} {
+  libdir=$libdir/2018
+} else {
+  libdir=$libdir/2021
+}
+libdir=$libdir/mpi/openmpi
+set libdir $libdir
 
 prepend-path PATH $libdir/bin
 prepend-path LD_LIBRARY_PATH $libdir/lib
