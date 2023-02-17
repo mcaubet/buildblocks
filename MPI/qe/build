@@ -16,6 +16,7 @@ pbuild::pre_configure() {
                         pbuild::add_configure_args "--with-cuda=$CUDA_HOME"
                         pbuild::add_configure_args "--with-cuda-cc=60"
                         pbuild::add_configure_args "--with-cuda-mpi=yes"
+                        pbuild::add_configure_args "--with-cuda-runtime=8+"
                         ;;
         esac
 
