@@ -10,7 +10,7 @@ pbuild::compile_in_sourcetree
 
 pbuild::pre_configure() {
         pbuild::add_configure_args "--enable-openmp"
-        pbuild::add_configure_args "--with-hdf5"
+        pbuild::add_configure_args "--with-hdf5=$HDF5_DIR"
 
         case "${COMPILER}" in
                 pgi )
