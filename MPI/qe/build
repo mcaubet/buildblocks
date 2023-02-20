@@ -9,13 +9,15 @@ pbuild::install_docfiles License README.md CONTRIBUTING.md
 pbuild::compile_in_sourcetree
 
 pbuild::pre_configure() {
-        pbuild::add_configure_args "-enable-openmp"
+        pbuild::add_configure_args "--enable-openmp"
+        pbuild::add_configure_args "--with-hdf5"
 
         case "${COMPILER}" in
                 pgi )
                         pbuild::add_configure_args "--with-cuda=$CUDA_HOME"
                         pbuild::add_configure_args "--with-cuda-cc=60"
                         pbuild::add_configure_args "--with-cuda-mpi=yes"
+                        pbuild::add_configure_args "--enable-openacc"
                         ;;
         esac
 
