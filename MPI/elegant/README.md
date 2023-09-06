@@ -1,55 +1,162 @@
-# How to compile (P)elegant
+# Building a module for (P)elegant
 
-## Official build instructions
+## Home page and official build instructions
 
->
-Go down for PSI build instructions!
+Elgant is a software packages produced by the [Accelerator Operations
+and Physics Group](https://www.aps.anl.gov/Accelerator-Operations-Physics/Software).
+It requires the EPICS build-system and SDDS. The EPICS build-system is completely 
+based on Makefiles. This makes it a bit harder to compile and more error prone. 
 
-Instructions to setup `epics/base`, `epics/extensions` compile `SDDS` and `elegant`. The instructions to build from source are almost at the end of the page:
+Instructions to setup `epics/base`, `epics/extensions` and to compile `SDDS` as
+well as `elegant` can be found 
+[here](https://www.aps.anl.gov/Accelerator-Operations-Physics/Software/installationGuide_Linux).
+The instructions to build from source are almost at the end of the page.
 
-https://www.aps.anl.gov/Accelerator-Operations-Physics/Software/installationGuide_Linux
+Instructions to build [`Pelegant`](https://ops.aps.anl.gov/publish/Pelegant_manual/node2.html)
 
-Instructions to build `Pelegant`:
+## Getting required configuration files
 
-https://ops.aps.anl.gov/publish/Pelegant_manual/node2.html
+* [file defining constants and some functions](https://ops.aps.anl.gov/cgi-bin/oagLog4.cgi?name=defns.rpn)
+* [EPICS base configuration](http://www.aps.anl.gov/Accelerator_Systems_Division/Accelerator_Operations_Physics/cgi-bin/oagLog4.cgi?name=epics.base.configure.tar.gz)
+* [EPICS extensions configuration](http://www.aps.anl.gov/Accelerator_Systems_Division/Accelerator_Operations_Physics/cgi-bin/oagLog4.cgi?name=epics.extensions.configure.tar.gz)
+* [Configuration files for elegant, spiffe, genesis, and shower](http://www.aps.anl.gov/Accelerator_Systems_Division/Accelerator_Operations_Physics/cgi-bin/oagLog4.cgi?name=oag.apps.configure.tar.gz)
 
-## Get the software
+## Elegant 2021.4.0
 
-**Main page**
+### SDDS 5 and Elegant 2021.4 sources
 
-* https://www1.aps.anl.gov/Accelerator-Operations-Physics/Software
+* [SDDS 5.1 source](https://ops.aps.anl.gov/cgi-bin/oagLog4.cgi?name=SDDS.5.1.tar.gz)
+* [Elegant 2021.4.0 source](http://www.aps.anl.gov/Accelerator_Systems_Division/Accelerator_Operations_Physics/cgi-bin/oagLog4.cgi?name=elegant.2021.4.0.tar.gz)
 
-**Configuration files for EPICS build system (base and extensions)**
+### Setup Environment
 
-* http://www.aps.anl.gov/Accelerator_Systems_Division/Accelerator_Operations_Physics/cgi-bin/oagLog4.cgi?name=epics.base.configure.tar.gz
-* http://www.aps.anl.gov/Accelerator_Systems_Division/Accelerator_Operations_Physics/cgi-bin/oagLog4.cgi?name=epics.extensions.configure.tar.gz
-
-**Configure files for elegant, spiffe, genesis, and shower**
-
-* http://www.aps.anl.gov/Accelerator_Systems_Division/Accelerator_Operations_Physics/cgi-bin/oagLog4.cgi?name=oag.apps.configure.tar.gz
-
-**SDDS source**
-
-* http://www.aps.anl.gov/Accelerator_Systems_Division/Accelerator_Operations_Physics/cgi-bin/oagLog4.cgi?name=SDDS.3.6.1.tar.gz
-
-**elegant source**
-
-* http://www.aps.anl.gov/Accelerator_Systems_Division/Accelerator_Operations_Physics/cgi-bin/oagLog4.cgi?name=elegant.34.2.0.tar.gz
-
-## Required Modules
-
+#### Pmodules
+Compile on Merlin:
 ```
-module load gcc/7.3.0 gsl/2.4 OpenBLAS/0.2.20 mpich/3.2.1
+USE_FLAGS="_slurm"
+module load gcc/10.3.0 gsl/2.7 lapack/3.10.0 openmpi/4.0.5-1_slurm
 ```
-
-## Set used versions
+Compile on other systems (e.g. Pmod7.psi.ch)
 ```
-SDDS_VERSION=3.6.1
-ELEGANT_VERSION=34.2.0
+USE_FLAGS=""
+module load gcc/10.3.0 gsl/2.7 lapack/3.10.0 openmpi/4.0.5
 ```
 
-## Setup Environment
+#### Elegant, SDDS, etc
 ```
+SDDS_VERSION=5.1
+ELEGANT_VERSION=2021.4.0
+ELEGANT_RELASE=-2
+DOWNLOAD_DIR="/opt/psi/var/distfiles/elegant"
+PREFIX="${PMODULES_ROOT}/MPI/elegant/${ELEGANT_VERSION}${ELEGANT_RELASE}${USE_FLAGS}/${MPI}/${MPI_VERSION}/${COMPILER}/${COMPILER_VERSION}"
+
+export EPICS_BASE="${PREFIX}/epics/base"
+export HOST_ARCH=linux-x86_64
+export EPICS_HOST_ARCH=linux-x86_64
+export RPN_DEFNS="${PREFIX}/RPN_DEFNS/defns.rpn"
+export PERLLIB="${PREFIX}/lib/perl"
+
+PATH+=":$PREFIX/epics/extensions/bin/${EPICS_HOST_ARCH}"
+
+ARGS=()
+ARGS+=( "GNU_BIN=$GCC_DIR/bin" )
+ARGS+=( "LD=/usr/bin/ld" )
+ARGS+=( "AR=/usr/bin/ar -rc" )
+ARGS+=( "RANLIB=/usr/bin/ranlib" )
+ARGS+=( "SYSGSL=1")
+```
+
+### Prepare everything
+```
+mkdir -p "${PREFIX}"
+mkdir -p "${RPN_DEFNS%/*}"
+cp "${DOWNLOAD_DIR}/defns.rpn" "${RPN_DEFNS}"
+cd "${PREFIX}"
+tar xvf "${DOWNLOAD_DIR}/epics.base.configure.tar.gz"
+tar xvf "${DOWNLOAD_DIR}/epics.extensions.configure.tar.gz"
+tar xvf "${DOWNLOAD_DIR}/oag.apps.configure.tar.gz"
+tar xvf "${DOWNLOAD_DIR}/SDDS.${SDDS_VERSION}.tar.gz"
+tar xvf "${DOWNLOAD_DIR}/elegant.${ELEGANT_VERSION}.tar.gz"
+```
+
+### Configure EPICS base and OAG applications
+
+```
+cd epics/base
+make "${ARGS[@]}"
+cd "${PREFIX}/oag/apps/configure"
+sed -i "s/clean::/clean:/" RULES_PYTHON
+make "${ARGS[@]}"
+```
+
+### Compile SDDS 5.1
+
+```
+cd "${PREFIX}/epics/extensions/src/SDDS/"
+sed -i -e  "s/\( sddspseudoinverse_SYS_LIB.*\)/\1 gfortran/" SDDSaps/pseudoInverse/Makefile
+sed -i -e  "s/\( sddsmatrixop_SYS_LIBS.*\)/\1 gfortran/" SDDSaps/pseudoInverse/Makefile
+
+make "${ARGS[@]}" -C png   && \
+make "${ARGS[@]}"
+
+make "${ARGS[@]}" -C fftpack
+make "${ARGS[@]}" -C pgapack
+make "${ARGS[@]}" -C namelist
+make "${ARGS[@]}" -C matlib
+make "${ARGS[@]}" -C mdbcommon
+make "${ARGS[@]}" -C mdblib
+```
+
+### Compile elegant 2021.4.0
+
+```
+cd "${PREFIX}/oag/apps/src/physics"
+make
+cd "${PREFIX}/oag/apps/src/elegant"
+make "${ARGS[@]}" STATIC_BUILD=NO
+make "${ARGS[@]}" -C elegantTools
+```
+
+### Compile Pelegant 2021.4.0
+
+```
+cd "${PREFIX}/epics/extensions/src/SDDS/"
+make "${ARGS[@]}" -C SDDSlib clean
+make "${ARGS[@]}" MPI=1 -C SDDSlib
+
+cd "${PREFIX}/oag/apps/src/elegant"
+make clean
+make SYSGSL=1 Pelegant
+```
+
+### Final step(s)
+```
+mkdir -p "${PREFIX}/lib64"
+cp -av "${GSL_DIR}"/lib64/* "${PREFIX}"/lib64
+```
+
+## Elegant 2020.2.0
+
+### SDDS and Elegant sources
+
+* [SDDS 4.3.1 source](http://www.aps.anl.gov/Accelerator_Systems_Division/Accelerator_Operations_Physics/cgi-bin/oagLog4.cgi?name=SDDS.4.3.0.tar.gz)
+* [Elegant 2020.2.0 source](http://www.aps.anl.gov/Accelerator_Systems_Division/Accelerator_Operations_Physics/cgi-bin/oagLog4.cgi?name=elegant.2020.2.0.tar.gz)
+
+### Required Modules
+
+```
+module load gcc/8.4.0 gsl/2.6 OpenBLAS/0.3.10 mpich/3.2.1
+```
+or
+```
+module load gcc/8.4.0 gsl/2.6 lapack/3.9.0 openmpi/3.1.6
+```
+
+
+### Setup Environment
+```
+SDDS_VERSION=4.3
+ELEGANT_VERSION=2020.2.0
 source "${PMODULES_ROOT}/config/modbuild.conf"
 DOWNLOAD_DIR="${PMODULES_DISTFILESDIR}/elegant"
 PREFIX="${PMODULES_ROOT}/MPI/elegant/${ELEGANT_VERSION}/${MPI}/${MPI_VERSION}/${COMPILER}/${COMPILER_VERSION}"
@@ -59,81 +166,67 @@ export HOST_ARCH=linux-x86_64
 export EPICS_HOST_ARCH=linux-x86_64
 export RPN_DEFNS="${PREFIX}/RPN_DEFNS/defns.rpn"
 export PERLLIB="${PREFIX}/lib/perl"
-```
 
-```
+PATH+=":$PREFIX/epics/extensions/bin/${EPICS_HOST_ARCH}"
+
 ARGS=()
 ARGS+=( "GNU_BIN=$GCC_DIR/bin" )
 ARGS+=( "LD=/usr/bin/ld" )
 ARGS+=( "AR=/usr/bin/ar -rc" )
 ARGS+=( "RANLIB=/usr/bin/ranlib" )
-ARGS+=( "EPICS_BASE=${PREFIX}" )
-ARGS+=( "INSTALL_LOCATION=${PREFIX}" )
-ARGS+=( "INSTALL_LIB=${PREFIX}/lib" )
-ARGS+=( "INSTALL_SHRLIB=${PREFIX}/lib" )
-ARGS+=( "INSTALL_TCLLIB=${PREFIX}/lib" )
-ARGS+=( "INSTALL_BIN=${PREFIX}/bin" )
 ARGS+=( "SYSGSL=1")
 ```
 
-## Prepare base build environment
+### Prepare everything
 
-EPICS base configuration
 ```
 mkdir -p "${PREFIX}"
 mkdir -p "${RPN_DEFNS%/*}"
 cp "${DOWNLOAD_DIR}/defns.rpn" "${RPN_DEFNS}"
 cd "${PREFIX}"
 tar xvf "${DOWNLOAD_DIR}/epics.base.configure.tar.gz"
-cd epics/base
-make -e "${ARGS[@]}"
-```
-
-## Unpack EPICS extensions and OAG apps configuration
-
-```
-ARGS+=( "TOOLS=${PREFIX}/bin")
-cd "${PREFIX}"
 tar xvf "${DOWNLOAD_DIR}/epics.extensions.configure.tar.gz"
 tar xvf "${DOWNLOAD_DIR}/oag.apps.configure.tar.gz"
+tar xvf "${DOWNLOAD_DIR}/SDDS.${SDDS_VERSION}.tar.gz"
+tar xvf "${DOWNLOAD_DIR}/elegant.${ELEGANT_VERSION}.tar.gz"
+```
+
+### Configure EPICS base and OAG applications
+
+```
+cd epics/base
+make "${ARGS[@]}"
 cd "${PREFIX}/oag/apps/configure"
 sed -i "s/clean::/clean:/" RULES_PYTHON
-make -e "${ARGS[@]}"
+make "${ARGS[@]}"
 ```
 
->
-You have to fix the `clean::` target in `${PREFIX}/oag/apps/configure/PYTHON_RULES`
+### Compile SDDS
 
-## Build required tools and libraries from SDDS
 ```
-cd "${PREFIX}"
-tar xvf "${DOWNLOAD_DIR}/SDDS.${SDDS_VERSION}.tar.gz"
 cd "${PREFIX}/epics/extensions/src/SDDS/"
-make -e "${ARGS[@]}" -C fftpack   && \
-make -e "${ARGS[@]}" -C lzma      && \
-make -e "${ARGS[@]}" -C matlib    && \
-make -e "${ARGS[@]}" -C mdbcommon && \
-make -e "${ARGS[@]}" -C mdblib    && \
-make -e "${ARGS[@]}" -C mdbmth    && \
-make -e "${ARGS[@]}" -C meschach  && \
-make -e "${ARGS[@]}" -C namelist  && \
-make -e "${ARGS[@]}" -C pgapack   && \
-make -e "${ARGS[@]}" -C rpns/code && \
-make -e "${ARGS[@]}" -C SDDSlib   && \
-make -e "${ARGS[@]}" -C SDDSlib clean
-make    "${ARGS[@]}" MPI=1 -C SDDSlib
+sed -i -e  "s/\( sddspseudoinverse_SYS_LIB.*\)/\1 gfortran/" SDDSaps/pseudoInverse/Makefile
+sed -i -e  "s/\( sddsmatrixop_SYS_LIBS.*\)/\1 gfortran/" SDDSaps/pseudoInverse/Makefile
+
+make "${ARGS[@]}" -C png   && \
+make "${ARGS[@]}"
+
+make "${ARGS[@]}" -C pgapack
+make "${ARGS[@]}" -C SDDSlib clean
+make "${ARGS[@]}" MPI=1 -C SDDSlib
 ```
 
-## Compile (P)elegant
+### Compile elegant
 
 ```
-cd "${PREFIX}"
-tar xvf "${DOWNLOAD_DIR}/elegant.${ELEGANT_VERSION}.tar.gz"
-
-PATH+=":${PREFIX}/bin"
-
 cd "${PREFIX}/oag/apps/src/elegant"
-make -e "${ARGS[@]}"
+make "${ARGS[@]}" STATIC_BUILD=NO
+```
+
+### Compile Pelegant
+
+```
+cd "${PREFIX}/oag/apps/src/elegant"
 make clean
-make    "${ARGS[@]}"  Pelegant
+make SYSGSL=1 Pelegant
 ```

@@ -1,0 +1,68 @@
+#!/usr/bin/env modbuild
+
+# use system gcc to compile
+declare -rx CC=gcc
+declare -rx CPP=/usr/bin/cpp
+
+# Check 'version-to-gitcommit.txt'
+#   - If version exists, we will compile directly from GIT cloned commit.
+#   - If version does not exist, install from GIT repository package (tag).
+COMMIT=$(grep -E "^${V}" files/version-to-gitcommit.txt | awk '{print $2}')
+
+if [[ ! -n ${COMMIT} ]]; then
+  pbuild::set_download_url "https://github.com/openucx/ucx/releases/download/v${V_PKG}/$P-${V_PKG}.tar.gz"
+else
+  pbuild::pre_prep() {
+    # Only deploy package if it does not exist
+    if [[ ! -f $PMODULES_DISTFILESDIR/$P-$V.tar.gz ]]; then
+      git clone https://github.com/openucx/ucx.git ucx
+      cd ucx
+      git fetch -a
+      git checkout ${COMMIT}
+      ./autogen.sh
+      cd ..
+      tar --remove-files -cvzf $PMODULES_DISTFILESDIR/$P-$V.tar.gz ucx
+    fi
+  }
+  pbuild::set_download_url "https://github.com/openucx/ucx/releases/download/v${V_PKG}/$P-${V_PKG}.tar.gz" "$P-$V.tar.gz"
+fi
+
+pbuild::add_to_group 'Libraries'
+
+pbuild::pre_configure() {
+  # pbuild::add_configure_args "--disable-shared"
+  pbuild::add_configure_args "--with-pic"
+
+  pbuild::add_configure_args "--enable-optimizations" # Recommended when compiled from source
+  pbuild::add_configure_args "--disable-logging"
+  pbuild::add_configure_args "--disable-debug"
+  pbuild::add_configure_args "--disable-assertions"
+  pbuild::add_configure_args "--disable-params-check"
+  pbuild::add_configure_args "--without-cm"
+  pbuild::add_configure_args "--without-rocm"
+  pbuild::add_configure_args "--without-xpmem"
+  pbuild::add_configure_args "--without-ugni"
+  pbuild::add_configure_args "--without-java"
+  pbuild::add_configure_args "--enable-cma"
+  pbuild::add_configure_args "--enable-mt"
+  pbuild::add_configure_args "--with-verbs"
+  pbuild::add_configure_args "--without-go"
+
+  if [[ -n "${CUDA_VERSION}" ]]; then
+    pbuild::add_configure_args "--with-cuda=${CUDA_HOME}"
+  fi
+
+  if [[ -n "${KNEM_VERSION}" ]]; then
+    pbuild::add_configure_args "--with-knem"
+  fi
+
+  if [[ -n "${GDRCOPY_VERSION}" ]]; then
+    pbuild::add_configure_args "--with-gdrcopy"
+  else
+    pbuild::add_configure_args "--without-gdrcopy"
+  fi
+
+  if pbuild::use_flag slurm || pbuild::use_flag dgx; then
+    pbuild::add_configure_args "--with-rdmacm"
+  fi
+}

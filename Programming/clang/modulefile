@@ -1,0 +1,21 @@
+#%Module1.0
+
+module-whatis		"LLVM native C/C++/Objective-C compiler"
+module-url		"http://llvm.org"
+module-license		"Apache 2.0 License with LLVM exceptions"
+module-maintainer	"Achim Gsell <achim.gsell@psi.ch>"
+
+module-help	"
+Clang is an \"LLVM native\" C/C++/Objective-C compiler, which aims to
+deliver amazingly fast compiles, extremely useful error and warning
+messages and to provide a platform for building great source level
+tools. The Clang Static Analyzer and clang-tidy are tools that
+automatically find bugs in your code, and are great examples of the
+sort of tools that can be built using the Clang frontend as a library
+to parse C/C++ code.
+"
+
+module-addgroup "Compiler"
+
+setenv		CC			$PREFIX/bin/clang
+setenv		CXX			$PREFIX/bin/clang++

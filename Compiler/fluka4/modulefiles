@@ -1,0 +1,14 @@
+#%Module1.0
+
+module-whatis		"FLUKA & Flair"
+module-url		"https://fluka.cern"
+module-license		"https://fluka.cern/download/licences"
+module-maintainer	"Achim Gsell <achim.gsell@psi.ch>"
+module-help	"
+The FLUKA code is a general purpose Monte Carlo code for the interaction
+and transport of hadrons, leptons, and photons from keV (with the exception
+of neutrons, tracked down to thermal energies) to cosmic ray energies in
+any material.
+"
+
+prepend-path PATH "$PREFIX/flair"

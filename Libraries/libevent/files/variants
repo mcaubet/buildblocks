@@ -1,1 +1,2 @@
-libevent/2.1.8	stable openssl/1.0.2r
+libevent/2.1.8	stable	openssl/1.0.2r
+libevent/2.1.12	stable	openssl/1.1.1k

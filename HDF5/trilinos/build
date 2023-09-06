@@ -2,7 +2,7 @@
 
 pbuild::set_download_url \
 	"https://github.com/$P/$P/tarball/$P-release-${V//./-}" \
-	"$P-$V.tar.gz"
+	"$P-${V_PKG}.tar.gz"
 
 pbuild::set_sha256sum \
 	"trilinos-12.12.1.tar.gz:c8f2029fa36230b9f384c56139aaa33111227bcf653e73f7daf3c9efdecc1d2d"
@@ -49,7 +49,6 @@ pbuild::configure() {
 
 	cmake \
            -D CMAKE_BUILD_TYPE:STRING=Release \
-           --prefix=$PREFIX \
            -DCMAKE_INSTALL_PREFIX:PATH=$PREFIX \
            -DCMAKE_CXX_FLAGS:STRING="-DMPICH_IGNORE_CXX_SEEK -fPIC" \
            -DCMAKE_C_FLAGS:STRING="-DMPICH_IGNORE_CXX_SEEK -fPIC" \
@@ -76,6 +75,7 @@ pbuild::configure() {
            -DTrilinos_ENABLE_Ifpack:BOOL=ON \
            -DTrilinos_ENABLE_Isorropia:BOOL=ON \
            -DTrilinos_ENABLE_ML:BOOL=ON \
+	   -DTrilinos_ENABLE_MueLu:BOOL=ON \
            -DTrilinos_ENABLE_NOX:BOOL=ON \
            -DTrilinos_ENABLE_Optika:BOOL=OFF \
            -DTrilinos_ENABLE_Teuchos:BOOL=ON \

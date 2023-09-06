@@ -1,6 +1,7 @@
 #!/usr/bin/env modbuild
 
-pbuild::set_download_url "https://www.unidata.ucar.edu/downloads/$P/ftp/$P-$V.tar.gz"
+# pbuild::set_download_url "https://www.unidata.ucar.edu/downloads/$P/ftp/$P-$V.tar.gz"
+pbuild::set_download_url "https://github.com/Unidata/netcdf-c/archive/refs/tags/v${V_PKG}.tar.gz" "netcdf-${V_PKG}.tar.gz"
 
 pbuild::pre_configure() {
 	pbuild::add_configure_args "CXX=${MPICXX}"
@@ -59,5 +60,3 @@ pbuild::install() {
 
 pbuild::add_to_group 'HDF5'
 pbuild::install_docfiles 'COPYRIGHT' 'README.md' 'RELEASE_NOTES.md'
-pbuild::make_all
-

@@ -1,7 +1,9 @@
 #!/usr/bin/env modbuild
 
-pbuild::set_download_url "http://www.kernel.org/pub/software/scm/$P/$P-${V_PKG}.tar.gz"
+pbuild::set_download_url \
+	"http://www.kernel.org/pub/software/scm/$P/$P-${V_PKG}.tar.gz"
 pbuild::add_to_group 'Tools'
+
 pbuild::compile_in_sourcetree
 pbuild::install_docfiles 'COPYING' 'README.md'
 
@@ -9,19 +11,17 @@ pbuild::pre_configure_Darwin() {
 	export NO_APPLE_COMMON_CRYPTO=1
 }
 
-pbuild::post_configure_Linux() {
-	echo 'LIBC_CONTAINS_LIBINTL=' >> "${SRC_DIR}/config.mak.autogen"
-}
 
 pbuild::pre_configure() {
 	#pbuild::add_configure_args "LIBS=-lintl"
 	pbuild::add_configure_args "--with-tcltk"
 	pbuild::add_configure_args "--with-iconv=${GETTEXT_PREFIX}"
 	pbuild::add_configure_args "--with-perl=${PERL_PREFIX}/bin/perl"
+	:
 }
 
 pbuild::post_compile() {
-	make -C contrib/subtree prefix="${prefix}"
+	make -C contrib/subtree prefix="${PREFIX}"
 }
 
 pbuild::post_install() {

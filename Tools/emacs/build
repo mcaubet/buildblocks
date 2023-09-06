@@ -4,7 +4,7 @@ pbuild::set_download_url "https://ftp.gnu.org/gnu/emacs/$P-$V.tar.xz"
 
 CC=''
 CXX=''
-module use System
+eval $(modulecmd bash use System)
 
 pbuild::pre_configure() {
 	case ${OS} in
@@ -35,5 +35,4 @@ pbuild::post_install_Darwin() {
 }
 
 pbuild::add_to_group 'Tools'
-pbuild::make_all
 

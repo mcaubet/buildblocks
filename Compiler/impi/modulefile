@@ -1,7 +1,7 @@
 #%Module1.0
 
 # Let the native Intel configuration define the following variables:  
-#set dont-setenv { C_INCLUDE_PATH CPLUS_INCLUDE_PATH LD_LIBRARY_PATH LIBRARY_PATH }
+# set dont-setenv { C_INCLUDE_PATH CPLUS_INCLUDE_PATH LD_LIBRARY_PATH LIBRARY_PATH }
 
 module-whatis		"Intel MPI"
 module-url		"http://intel.com/"
@@ -10,7 +10,11 @@ module-maintainer	"Hans-Christian Stadler <hans-christian.stadler@psi.ch>"
 module-addgroup		"MPI"
 
 module-help     "
-impi/19.3  - Intel MPI 2019.3 64-bit
+The Intel MPI Library.
+
+Loading intel PModules only is not enough when compiling software with
+Intel MPI. Therefore, loading the impi PModule with equivalent version
+is also necessary.
 "
 
 setenv          MPICC                   mpiicc
@@ -19,5 +23,11 @@ setenv          MPIF77                  mpiifort
 setenv          MPIF90                  mpiifort
 setenv          MPIFC                   mpiifort
 setenv          MPIFORTRAN              mpiifort
-setenv          MPIEXEC                 mpirun
+setenv          MPIEXEC                 mpiexec.hydra
 setenv          MPIRUN                  mpirun
+#
+setenv          I_MPI_ICC               mpiicc
+setenv          I_MPI_CXX               mpiicpc
+setenv          I_MPI_F77               mpiifort
+setenv          I_MPI_F90               mpiifort
+setenv          I_MPI_FC                mpiifort
