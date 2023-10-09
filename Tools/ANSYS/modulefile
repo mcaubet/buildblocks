@@ -52,5 +52,8 @@ prepend-path    LD_LIBRARY_PATH  $PREFIX/$version/CFX/tools/qwt-6.1.2/linx64/lib
 prepend-path    LD_LIBRARY_PATH  $PREFIX/$version/CFX/tools/qwtpolar-1.1.1/linx64/lib
 prepend-path    LD_LIBRARY_PATH  $PREFIX/$version/CFX/tools/xerces-3.2.2/linx64/lib
 
+# Lumerical
+prepend-path    LD_LIBRARY_PATH  $PREFIX/$version/lumerical/$version/lib/
+
 # RSM
 prepend-path    PATH    $PREFIX/$version/RSM/Config/tools/linux
