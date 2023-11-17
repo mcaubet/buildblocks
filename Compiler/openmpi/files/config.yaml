@@ -7,6 +7,7 @@ openmpi:
     overlay: base
     relstage: stable
     systems: [rhel7, rhel8, rhel9]
+    docfiles: [AUTHORS, LICENSE, NEWS, README]
     urls:
       - url: https://download.open-mpi.org/release/open-mpi/v${V_MAJOR}.${V_MINOR}/openmpi-${V_PKG}.tar.bz
   shasums:
@@ -54,13 +55,21 @@ openmpi:
 
   versions:
 
-    4.1.5_slurm:
-      config:
-        relstage: unstable
-        group_deps:
-          compiler: {gcc: [9.5.0, 10.4.0, 11.4.0, 12.3.0, 13.1.0], intelcc: [22.2]}
-        build_requires: [pmix/4.2.4, ucx/1.14.1_slurm, libfabric/1.18.0, hwloc/2.9.1, patchelf/0.14.5]
-        runtime_deps: [cuda/12.1.1]
+    4.1.5:
+      variants:
+        - systems: [merlin-*, ra-*]
+          suffix: _slurm
+          group_deps:
+            compiler: {gcc: [9.5.0, 10.4.0, 11.4.0, 12.3.0, 13.1.0]}
+          build_requires: [pmix/4.2.4, ucx/1.14.1_slurm, libfabric/1.18.0, hwloc/2.9.1, patchelf/0.14.5]
+          runtime_deps: [cuda/12.1.1]
+        - systems: [merlin-*, ra-*]
+          suffix: _slurm
+          relstage: unstable
+          group_deps:
+            compiler: {intelcc: [22.2]}
+          build_requires: [pmix/4.2.4, ucx/1.14.1_slurm, libfabric/1.18.0, hwloc/2.9.1, patchelf/0.14.5]
+          runtime_deps: [cuda/12.1.1]
 
     4.1.4_slurm:
       config:
