@@ -6,7 +6,7 @@ This module provides tools to interface with the Data Catalog (discovery.psi.ch)
 
 ## Version Numbers
 
-Prior to version 2, each command had it's own version. The pmodule version
+Prior to version 2, each command had its own version. The pmodule version
 roughly tracked the datasetIngestor version. However, some pmodules were
 updated manually with more recent binaries, so in general there is no way to
 check the versions contained in older pmodules other than running each command
@@ -42,7 +42,6 @@ fixed with a manual wrapper script which produces an error on RHEL 8.
 
 # TODO
 
-- [ ] The post_prep section of the build script should be removed following
-  fixing [#55](https://github.com/paulscherrerinstitute/scicat-cli/issues/55)
-- [ ] SciCat should be downloaded and installed in the build script
+- [ ] SciCat should be downloaded and installed in the build script. (This is
+      planned after the GUI is migrated to github and CI/CD implemented.)
 
