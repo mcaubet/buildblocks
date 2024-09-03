@@ -88,7 +88,7 @@ gcc:
         - overlay: base
           systems: [rhel.*]
 
-    gcc/12.1.0:
+    12.1.0:
       config:
         relstage: deprecated
         build_requires: [gcc/11.3.0, gmp/6.2.1, mpfr/4.1.0, mpc/1.2.1]
