@@ -55,6 +55,14 @@ openmpi:
     openmpi-4.1.6.tar.bz2: f740994485516deb63b5311af122c265179f5328a0d857a567b85db00b11e415
 
   versions:
+    5.0.5:
+      variants:
+        - systems: [login001*,login002*]
+          suffix: _merlin7
+          group_deps:
+            compiler: {gcc: [12.3.0]}
+          build_requires: [pmix/4.2.4, ucx/1.15.1_slurm, hwloc/2.9.1, patchelf/0.14.5]
+          runtime_deps: [cuda/12.1.1]
     4.1.6:
       variants:
         - systems: [merlin-*, ra-*]

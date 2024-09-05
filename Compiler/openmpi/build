@@ -4,8 +4,12 @@ pbuild::install_docfiles 'AUTHORS' 'LICENSE' 'NEWS' 'README'
 
 pbuild::pre_configure() {
 	pbuild::add_configure_args "--prefix=${PREFIX}"
-	pbuild::add_configure_args "--enable-mpi-cxx"
-	pbuild::add_configure_args "--enable-mpi-cxx-seek"
+
+        if (( V_MAJOR < 5 )); then
+	  pbuild::add_configure_args "--enable-mpi-cxx"
+	  pbuild::add_configure_args "--enable-mpi-cxx-seek"
+        fi
+
 	pbuild::add_configure_args "--enable-orterun-prefix-by-default"
 	pbuild::add_configure_args "--enable-shared"
 	pbuild::add_configure_args "--enable-static"
@@ -48,10 +52,12 @@ pbuild::pre_configure() {
                 pbuild::add_configure_args "LDFLAGS=-Wc,-static-intel,-O0"
         fi
 
-        if pbuild::use_flag slurm || pbuild::use_flag dgx || pbuild::use_flag merlin6; then
+        if pbuild::use_flag slurm || pbuild::use_flag dgx || pbuild::use_flag merlin6 || pbuild::use_flag merlin7; then
 		pbuild::add_configure_args "--with-gpfs=/usr/lpp/mmfs"
-		pbuild::add_configure_args "--with-pmi"
-		# pbuild::add_configure_args "--with-pmi-libdir=/usr/lib64/"
+        	if (( V_MAJOR < 5 )); then
+		  pbuild::add_configure_args "--with-pmi"
+		  # pbuild::add_configure_args "--with-pmi-libdir=/usr/lib64/"
+                fi
 
                 if pbuild::use_flag "libpmix"; then
                   pbuild::add_configure_args "--enable-install-libpmix"
@@ -72,7 +78,7 @@ pbuild::pre_configure() {
 }
 
 pbuild::post_install() {
-        if ! pbuild::use_flag slurm && ! pbuild::use_flag dgx && ! pbuild::use_flag merlin6; then
+        if ! pbuild::use_flag slurm && ! pbuild::use_flag dgx && ! pbuild::use_flag merlin6 && ! pbuild::use_flag merlin7; then
 	  mkdir -p "${PREFIX}/lib/fallback"
 	  local -r binary=$(ls "${PREFIX}"/lib/libmpi.so.*.*.*)
 	  pbuild::install_shared_libs "${binary}" "${PREFIX}/lib/fallback" '/libuc[mpst].so'
