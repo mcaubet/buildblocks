@@ -48,15 +48,15 @@ pbuild::pre_configure() {
                 pbuild::add_configure_args "LDFLAGS=-Wc,-static-intel,-O0"
         fi
 
-        if pbuild::use_flag slurm || pbuild::use_flag dgx || pbuild::use_flag merlin6; then
-		pbuild::add_configure_args "--with-gpfs=/usr/lpp/mmfs"
-		pbuild::add_configure_args "--with-pmi"
-		# pbuild::add_configure_args "--with-pmi-libdir=/usr/lib64/"
-
-                if pbuild::use_flag "libpmix"; then
-                  pbuild::add_configure_args "--enable-install-libpmix"
-                fi
-        fi
+#        if pbuild::use_flag slurm || pbuild::use_flag dgx || pbuild::use_flag merlin6; then
+#		pbuild::add_configure_args "--with-gpfs=/usr/lpp/mmfs"
+#		pbuild::add_configure_args "--with-pmi"
+#		# pbuild::add_configure_args "--with-pmi-libdir=/usr/lib64/"
+#
+#                if pbuild::use_flag "libpmix"; then
+#                  pbuild::add_configure_args "--enable-install-libpmix"
+#                fi
+#        fi
 
 	local version
 	(( version = (${V_MAJOR} * 100 + ${V_MINOR}) * 100 + V_PATCHLVL ))
