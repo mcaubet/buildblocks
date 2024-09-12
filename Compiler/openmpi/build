@@ -12,7 +12,7 @@ pbuild::pre_configure() {
 	if (( V_MAJOR < 5 )) && pbuild::use_flag 'slurm'; then
 		pbuild::add_configure_args "--with-pmi=/usr"
 		pbuild::add_configure_args "--with-pmi-libdir=/usr/lib64/slurmpmi"
-fi
+	fi
 	if (( V_MAJOR >= 5 )); then
 		pbuild::add_configure_args "--enable-prte-prefix-by-default"
 	fi
@@ -61,7 +61,7 @@ fi
 		std::info "Enabling libfabric ${LIBFABRIC_VERSION}."
                 pbuild::add_configure_args "--with-ofi=${LIBFABRIC_PREFIX}"
         fi 
-
+	
 	if [[ -v UCX_VERSION ]]; then
 		std::info "Enabling UCX ${UCX_VERSION}."
 		pbuild::add_configure_args "--with-ucx=${UCX_PREFIX}"
@@ -117,19 +117,22 @@ pbuild::post_install() {
 		echo "opal_warn_on_missing_libcuda = 0" >> ${PREFIX}/etc/openmpi-mca-params.conf
 	fi
 
+	local fname=''
 	local old_rpath=''
 	local new_rpath=''
-        while read file; do
-		old_rpath=$(objdump -x "${file}" | awk '/RPATH|RUNPATH/ {print $2}')
+	# remove '/usr/lib64' from RPATH/RUNPATH
+        while read fname; do
+		old_rpath=$(objdump -x "${fname}" | awk '/RPATH|RUNPATH/ {print $2}')
 		new_rpath=$(echo "${old_rpath}" | sed 's/:\/usr\/lib64:/:/g')
 		if [[ "${old_rpath}" != "${new_rpath}" ]]; then
 			patchelf \
 				--force-rpath \
 				--set-rpath "${new_rpath}" \
-				"${file}"
+				"${fname}"
 		fi
-        done < <(find "{PREFIX}" -type f \( ! -name "*.a" -and ! -name "*.mod" \) \
+        done < <(find "${PREFIX}" -type f \( ! -name "*.a" -and ! -name "*.mod" \) \
 		      -exec grep -IL . "{}" \;)
+}
 
 # Local Variables:
 # mode: sh

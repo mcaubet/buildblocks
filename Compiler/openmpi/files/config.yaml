@@ -82,8 +82,7 @@ openmpi:
         - systems: [merlin-.*]
           suffix: _slurm
           relstage: unstable
-          overlay: private
-          use_overlays: [private]
+          overlay: base
           group_deps:
             compiler: {gcc: [9.5.0, 10.4.0, 11.4.0, 12.3.0, 12.4.0, 13.2.0, 14.2.0]}
           build_requires:
