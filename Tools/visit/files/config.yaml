@@ -1,0 +1,19 @@
+---
+format: 1
+gnuplot:
+  defaults:
+    group: Tools
+    overlay: base
+    relstage: stable
+    systems: [sles15.5]
+    docfiles: [Copyright, NEWS, README]
+    urls:
+      - url: https://github.com/visit-dav/visit/releases/download/v${V_PKG}/visit-install${V_PKG//./_}
+  shasums:
+    visit-3.4.2: 65b5ad7facc0f7281026c78c2adeff07a31965136da150e3d9d00341907367da
+  versions:
+    3.4.2:
+      config:
+        relstage: unstable
+        systems: [rhel*]
+

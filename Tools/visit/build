@@ -1,0 +1,17 @@
+#!/usr/bin/env modbuild
+
+pbuild::prep() {
+        :
+}
+
+pbuild::configure() {
+        :
+}
+
+pbuild::compile() {
+        :
+}
+
+pbuild::install() {
+        visit-install ${V} linux-$(uname -p) $PREFIX
+}
