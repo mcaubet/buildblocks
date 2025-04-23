@@ -12,10 +12,10 @@ ctffind4:
   versions:
     5.0.2:
       config:
-        strip_dirs: 1
         urls:
           - url: https://grigoriefflab.umassmed.edu/system/tdf?path=ctffind-${V_PKG}.tar.gz&file=1&type=node&id=26
             name: ctffind-${V_PKG}.tar.gz
+            strip_dirs: 2
     4.1.{8,14}:
       config:
         relstage: stable
