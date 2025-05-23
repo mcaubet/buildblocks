@@ -18,6 +18,5 @@ patchelf:
     0.8.1;0.11;0.12;0.14.5:
     0.18.0:
       config:
-        relstage: unstable
         build_requires: [gcc/12.3.0]
 
