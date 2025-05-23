@@ -23,6 +23,4 @@ xz:
   versions:
     5.8.0:
       config:
-        relstage: unstable
-
 
