@@ -1,0 +1,23 @@
+---
+# yamllint disable rule:line-length
+format: 1
+impi:
+  defaults:
+    group: Compiler
+    overlay: base
+    relstage: stable
+    build_functions:
+      prep: []
+      configure: []
+      compile: []
+      install: []
+
+  versions:
+    22.2:
+      variants:
+        - systems: [merlin-.*\.psi.ch]
+          relstage: stable
+          group_deps:
+            compiler:
+              intel: [22.2]
+
