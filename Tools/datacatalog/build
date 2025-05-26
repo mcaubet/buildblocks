@@ -1,17 +1,7 @@
 #!/usr/bin/env modbuild
 
 pbuild::add_to_group 'Tools'
-pbuild::set_download_url https://github.com/paulscherrerinstitute/scicat-cli/releases/download/v${V_PKG}/scicat-cli_.${V_PKG}_Linux_x86_64.tar.gz
-
-pbuild::post_prep() {
-  # PModules 1.0.0 fails on tar bundles without top-level directories. This
-  # tries to work around this.  It could be removed if the cli release process
-  # changes (https://github.com/paulscherrerinstitute/scicat-cli/issues/55)
-  if [[ ! -f "${SRC_DIR}/datasetIngestor" ]]; then
-    local file="$PMODULES_DISTFILESDIR/scicat-cli_.${V_PKG}_Linux_x86_64.tar.gz"
-    tar --directory="${SRC_DIR}" -xv --strip-components 0 -f "${file}"
-  fi
-}
+pbuild::set_download_url https://github.com/paulscherrerinstitute/scicat-cli/releases/download/v${V_PKG}/scicat-cli_v${V_PKG}_Linux_x86_64.tar.gz
 
 pbuild::configure() {
   :
