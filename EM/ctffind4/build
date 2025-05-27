@@ -3,12 +3,8 @@
 # Binary distribution with manual installation. See README.md
 
 pbuild::post_prep() {
-    cp "$BUILDBLOCK_DIR/ctffind_wrapper.c" "$BUILD_DIR/"
-    sed -i "s|@CTFFINDPATH@|$PREFIX/bin/ctffind.orig|" "$BUILD_DIR/ctffind_wrapper.c"
-}
-
-pbuild::compile() {
-    gcc -Wall -pedantic -o ctffind_wrapper ctffind_wrapper.c
+    cp "$BUILDBLOCK_DIR/ctffind_wrapper.sh" "$BUILD_DIR/ctffind_wrapper"
+    sed -i "s|@CTFFINDPATH@|$PREFIX/bin/ctffind.orig|" "$BUILD_DIR/ctffind_wrapper"
 }
 
 pbuild::install() {
