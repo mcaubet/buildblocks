@@ -10,12 +10,10 @@ image and then use the chimerax executable from that image.
 Here are the steps for the installation:
 
 1. Download the .deb file from the link
-https://www.rbvi.ucsf.edu/chimerax/download.html and copy to the locations where
-the container images are saved. Currently, those are saved in the directory:
-/data/project/bio/shared/containers/chimerax/<version>
+https://www.rbvi.ucsf.edu/chimerax/download.html and copy it to the location
+where container images are saved.
 
-2. In that directory, create a Dockerfile similar to the example below, adapted
-to your downloaded filename.
+2. In that directory, create a Dockerfile similar to the example below:
 ```
 FROM ubuntu:24.04
 
@@ -29,8 +27,8 @@ RUN apt-get update && \
 ENTRYPOINT ["/usr/bin/chimerax"]
 ```
 
-3. In the same directory, run the commands below by adapting the filename in
-the DEB_FILE variable:
+3. In the same directory, run the following commands and set the variable 
+DEB_FILE with the filename.
 ```
 DEB_FILE=ucsf-chimerax_1.10ubuntu24.04_amd64.deb
 
@@ -50,9 +48,8 @@ rm chimerax.tar
 chmod 775 chimerax.sif
 ```
 
-4. Correct the environamental variable APPTAINER_IMAGE_DIR to the directory
-where the .sif file is located, for example:
-`setenv APPTAINER_IMAGE_DIR /data/project/bio/shared/containers/chimerax/1.10`
+4. Set the environamental variable APPTAINER_IMAGE in the modulefile to the path
+where the singularity image is located, for example:
+`setenv APPTAINER_IMAGE /data/project/bio/shared/containers/chimerax/1.10/chimerax.sif`
 
 5. Build the module. 
-

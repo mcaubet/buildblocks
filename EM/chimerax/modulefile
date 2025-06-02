@@ -15,10 +15,8 @@ see ChimeraX commercial licensing
 (https://www.rbvi.ucsf.edu/chimerax/commercial_license.html).
 "
 
-# Run setxkbmap when loading the module
+# Set keyboard layout (required to run in NoMachine)
 exec setxkbmap us
 
 # Environment variables
-setenv APPTAINER_IMAGE_DIR /data/project/bio/shared/containers/chimerax/1.10
-setenv LANG C.UTF-8
-setenv LC_ALL C.UTF-8
+setenv APPTAINER_IMAGE /data/project/bio/shared/containers/chimerax/1.10/chimerax.sif
