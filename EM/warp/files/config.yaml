@@ -1,0 +1,24 @@
+---
+# yamllint disable rule:line-length
+format: 1
+warp:
+  defaults:
+    group: EM
+    overlay: base
+    relstage: unstable
+    urls:
+      - url: https://github.com/warpem/${P}/archive/refs/tags/v${V}.tar.gz
+        name: ${P}-${V_PKG}.tar.gz
+    docfiles:
+      - LICENSE
+      - README.md
+
+  shasums:
+    v2.0.0dev33.tar.gz: 2f43cb945308a37f6ff9b756cbc22cb2a4f5c6034f18ab07a5a295369eed7576
+
+  versions:
+    2.0.0dev33:
+      variants:
+        - overlay: Alps
+          systems: [.*]
+          relstage: unstable

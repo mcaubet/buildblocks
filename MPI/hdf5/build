@@ -1,6 +1,5 @@
 #!/usr/bin/env modbuild
 
-
 pbuild::pre_configure() {
 	pbuild::add_configure_args "CC=${MPICC}"
 	pbuild::add_configure_args "CXX=${MPICXX}"
