@@ -63,8 +63,8 @@ cd ..
 chmod 775 alphafold3.sif
 ```
 
-5. Set the environamental variable APPTAINER_IMAGE to the directory
-where the .sif file is located and the variable PUBLIC_DATABASES_DIR to the directory of the public databases, for example:
+5. Set the environamental variable APPTAINER_IMAGE to the directory where the .sif file is located.
+Also set the variable PUBLIC_DATABASES_DIR to the directory of the public databases to allow users to have that option without having to download the databases.
 `setenv APPTAINER_IMAGE /data/project/bio/shared/containers/alphafold3/3.0.1/alphafold3.sif`
 `setenv PUBLIC_DATABASES_DIR /data/project/bio/shared/alphafold3/public_databases`
 
