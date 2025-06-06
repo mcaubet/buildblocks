@@ -1,5 +1,9 @@
 # Alphafold3
 
+AlphaFold 3, introduced in May 2024 by Google DeepMind in collaboration with Isomorphic Labs, represents a significant advancement in computational biology. Building upon the success of AlphaFold 2, which revolutionized protein structure prediction, AlphaFold 3 extends its capabilities to accurately predict the 3D structures and interactions of a wide array of biomolecules, including proteins, DNA, RNA, ligands, and ions.
+
+https://github.com/google-deepmind/alphafold3
+
 ## Installation
 The Alphafold3 installation is performed using a Docker container or singularity image (https://github.com/google-deepmind/alphafold3/blob/main/docs/installation.md). Here, we decided to install Alphafold3 by first building a container image using Singularity and then a alphafold3 executable to run that image.
 
