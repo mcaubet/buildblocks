@@ -9,8 +9,8 @@ pbuild::configure() {
     # Initialize conda for script use
     source "$PREFIX/miniforge/etc/profile.d/conda.sh"
 
-    # Create the warp environment
-    conda create -y --name "${P}_${V}" warp=${V} -c warpem -c nvidia/label/cuda-11.8.0 -c pytorch -c conda-forge
+    # Create the conda environment
+    conda create -y --name "${P}_${V_PKG}" ${P}=${V_PKG} -c warpem -c nvidia/label/cuda-11.8.0 -c pytorch -c conda-forge
 }
 
 pbuild::compile() {

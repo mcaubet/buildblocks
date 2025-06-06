@@ -30,7 +30,7 @@ switch -- $shelltype {
 switch [module-info mode] {
     "load" {
         # Activate the specific conda environment
-        puts stdout "conda activate ${P}_${V};\n"
+        puts stdout "conda activate ${P}_${V_PKG};\n"
     }
     "unload" -
     "remove" {
