@@ -94,5 +94,6 @@ singularity exec \
     --bind "/data/project:/data/project" \
     --bind "/scratch:/scratch" \
     --bind "/tmp:/tmp" \
+    --bind "/etc/ssl/ca-bundle.pem:/etc/ssl/ca-bundle.pem" \
     "$IMAGE" \
     python3.9 /app/RFdiffusion/scripts/run_inference.py "${INFERENCE_ARGS[@]}" "${ARGS[@]}"
