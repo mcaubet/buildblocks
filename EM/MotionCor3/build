@@ -19,5 +19,5 @@ pbuild::compile() {
 
 pbuild::install() {
     # Copy the compiled binary to the installation directory
-    install "$SRC_DIR/MotionCor3" "$PREFIX/bin/"
+    install "$SRC_DIR/${P}" "$PREFIX/bin/"
 }
