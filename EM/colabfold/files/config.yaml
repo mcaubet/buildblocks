@@ -4,11 +4,11 @@ colabfold:
   defaults:
     group: EM
     overlay: base
-    relstage: unstable
+    relstage: stable
 
   versions:
     1.5.5:
       variants:
         - overlay: Alps
           systems: [.*.merlin7.psi.ch]
-          relstage: unstable
+          relstage: stable

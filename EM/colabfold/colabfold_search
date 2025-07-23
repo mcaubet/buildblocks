@@ -9,16 +9,7 @@ fi
 
 IMAGE="$APPTAINER_IMAGE"
 
-# Validate that the model weights directory is specified and exists
-if [[ -z "${MODEL_WEIGHTS_DIR:-}" || ! -d "$MODEL_WEIGHTS_DIR" ]]; then
-    echo "Error: Model weights directory not found or is not set."
-    echo "Please contact the system administrators for assistance."
-    exit 1
-fi
-
-MODEL_WEIGHTS="$MODEL_WEIGHTS_DIR"
-
-# Run ColabFold batch inside the Singularity container
+# Run ColabFold search inside the Singularity container
 singularity exec --nv \
     --bind "/data/scratch/shared:/data/scratch/shared" \
     --bind "/data/user:/data/user" \
@@ -26,6 +17,5 @@ singularity exec --nv \
     --bind "/scratch:/scratch" \
     --bind "/tmp:/tmp" \
     --bind "/etc/ssl/ca-bundle.pem:/etc/ssl/ca-bundle.pem" \
-    --bind "$MODEL_WEIGHTS:/cache" \
     "$IMAGE" \
-    colabfold_batch "$@"
+    colabfold_search "$@"

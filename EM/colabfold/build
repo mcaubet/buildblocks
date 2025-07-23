@@ -6,6 +6,8 @@ pbuild::prep() {
 
     # Copy executable script to the installation directory
     cp -n "$BUILDBLOCK_DIR/${P}_batch" "$PREFIX/bin/"
+    cp -n "$BUILDBLOCK_DIR/${P}_search" "$PREFIX/bin/"
+
 }
 
 pbuild::configure() {
