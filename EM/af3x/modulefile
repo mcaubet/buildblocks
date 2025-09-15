@@ -15,5 +15,5 @@ visually appealing.
 "
 
 # Environment variables
-setenv APPTAINER_IMAGE /data/project/bio/shared/containers/af3x/dev/af3x.sif
-setenv PUBLIC_DATABASES_DIR /data/project/bio/shared/alphafold3/public_databases
+setenv APPTAINER_IMAGE /data/project/cls/shared/containers/af3x/dev/af3x.sif
+setenv PUBLIC_DATABASES_DIR /data/project/cls/shared/databases/alphafold3/public_databases
