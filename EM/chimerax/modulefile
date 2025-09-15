@@ -22,4 +22,4 @@ if {[info exists env(NXSESSIONID)] || [info exists env(NX_SYSTEM)]} {
 }
 
 # Environment variables
-setenv APPTAINER_IMAGE /data/project/bio/shared/containers/chimerax/1.10/chimerax.sif
+setenv APPTAINER_IMAGE /data/project/cls/shared/containers/chimerax/1.10/chimerax.sif

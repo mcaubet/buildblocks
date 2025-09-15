@@ -55,6 +55,6 @@ chmod 775 chimerax.sif
 
 4. Set the environamental variable APPTAINER_IMAGE in the modulefile to the path
 where the singularity image is located, for example:
-`setenv APPTAINER_IMAGE /data/project/bio/shared/containers/chimerax/1.10/chimerax.sif`
+`setenv APPTAINER_IMAGE /data/project/cls/shared/containers/chimerax/1.10/chimerax.sif`
 
 5. Build the module. 
