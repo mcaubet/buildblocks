@@ -10,7 +10,7 @@
 # extra1        XXXextra1XXX
 # extra2        XXXextra2XXX
 # extra3        XXXextra3XXX
-# extra5        XXXextra5XXX
+# extra4        XXXextra4XXX
 
 #SBATCH --job-name=r501-cpu
 #SBATCH --open-mode=append
@@ -24,9 +24,9 @@
 #SBATCH --error=XXXerrfileXXX
 #SBATCH --output=XXXoutfileXXX
 #SBATCH --time=XXXextra1XXX
-#SBATCH --nodes=XXXextra2XXX
-#SBATCH --mem=XXXextra3XXX
-#SBATCH XXXextra5XXX
+#SBATCH --nodes=XXXextra3XXX
+#SBATCH --mem=XXXextra4XXX
+#SBATCH XXXextra2XXX
 
 # Load RELION module
 module purge

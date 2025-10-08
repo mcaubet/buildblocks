@@ -25,10 +25,10 @@
 #SBATCH --error=XXXerrfileXXX
 #SBATCH --output=XXXoutfileXXX
 #SBATCH --time=XXXextra1XXX
-#SBATCH --nodes=XXXextra2XXX
-#SBATCH --mem=XXXextra3XXX
-#SBATCH --gres=gpu:XXXextra4XXX
-#SBATCH XXXextra5XXX
+#SBATCH --nodes=XXXextra3XXX
+#SBATCH --mem=XXXextra4XXX
+#SBATCH --gres=gpu:XXXextra5XXX
+#SBATCH XXXextra2XXX
 
 # Load RELION module
 module purge

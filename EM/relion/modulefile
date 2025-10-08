@@ -59,21 +59,21 @@ setenv RELION_QSUB_EXTRA1                "Time limit:"
 setenv RELION_QSUB_EXTRA1_DEFAULT        "1-00:00:00"
 setenv RELION_QSUB_EXTRA1_HELP           "Maximum runtime before the job is terminated by SLURM. Format: days-hh:mm:ss"
 
-setenv RELION_QSUB_EXTRA2                "Number of nodes:"
-setenv RELION_QSUB_EXTRA2_DEFAULT        "1"
-setenv RELION_QSUB_EXTRA2_HELP           "Total number of compute nodes to request."
+setenv RELION_QSUB_EXTRA2                "Additional sbatch arguments:"
+setenv RELION_QSUB_EXTRA2_DEFAULT        ""
+setenv RELION_QSUB_EXTRA2_HELP           "Any extra SLURM sbatch arguments to include."
 
-setenv RELION_QSUB_EXTRA3                "Total memory per node:"
-setenv RELION_QSUB_EXTRA3_DEFAULT        "59G"
-setenv RELION_QSUB_EXTRA3_HELP           "Amount of memory to allocate per node."
+setenv RELION_QSUB_EXTRA3                "Number of nodes:"
+setenv RELION_QSUB_EXTRA3_DEFAULT        "1"
+setenv RELION_QSUB_EXTRA3_HELP           "Total number of compute nodes to request."
 
-setenv RELION_QSUB_EXTRA4                "(GPU jobs) Number of GPUs per node:"
-setenv RELION_QSUB_EXTRA4_DEFAULT        "1"
-setenv RELION_QSUB_EXTRA4_HELP           "Amount of GPUs to allocate per node. This option is only valid for GPU jobs."
+setenv RELION_QSUB_EXTRA4                "Total memory per node:"
+setenv RELION_QSUB_EXTRA4_DEFAULT        "59G"
+setenv RELION_QSUB_EXTRA4_HELP           "Amount of memory to allocate per node."
 
-setenv RELION_QSUB_EXTRA5                "Additional sbatch arguments:"
-setenv RELION_QSUB_EXTRA5_DEFAULT        ""
-setenv RELION_QSUB_EXTRA5_HELP           "Any extra SLURM sbatch arguments to include."
+setenv RELION_QSUB_EXTRA5                "(GPU jobs) Number of GPUs per node:"
+setenv RELION_QSUB_EXTRA5_DEFAULT        "1"
+setenv RELION_QSUB_EXTRA5_HELP           "Amount of GPUs to allocate per node. This option is only valid for GPU jobs."
 
 # --------------------------------------------------------------------------
 # External Tool Paths
