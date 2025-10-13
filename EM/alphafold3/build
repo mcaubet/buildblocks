@@ -6,6 +6,9 @@ pbuild::prep() {
 
     # Copy executable script to the installation directory
     cp -n "$BUILDBLOCK_DIR/${P}" "$PREFIX/bin/"
+
+    # Add execute permission to the script
+    chmod +x "$PREFIX/bin/${P}"
 }
 
 pbuild::configure() {
