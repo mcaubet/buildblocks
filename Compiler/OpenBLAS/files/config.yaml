@@ -39,7 +39,7 @@ OpenBLAS:
           compiler:
             gcc: [12.3.0, 12.4.0, 13.3.0, 13.4.0, 14.2.0, 14.3.0, 15.2.0]
         build_requires: [cmake/3.23.2]
-        relstage: unstable
+        relstage: stable
         configure_args+:
           - -DBUILD_SHARED_LIBS=ON
           - -DBUILD_STATIC_LIBS=ON
@@ -55,7 +55,7 @@ OpenBLAS:
           compiler:
             gcc: [12.3.0, 12.4.0, 13.3.0, 13.4.0, 14.2.0, 14.3.0, 15.2.0]
         build_requires: [cmake/3.23.2]
-        relstage: unstable
+        relstage: stable
         configure_args+:
           - -DBUILD_SHARED_LIBS=ON
           - -DBUILD_STATIC_LIBS=ON
