@@ -37,6 +37,9 @@ For tomographic reconstruction, see also:
 > tomographic reconstruction in IMOD. J. Struct. Biol. 197:102-113. 
 "
 
+# Use software OpenGL explicitly to avoid Vulkan drivers missing error
+setenv LIBGL_ALWAYS_SOFTWARE 1
+
 switch [module-info mode] {
     "load" {
         puts stdout "source $PREFIX/profile.d/IMOD-linux.sh"
