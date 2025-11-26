@@ -1,0 +1,18 @@
+#%Module1.0
+
+module-whatis       "Twisted is a Python event-based framework for internet applications"
+module-url          "https://github.com/twisted/twisted"
+module-license      "MIT license"
+module-maintainer   "João Pedro Agostinho de Sousa <joao.agostinho-de-sousa@psi.ch>"
+
+module-help "
+Twisted is an event-driven network programming framework written in Python and
+licensed under the MIT License. Twisted projects variously support TCP, UDP,
+SSL/TLS, IP multicast, Unix domain sockets, many protocols (including HTTP,
+XMPP, NNTP, IMAP, SSH, IRC, FTP, and others), and much more. Twisted is based
+on the event-driven programming paradigm, which means that users of Twisted
+write short callbacks which are called by the framework.
+"
+
+# Add conda env bin directory to PATH
+prepend-path PATH "${PREFIX}/miniforge/envs/${P}_${V_PKG}/bin"
