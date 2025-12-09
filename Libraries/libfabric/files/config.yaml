@@ -39,6 +39,18 @@ libfabric:
             - --enable-cuda-dlopen
             - --enable-gdrcopy-dlopen
             # - --enable-xpmem
+        - systems: [merlin-.*.psi.ch]
+          overlay: merlin
+          use_overlays: [base, merlin]
+          suffix: '-oss'
+          use_flags: [merlin6, slurm]
+          build_requires: [gcc/13.2.0, cuda/12.9.1, GDRCopy/2.5]
+          configure_args+:
+            - --with-cuda=$CUDA_HOME
+            - --with-gdrcopy=$GDRCOPY_HOME
+            # Only enable dlopen when static is disabled
+            - --enable-cuda-dlopen
+            - --enable-gdrcopy-dlopen
     2.0.0:
       config:
         relstage: removed
