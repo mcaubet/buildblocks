@@ -21,12 +21,11 @@ mpich:
     4.3.2:
       variants:
         - systems: [merlin-.*.psi.ch]
-          suffix: '-ucx'
           relstage: unstable
           overlay: merlin
           target_cpus: ['x86_64']
           use_overlays: [base, merlin]
-          use_flags: [merlin6, slurm, cuda, ucx]
+          use_flags: [merlin6, slurm, cuda, ucx, mpiexec, no_srun]
           group_deps:
             compiler: {gcc: [13.2.0]}
           build_requires: [hwloc/2.12.0, patchelf/0.14.5,GDRCopy/2.5,ucx/1.19.0]
@@ -34,7 +33,7 @@ mpich:
           configure_args+:
             - --with-pm=hydra,gforker
             - --with-slurm
-          
+
     4.3.1:
       variants:
         - systems: [login.*.merlin7.psi.ch, cn.*.merlin7.psi.ch]
