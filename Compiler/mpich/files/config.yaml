@@ -33,6 +33,7 @@ mpich:
           runtime_deps: [cuda/12.9.1]
           configure_args+:
             - --with-pm=hydra,gforker
+            - --with-slurm
           
     4.3.1:
       variants:

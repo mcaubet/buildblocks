@@ -24,7 +24,7 @@ pbuild::pre_configure() {
         if [[ -v CUDA_VERSION ]] || pbuild::use_flag cuda; then
                 std::info "Enabling CUDA ${CUDA_VERSION}."
                 pbuild::add_configure_args "--with-cuda=${CUDA_HOME}"
-                pbuild::add_configure_args "--with-cuda-lib=${CUDA_HOME}/lib64/stubs"
+                # pbuild::add_configure_args "--with-cuda-lib=${CUDA_HOME}/lib64/stubs"
         fi
 
         if [[ -v HWLOC_VERSION ]]; then
@@ -62,7 +62,7 @@ pbuild::pre_configure() {
 		pbuild::add_configure_args "--with-ucx=${UCX_PREFIX}"
 	fi
 
-        if [[ -v INTEL_VERSION ]] || [[ -v INTELCC_VERSION ]]; then
+        # if [[ -v INTEL_VERSION ]] || [[ -v INTELCC_VERSION ]]; then
                 # Commented out, since this comes with the Intel/IntelCC modules
                 #
                 #   pbuild::add_configure_args "CC=$(which icc)"
@@ -73,7 +73,7 @@ pbuild::pre_configure() {
                 #   pbuild::add_configure_args "LDFLAGS=-Wc,-static-intel,-O0"
                 #
                 # In general, any extra configure args should go to config.yaml
-        fi
+        # fi
 
         if pbuild::use_flag slurm || \
 		pbuild::use_flag merlin6 || \
