@@ -1,0 +1,51 @@
+---
+# yamllint disable rule:line-length
+format: 1
+ucx:
+  defaults:
+    group: Libraries
+    overlay: base
+    relstage: stable
+    configure_args:
+      - --enable-shared
+      - --with-pic
+      - --enable-optimizations # Recommended when compiled from source
+      - --disable-logging
+      - --disable-debug
+      - --disable-assertions
+      - --disable-params-check
+      - --without-cm
+      - --without-rocm
+      - --without-xpmem
+      - --without-ugni
+      - --without-java
+      - --enable-cma
+      - --enable-mt
+      - --without-go
+    docfiles: [AUTHORS, LICENSE, NEWS, README]
+    urls:
+      - url: https://github.com/openucx/ucx/releases/download/v${V_PKG}/$P-${V_PKG}.tar.gz
+  shasums:
+
+  versions:
+    1.19.0:
+      variants:
+        # Unstable
+        - systems: [merlin-.*.psi.ch]
+          relstage: unstable
+          overlay: merlin
+          use_overlays: [base, merlin]
+          group_deps:
+            compiler: {gcc: [13.2.0]}
+          build_requires:
+            - hwloc/2.12.0
+            - patchelf/0.14.5
+            - knem/1.1.4
+          runtime_deps:
+            - cuda/12.9.1
+            - GDRCopy/2.5
+          configure_args+:
+            - --with-rdmacm
+            - --with-mlx5
+            - --with-verbs
+          use_flags: [merlin6, slurm]

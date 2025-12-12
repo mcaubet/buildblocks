@@ -18,6 +18,22 @@ mpich:
     mpich-4.3.1.tar.gz: acc11cb2bdc69678dc8bba747c24a28233c58596f81f03785bf2b7bb7a0ef7dc
 
   versions:
+    4.3.2:
+      variants:
+        - systems: [merlin-.*.psi.ch]
+          relstage: unstable
+          overlay: merlin
+          target_cpus: ['x86_64']
+          use_overlays: [base, merlin]
+          use_flags: [merlin6, slurm, cuda, ucx, mpiexec, no_srun]
+          group_deps:
+            compiler: {gcc: [13.2.0]}
+          build_requires: [hwloc/2.12.0, patchelf/0.14.5,GDRCopy/2.5,ucx/1.19.0]
+          runtime_deps: [cuda/12.9.1]
+          configure_args+:
+            - --with-pm=hydra,gforker
+            - --with-slurm
+
     4.3.1:
       variants:
         - systems: [login.*.merlin7.psi.ch, cn.*.merlin7.psi.ch]
