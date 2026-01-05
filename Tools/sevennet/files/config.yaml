@@ -7,11 +7,10 @@ sevennet:
     relstage: stable
 
   versions:
-    0.11.2:
+    0.12.0:
       variants:
         - overlay: base
           target_cpus: [x86_64]
-          systems: [.*.merlin7.psi.ch]
           relstage: stable
           build_requires:
             - gcc/14.2.0
@@ -23,7 +22,30 @@ sevennet:
             - openmpi/5.0.8
         - overlay: base
           target_cpus: [aarch64]
-          systems: [gpu0.*.merlin7.psi.ch]
+          relstage: unstable
+          build_requires:
+            - gcc/14.2.0
+            - cuda/12.9.1
+            - openmpi/5.0.8
+          runtime_deps:
+            - gcc/14.2.0
+            - cuda/12.9.1
+            - openmpi/5.0.8
+    0.11.2:
+      variants:
+        - overlay: base
+          target_cpus: [x86_64]
+          relstage: stable
+          build_requires:
+            - gcc/14.2.0
+            - cuda/12.9.1
+            - openmpi/5.0.8
+          runtime_deps:
+            - gcc/14.2.0
+            - cuda/12.9.1
+            - openmpi/5.0.8
+        - overlay: base
+          target_cpus: [aarch64]
           relstage: unstable
           build_requires:
             - gcc/14.2.0
