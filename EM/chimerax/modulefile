@@ -15,11 +15,5 @@ see ChimeraX commercial licensing
 (https://www.rbvi.ucsf.edu/chimerax/commercial_license.html).
 "
 
-# Running chimerax in NoMachine requires that xkb keyboard layout is set to 'us'
-# Check if running in NoMachine
-if {[info exists env(NXSESSIONID)] || [info exists env(NX_SYSTEM)]} {
-    exec setxkbmap us
-}
-
 # Environment variables
 setenv APPTAINER_IMAGE /data/project/cls/shared/containers/chimerax/1.10/chimerax.sif
