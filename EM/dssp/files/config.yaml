@@ -1,0 +1,33 @@
+---
+# yamllint disable rule:line-length
+format: 1
+dssp:
+  defaults:
+    group: EM
+    overlay: base
+    relstage: stable
+    urls:
+      - url: https://github.com/PDB-REDO/${P}/archive/refs/tags/v${V_PKG}.tar.gz
+
+  shasums:
+    v4.5.6.tar.gz: 940062a5c97be30546af045020761dbba68d4ca64cbaf2343b3765c0bf1f10b3
+
+  versions:
+    4.5.6:
+      variants:
+        - overlay: Alps
+          target_cpus: [x86_64]
+          systems: [.*.merlin7.psi.ch]
+          relstage: stable
+          build_requires:
+            - gcc/14.3.0
+          runtime_deps:
+            - gcc/14.3.0
+        - overlay: Alps
+          target_cpus: [aarch64]
+          systems: [gpu0.*.merlin7.psi.ch]
+          relstage: stable
+          build_requires:
+            - gcc/14.3.0
+          runtime_deps:
+            - gcc/14.3.0
