@@ -1,0 +1,14 @@
+#%Module1.0
+
+module-whatis       "The DSSP program was designed to standardize secondary structure assignment"
+module-url          "https://github.com/PDB-REDO/dssp"
+module-license	    "BSD-2-Clause license"
+module-maintainer   "Joao Pedro Agostinho de Sousa <joao.agostinho-de-sousa@psi.ch>"
+
+module-help         "
+The DSSP program was designed by Wolfgang Kabsch and Chris Sander to
+standardize secondary structure assignment. DSSP is a database of secondary
+structure assignments (and much more) for all protein entries in the Protein
+Data Bank (PDB). DSSP is also the program that calculates DSSP entries from PDB
+entries. DSSP does not predict secondary structure.
+"
