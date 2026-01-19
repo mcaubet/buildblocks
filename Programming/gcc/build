@@ -1,3 +1,8 @@
 #!/usr/bin/env modbuild
 
-export LC_CTYPE=C
+export LC_ALL=C
+
+# Sometime I had issues with more then 4 parallel make jobs.
+pbuild::compile(){
+	make -j4
+}
