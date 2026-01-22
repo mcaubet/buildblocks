@@ -4,11 +4,16 @@ chimerax:
   defaults:
     group: EM
     overlay: base
-    relstage: unstable
+    relstage: stable
 
   versions:
     1.10:
       variants:
         - overlay: Alps
           systems: [.*.merlin7.psi.ch]
-          relstage: unstable
+          relstage: stable
+    1.11:
+      variants:
+        - overlay: Alps
+          systems: [.*.merlin7.psi.ch]
+          relstage: stable

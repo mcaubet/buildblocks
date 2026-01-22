@@ -16,4 +16,4 @@ see ChimeraX commercial licensing
 "
 
 # Environment variables
-setenv APPTAINER_IMAGE /data/project/cls/shared/containers/chimerax/1.10/chimerax.sif
+setenv APPTAINER_IMAGE /data/project/cls/shared/containers/${P}/${V}/${P}.sif
