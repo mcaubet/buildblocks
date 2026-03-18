@@ -8,15 +8,6 @@ pbuild::pre_configure() {
 	else
 		declare -g CPATH="${LIBRARY_PATH}"
 	fi
-	pbuild::add_configure_args "CC=${MPICC}"
-	pbuild::add_configure_args "CXX=${MPICXX}"
-
-	pbuild::add_configure_args "--enable-shared"
-	pbuild::add_configure_args "--enable-parallel"
-	pbuild::add_configure_args "--enable-cxx"
-	pbuild::add_configure_args "--enable-unsupported"
-	#pbuild::add_configure_args "--enable-threadsafe"
-	pbuild::add_configure_args "--with-pic"
 
 	local enable_fortran='yes'
 
