@@ -67,7 +67,7 @@ openmpi:
           - --enable-static=no
       variants:
         - systems: [.*.merlin7.psi.ch]
-          relstage: unstable
+          relstage: stable
           overlay: Alps
           use_overlays: [PSI, Alps]
           group_deps:

@@ -22,7 +22,7 @@ mpich:
     5.0.1:
       variants:
         - systems: [login.*.merlin7.psi.ch, cn.*.merlin7.psi.ch]
-          relstage: unstable
+          relstage: stable
           overlay: Alps
           target_cpus: ['x86_64'] # MC
           use_overlays: [PSI, Alps]
@@ -34,7 +34,7 @@ mpich:
           configure_args+:
             - --with-pm=hydra,gforker
         - systems: [gpu.*.merlin7.psi.ch]
-          relstage: unstable
+          relstage: stable
           overlay: Alps_A100
           target_cpus: ['x86_64'] # GPU A100
           use_overlays: [PSI, Alps_A100]
@@ -98,7 +98,7 @@ mpich:
     4.3.2:
       variants:
         - systems: [merlin-.*.psi.ch]
-          relstage: unstable
+          relstage: stable
           overlay: merlin
           target_cpus: ['x86_64']
           use_overlays: [base, merlin]
