@@ -22,7 +22,7 @@ libfabric:
   versions:
     2.5.1:
       config:
-        relstage: unstable
+        relstage: stable
       variants:
         - systems: [.*.merlin7.psi.ch]
           overlay: Alps
@@ -56,7 +56,7 @@ libfabric:
             # - --enable-xpmem
     2.4.0:
       config:
-        relstage: unstable
+        relstage: stable
       variants:
         - systems: [.*.merlin7.psi.ch]
           overlay: Alps
