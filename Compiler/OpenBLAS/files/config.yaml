@@ -33,6 +33,21 @@ OpenBLAS:
     OpenBLAS-0.3.30.tar.gz: 27342cff518646afb4c2b976d809102e368957974c250a25ccc965e53063c95d
 
   versions:
+    0.3.34:
+      config:
+        configure_args+:
+          - -DBUILD_SHARED_LIBS=ON
+          - -DBUILD_STATIC_LIBS=ON
+      variants:
+        - systems: [.*.merlin7.psi.ch]
+          target_cpus: [x86_64]
+          overlay: PSI
+          use_overlays: [PSI, Alps]
+          group_deps:
+            compiler:
+              gcc: [13.4.0]
+          build_requires: [cmake/4.4.0]
+
     0.3.30:
       config:
         configure_args+:
